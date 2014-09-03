@@ -34,14 +34,8 @@ VOLUME ["/etc/openerp/", "/var/log/openerp", "/opt/odoo/extra-addons"]
 ADD openerp-server.conf /etc/openerp/
 ADD launcher.sh /opt/odoo/
 
-# Allow openerp user to modify configuration (launcher.sh does that)
-RUN chown openerp:openerp /etc/openerp/openerp-server.conf
-
 # Odoo ports for web and chat
 EXPOSE 8069 8072
-
-# Odoo does not allow to be run as root
-USER openerp
 
 # Odoo command ready to link with database image nornagon/postgres
 CMD /opt/odoo/launcher.sh
