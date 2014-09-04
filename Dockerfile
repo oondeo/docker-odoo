@@ -31,12 +31,13 @@ RUN mkdir --parents /opt/odoo/extra-addons
 # Used volumes
 VOLUME ["/etc/openerp/", "/var/log/openerp", "/opt/odoo/extra-addons"]
 
-# Load configuration and launcher
-ADD openerp-server.conf /etc/openerp/
-ADD launcher.sh /opt/odoo/
-
 # Odoo ports for web and chat
 EXPOSE 8069 8072
 
-# Odoo command ready to link with database image nornagon/postgres
+# Configure launcher
+RUN touch /firstrun
+ENV ADMIN_PASSWD admin
+ADD launcher.sh /opt/odoo/
+
+# Launcher will patch configuration on first run and launch Odoo
 CMD /opt/odoo/launcher.sh
