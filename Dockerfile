@@ -4,7 +4,7 @@ MAINTAINER yajo@openaliasbox.org
 
 # Add EPEL
 RUN yum --assumeyes install \
-    http://ftp.rediris.es/mirror/fedora-epel/7/x86_64/e/epel-release-7-1.noarch.rpm
+    http://download.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-1.noarch.rpm
 
 # Install Odoo
 RUN yum --assumeyes install \
