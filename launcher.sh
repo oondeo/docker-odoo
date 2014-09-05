@@ -1,5 +1,7 @@
 #!/bin/bash
 
+odoo="openerp-gevent --config /etc/openerp/openerp-server.conf"
+
 if [ -f /firstrun ]; then
     echo Patching configuration on first run
 
@@ -16,7 +18,12 @@ database = $DB_ENV_POSTGRESQL_DB
 admin_passwd = $ADMIN_PASSWD" > /etc/openerp/openerp-server.conf
 
     rm /firstrun
-fi
 
-# Run server
-su openerp --command "openerp-server --config /etc/openerp/openerp-server.conf"
+    # Workaround of for web module not being installed
+    # https://github.com/odoo/odoo/issues/953#issuecomment-54597695
+    su openerp --command "$odoo --init base,web --database $DB_ENV_POSTGRESQL_DB"
+
+else
+    # Run server with live chat enabled
+    su openerp --command "$odoo"
+fi
