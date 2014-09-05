@@ -2,6 +2,12 @@
 
 odoo="openerp-gevent --config /etc/openerp/openerp-server.conf"
 
+# Workaround when default settings are used in database container
+# https://github.com/wyaeld/dockerfiles/issues/4
+DB_ENV_POSTGRESQL_USER=${DB_ENV_POSTGRESQL_USER:-"docker"}
+DB_ENV_POSTGRESQL_PASS=${DB_ENV_POSTGRESQL_PASS:-"docker"}
+DB_ENV_POSTGRESQL_DB=${DB_ENV_POSTGRESQL_DB:-"docker"}
+
 if [ -f /firstrun ]; then
     echo Patching configuration on first run
 
