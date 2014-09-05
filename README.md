@@ -15,8 +15,7 @@ It uses the [upstream nightly RPM packages][1] in [CentOS][].
     from the database server itself, in case you want. Quick example:
 
         docker run --name odoo_dbdata wyaeld/postgres
-        docker run --name odoo_dbsrv --detach \
-            --volumes-from odoo_dbdata wyaeld/postgres
+        docker run --name odoo_dbsrv --detach --volumes-from odoo_dbdata wyaeld/postgres
 
     Also there you can find how to set up a different username, password and
     database name when creating the container. If you use instructions from
