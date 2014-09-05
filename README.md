@@ -23,7 +23,7 @@ It uses the [upstream nightly RPM packages][1] in [CentOS][].
 
 2.  Create the [Odoo][] app container, and link it to the database:
 
-        docker run --detach --name odoo_app --link odoo_dbsrv:db yajo/odoo
+        docker run --detach --name odoo_app --link odoo_dbsrv:db --publish-all yajo/odoo
 
     ### Additional information
 
