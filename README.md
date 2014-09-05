@@ -2,7 +2,7 @@
 
 It uses the [upstream nightly RPM packages][1] in [CentOS][].
 
-# Usage
+## Usage
 
 1.  Follow instructions from [wyaeld/postgres][] to create the
     PostgreSQL server container.
@@ -32,6 +32,33 @@ It uses the [upstream nightly RPM packages][1] in [CentOS][].
     You **should** change the database administration password by adding
     `--env ADMIN_PASSWD=blahblah`, or it will default to `admin`, which is too
     insecure for production environments.
+
+## Mounting extra addons for Odoo
+
+Extra addons must be located in `/opt/odoo/extra-addons/<repo>/<addon>`.
+
+How you put them there does not matter. I will give you some ideas:
+
+### Mounting an addons folder from the host
+
+Good idea for developing.
+
+Add `--volume /path/to/addons/folder/in/host:/opt/odoo/extra-addons:ro` when
+executing step 2 of above instructions. The mounted folder must have read
+permissions for the docker process, or it will fail without notice.
+
+### Subclassing this repository
+
+A simple `Dockerfile` like this can help:
+
+    FROM yajo/odoo
+    ADD extra-addons /opt/odoo/
+
+You should obviously have an `extra-addons` folder in the directory tree.
+Then, run:
+
+    cd /path/to/my/subrepository
+    docker build --tag my-odoo .
 
 
 [1]: http://nightly.openerp.com/8.0/nightly/rpm/
