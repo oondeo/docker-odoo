@@ -1,38 +1,39 @@
 # Dockerized Odoo #
 
-It uses the [upstream nightly packages for CentOS][1].
+It uses the [upstream nightly RPM packages][1] in [CentOS][].
 
 # Usage
 
-1.  Follow instructions from [wyaeld/postgres][2] to create the PostgreSQL
-    server containers (one for data, other for the server):
+1.  Follow instructions from [wyaeld/postgres][] to create the
+    PostgreSQL server container.
 
-        # DB data container
-        $ docker run --name odoo_dbdata wyaeld/postgres:data
+        docker run --detach --name odoo_dbsrv wyaeld/postgres
 
-        # DB server container
-        $ docker run --detach --name odoo_dbsrv \
-            --volumes-from odoo_dbdata \
-            --env POSTGRESQL_USER=admin \
-            --env POSTGRESQL_PASS=admin \
-            --env POSTGRESQL_DB=odoo \
-            wyaeld/postgres
+    ### Additional information
 
-    **Note:** Those `--env` are optional, but until [Odoo bug 953][3] gets
-    fixed, `--env POSTGRESQL_PASS=admin` is needed to workaround it.
+    That repository has information about how to split your database data files
+    from the database server itself, in case you want. Quick example:
 
-2.  Create the [Odoo][4] app container, and link it to the database:
+        docker run --name odoo_dbdata wyaeld/postgres
+        docker run --name odoo_dbsrv --detach \
+            --volumes-from odoo_dbdata wyaeld/postgres
 
-        $ docker run --detach --name odoo_app \
-            --link odoo_dbsrv:db \
-            --env ADMIN_PASSWD=admin \
-            yajo/odoo
+    Also there you can find how to set up a different username, password and
+    database name when creating the container. If you use instructions from
+    there, those values will be used in the Odoo app container.
 
-    **Note:** If no `--env ADMIN_PASSWD`, it will default to `admin`,
-    which is a security hole.
+2.  Create the [Odoo][] app container, and link it to the database:
+
+        docker run --detach --name odoo_app --link odoo_dbsrv:db yajo/odoo
+
+    ### Additional information
+
+    You **should** change the database administration password by adding
+    `--env ADMIN_PASSWD=blahblah`, or it will default to `admin`, which is too
+    insecure for production environments.
 
 
 [1]: http://nightly.openerp.com/8.0/nightly/rpm/
-[2]: https://registry.hub.docker.com/u/wyaeld/postgres/
-[3]: https://github.com/odoo/odoo/issues/953
-[4]: https://www.odoo.com/
+[CentOS]: http://centos.org/
+[Odoo]: https://www.odoo.com/
+[wyaeld/postgres]: https://registry.hub.docker.com/u/wyaeld/postgres/
