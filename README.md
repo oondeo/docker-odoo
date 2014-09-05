@@ -27,6 +27,8 @@ It uses the [upstream nightly RPM packages][1] in [CentOS][].
 
     ### Additional information
 
+    Maybe you prefer to change `--publish-all` for `--publish 8072:8072`.
+
     You **should** change the database administration password by adding
     `--env ADMIN_PASSWD=blahblah`, or it will default to `admin`, which is too
     insecure for production environments.
