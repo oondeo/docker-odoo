@@ -16,6 +16,7 @@ RUN yum --assumeyes install python-gevent wkhtmltopdf
 # Dependencies available from Fedora 20
 RUN yum --assumeyes install \
     http://dl.fedoraproject.org/pub/fedora/linux/releases/20/Everything/x86_64/os/Packages/p/pychart-1.39-16.fc20.noarch.rpm \
+    http://dl.fedoraproject.org/pub/fedora/linux/releases/20/Everything/x86_64/os/Packages/p/python-vatnumber-1.0-5.fc20.noarch.rpm \
     http://dl.fedoraproject.org/pub/fedora/linux/releases/20/Everything/x86_64/os/Packages/p/pyPdf-1.13-6.fc20.noarch.rpm
 
 # Dependencies available from pip
