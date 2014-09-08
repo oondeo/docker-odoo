@@ -1,6 +1,6 @@
 # Dockerized Odoo #
 
-It uses the [upstream nightly RPM packages][1] in [CentOS][].
+An [Odoo][] server installed in [CentOS][] 7.
 
 ## Usage
 
@@ -67,8 +67,21 @@ Then, run:
     cd /path/to/my/subrepository
     docker build --tag my-odoo .
 
+## Image versions available
 
-[1]: http://nightly.openerp.com/8.0/nightly/rpm/
+The repository [yajo/odoo][] has these versions (tags):
+
+- `latest` or `rpm8.0`: It uses the official
+  [upstream nightly RPM packages](http://nightly.openerp.com/8.0/nightly/rpm/)
+  and tries to install every dependency possible with [RPM][].
+- `pip8.0`: It uses [Pip][] and [Git][] to download and install [Odoo][] from
+[the official main source code repository](https://github.com/odoo/odoo).
+
+
 [CentOS]: http://centos.org/
+[Git]: http://git-scm.com/
 [Odoo]: https://www.odoo.com/
+[Pip]: https://pip.pypa.io/en/latest/
+[RPM]: http://rpm.org/
 [wyaeld/postgres]: https://registry.hub.docker.com/u/wyaeld/postgres/
+[yajo/odoo]: https://registry.hub.docker.com/u/yajo/odoo/
