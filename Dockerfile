@@ -38,6 +38,7 @@ EXPOSE 8069 8072
 # Configure launcher
 RUN touch /firstrun
 ENV ADMIN_PASSWD admin
+ENV ODOO_SERVER openerp-server
 ADD launcher.sh /opt/odoo/
 
 # Launcher will patch configuration on first run and launch Odoo

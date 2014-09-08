@@ -33,6 +33,13 @@ It uses the [upstream nightly RPM packages][1] in [CentOS][].
     `--env ADMIN_PASSWD=blahblah`, or it will default to `admin`, which is too
     insecure for production environments.
 
+    You can choose which script will the launcher run by adding
+    `--env ODOO_SERVER=script_name`. Choose from:
+
+    - `openerp-server`: Default. To run just the web server (port 8069).
+    - `openerp-gevent`: To run the web server with live chat (port 8072).
+    - `odoo.py`: Like the first, with some more options.
+
 ## Mounting extra addons for Odoo
 
 Extra addons must be located in `/opt/odoo/extra-addons/<repo>/<addon>`.

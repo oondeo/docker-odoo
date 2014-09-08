@@ -1,6 +1,6 @@
 #!/bin/bash
 
-odoo="openerp-gevent --config /etc/openerp/openerp-server.conf"
+odoo="$ODOO_SERVER --config /etc/openerp/openerp-server.conf"
 
 # Workaround when default settings are used in database container
 # https://github.com/wyaeld/dockerfiles/issues/4
