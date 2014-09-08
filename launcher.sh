@@ -25,6 +25,14 @@ admin_passwd = $ADMIN_PASSWD" > /etc/openerp/openerp-server.conf
 
     rm /firstrun
 
+    # Install unaccent
+    PGPASSWORD="$DB_ENV_POSTGRESQL_PASS" psql \
+        --user "$DB_ENV_POSTGRESQL_USER" \
+        --host "$DB_PORT_5432_TCP_ADDR" \
+        --port "$DB_PORT_5432_TCP_PORT" \
+        --dbname "$DB_ENV_POSTGRESQL_DB" \
+        --command "CREATE EXTENSION unaccent;"
+
     # Workaround of for web module not being installed
     # https://github.com/odoo/odoo/issues/953#issuecomment-54597695
     su openerp --command "$odoo --init base,web --database $DB_ENV_POSTGRESQL_DB"
