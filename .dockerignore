@@ -1,0 +1,4 @@
+.git*
+.hg*
+README.md
+LICENSE.txt
