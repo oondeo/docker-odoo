@@ -28,6 +28,7 @@ EXPOSE 8069 8072
 
 # Configure launcher
 RUN touch /firstrun
+RUN useradd openerp
 ENV ADMIN_PASSWD admin
 ENV ODOO_SERVER openerp-server
 ADD launcher.sh /opt/odoo/
