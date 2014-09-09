@@ -10,6 +10,7 @@ RUN yum --assumeyes install \
 RUN yum --assumeyes install \
     gcc \
     git \
+    libpng12 \
     postgresql \
     python-devel \
     python-pip \
