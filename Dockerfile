@@ -11,6 +11,8 @@ RUN yum --assumeyes install \
     gcc \
     git \
     libpng12 \
+    libxml2-devel \
+    libxslt-devel \
     postgresql \
     python-devel \
     python-pip \
