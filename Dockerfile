@@ -11,6 +11,7 @@ RUN yum --assumeyes install \
     gcc \
     git \
     postgresql \
+    python-devel \
     python-pip \
     http://netcologne.dl.sourceforge.net/project/wkhtmltopdf/0.12.1/wkhtmltox-0.12.1_linux-centos6-amd64.rpm
 RUN pip install git+https://github.com/odoo/odoo.git@8.0#egg=Odoo
