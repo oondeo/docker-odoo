@@ -11,7 +11,7 @@ DB_ENV_POSTGRESQL_DB=${DB_ENV_POSTGRESQL_DB:-"docker"}
 if [ -f /firstrun ]; then
     echo Patching configuration on first run
 
-    addons=$(ls -1bdm /usr/local/lib/python2.7/dist-packages/openerp/addons
+    addons=$(ls -1bdm /usr/local/lib/python2.7/dist-packages/openerp/addons \
                       /opt/odoo/extra-addons/*)
 
     echo "
