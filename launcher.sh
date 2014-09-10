@@ -27,20 +27,27 @@ database = $DB_ENV_POSTGRESQL_DB
 admin_passwd = $ADMIN_PASSWD" > /etc/openerp/openerp-server.conf
 
     rm /firstrun
+fi
 
-    # Install unaccent
-    PGPASSWORD="$DB_ENV_POSTGRESQL_PASS" psql \
-        --user "$DB_ENV_POSTGRESQL_USER" \
-        --host "$DB_PORT_5432_TCP_ADDR" \
-        --port "$DB_PORT_5432_TCP_PORT" \
-        --dbname "$DB_ENV_POSTGRESQL_DB" \
-        --command "CREATE EXTENSION unaccent;"
+# Prepare connections to the database
+export PGPASSWORD="$DB_ENV_POSTGRESQL_PASS"
+pg="$(echo psql \
+     --user "$DB_ENV_POSTGRESQL_USER" \
+     --host "$DB_PORT_5432_TCP_ADDR" \
+     --port "$DB_PORT_5432_TCP_PORT" \
+     --dbname "$DB_ENV_POSTGRESQL_DB" \
+     --command)"
 
+# Install unaccent
+$pg 'CREATE EXTENSION unaccent;'
+
+# This will have 4 lines for an empty database
+if [ $($pg 'SELECT * FROM pg_stat_user_tables;' | wc -l) -lt 5 ]; then
     # Workaround of for web module not being installed
     # https://github.com/odoo/odoo/issues/953#issuecomment-54597695
-    su openerp --command "$odoo --init base,web --database $DB_ENV_POSTGRESQL_DB"
-
-else
-    # Run server with live chat enabled
-    su openerp --command "$odoo"
+    odoo="$odoo --init base,web --database '$DB_ENV_POSTGRESQL_DB'"
 fi
+
+# Run server
+echo "Executing '$odoo'"
+su openerp --command "$odoo"
