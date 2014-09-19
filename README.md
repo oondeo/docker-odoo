@@ -67,6 +67,15 @@ Then, run:
     cd /path/to/my/subrepository
     docker build --tag my-odoo .
 
+## Debugging
+
+This image comes with [pudb][] preinstalled. To debug your modules, simply add
+this line anywhere:
+
+    import pudb;pudb.set_trace()
+
+That will interrupt the execution and display the pudb screen in your terminal.
+
 ## Image versions available
 
 The repository [yajo/odoo][] has these versions (tags):
@@ -82,6 +91,7 @@ The repository [yajo/odoo][] has these versions (tags):
 [Git]: http://git-scm.com/
 [Odoo]: https://www.odoo.com/
 [Pip]: https://pip.pypa.io/en/latest/
+[pudb]: https://pypi.python.org/pypi/pudb
 [RPM]: http://rpm.org/
 [wyaeld/postgres]: https://registry.hub.docker.com/u/wyaeld/postgres/
 [yajo/odoo]: https://registry.hub.docker.com/u/yajo/odoo/
