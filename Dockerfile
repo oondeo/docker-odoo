@@ -27,6 +27,11 @@ RUN yum --assumeyes install \
 RUN yum --assumeyes install python-pip
 RUN pip install psycogreen
 
+# I need a debugger
+RUN pip install pudb
+ADD pudb.cfg /home/openerp/.config/pudb/
+RUN chown -R openerp:openerp /home/openerp
+
 # PYTHONPATH needs to be patched
 ENV PYTHONPATH PYTHONPATH=$(python -c "import sys; print ':'.join(x for x in sys.path if x)"):/usr/local/lib/python2.7/dist-packages/
 
