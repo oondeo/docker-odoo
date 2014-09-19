@@ -27,7 +27,8 @@ An [Odoo][] server installed in [CentOS][] 7.
 
     ### Additional information
 
-    Maybe you prefer to change `--publish-all` for `--publish 8072:8072`.
+    Maybe you prefer to change `--publish-all` for
+    `--publish 8069:8069 --publish 8072:8072`.
 
     You **should** change the database administration password by adding
     `--env ADMIN_PASSWD=blahblah`, or it will default to `admin`, which is too
