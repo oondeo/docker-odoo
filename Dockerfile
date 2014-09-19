@@ -29,8 +29,8 @@ RUN pip install psycogreen
 
 # I need a debugger
 RUN pip install pudb
-ADD pudb.cfg /home/openerp/.config/pudb/
-RUN chown -R openerp:openerp /home/openerp
+ADD pudb.cfg /home/odoo/.config/pudb/
+RUN chown -R odoo:odoo /home/odoo
 
 # PYTHONPATH needs to be patched
 ENV PYTHONPATH PYTHONPATH=$(python -c "import sys; print ':'.join(x for x in sys.path if x)"):/usr/local/lib/python2.7/dist-packages/
@@ -48,7 +48,10 @@ EXPOSE 8069 8072
 RUN touch /firstrun
 ENV ADMIN_PASSWD admin
 ENV ODOO_SERVER openerp-server
-ADD launcher.sh /opt/odoo/
+ADD launch /usr/local/bin/
+ADD pot /usr/local/bin/
+ADD unittest /usr/local/bin/
+ADD variables /usr/local/bin/
 
 # Launcher will patch configuration on first run and launch Odoo
-CMD /opt/odoo/launcher.sh
+CMD launch

@@ -34,12 +34,32 @@ An [Odoo][] server installed in [CentOS][] 7.
     `--env ADMIN_PASSWD=blahblah`, or it will default to `admin`, which is too
     insecure for production environments.
 
-    You can choose which script will the launcher run by adding
-    `--env ODOO_SERVER=script_name`. Choose from:
+### Scripts available
 
-    - `openerp-server`: Default. To run just the web server (port 8069).
-    - `openerp-gevent`: To run the web server with live chat (port 8072).
-    - `odoo.py`: Like the first, with some more options.
+-   `launch`: Default. Ultimately all other scripts end up running this one.
+
+    You can choose which upstream server to run by adding
+    `--env ODOO_SERVER=script_name` to the `docker run` command.
+
+    Choose from:
+
+    -   `openerp-server`: Default. To run just the web server (port 8069).
+
+    -   `openerp-gevent`: To run the web server with live chat (port 8072).
+
+    -   `odoo.py`: Like the first, with some more options.
+
+-   `pot`: This prints a `*.pot` template to translate your module.
+
+    Usage:
+
+        docker run --rm --link odoo_dbsrv:db yajo/odoo pot one_module,other
+
+-   `unittest`: This runs the server in unit test mode.
+
+    Usage:
+
+        docker run -P --rm --link odoo_dbsrv:db yajo/odoo unittest one_module,other
 
 ## Mounting extra addons for Odoo
 

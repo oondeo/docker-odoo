@@ -1,12 +1,11 @@
 #!/bin/bash
 
-odoo="$ODOO_SERVER --config /etc/openerp/openerp-server.conf"
+# This program patches the configuration for Odoo and then runs the server
 
-# Workaround when default settings are used in database container
-# https://github.com/wyaeld/dockerfiles/issues/4
-DB_ENV_POSTGRESQL_USER=${DB_ENV_POSTGRESQL_USER:-"docker"}
-DB_ENV_POSTGRESQL_PASS=${DB_ENV_POSTGRESQL_PASS:-"docker"}
-DB_ENV_POSTGRESQL_DB=${DB_ENV_POSTGRESQL_DB:-"docker"}
+source $(dirname $0)/variables
+
+conf=/etc/openerp/openerp-server.conf
+odoo="$ODOO_SERVER --config $conf"
 
 if [ -f /firstrun ]; then
     echo Patching configuration on first run
@@ -24,7 +23,7 @@ db_port = $DB_PORT_5432_TCP_PORT
 db_user = $DB_ENV_POSTGRESQL_USER
 db_password = $DB_ENV_POSTGRESQL_PASS
 database = $DB_ENV_POSTGRESQL_DB
-admin_passwd = $ADMIN_PASSWD" > /etc/openerp/openerp-server.conf
+admin_passwd = $ADMIN_PASSWD" > $conf
 
     rm /firstrun
 fi
@@ -50,4 +49,4 @@ fi
 
 # Run server
 echo "Executing '$odoo'"
-su openerp --command "$odoo"
+su odoo --command "$odoo"
