@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# This program runs the server in unit test mode
+
+source $(dirname $0)/variables
+
+command="$ODOO_SERVER --database $DB_ENV_POSTGRESQL_DB \
+                      --init $1 \
+                      --log-level test \
+                      --test-enable \
+                      --update $1"
+
+ODOO_SERVER="$command" $(dirname $0)/launch
