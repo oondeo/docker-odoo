@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# This program exports a language template for the modules selected
+
+source $(dirname $0)/variables
+
+location=$home/export.po
+command="$ODOO_SERVER --database $DB_ENV_POSTGRESQL_DB \
+                      --i18n-export $location \
+                      --init $1 \
+                      --modules $1 \
+                      --update $1"
+
+ODOO_SERVER="$command" $(dirname $0)/launch
+
+echo "Output of language template for module(s): $1"
+echo "---------------------------------------------"
+
+cat $location

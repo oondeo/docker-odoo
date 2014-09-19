@@ -9,7 +9,6 @@ RUN yum --assumeyes install \
 # Install Odoo and dependencies
 RUN yum --assumeyes install \
     gcc \
-    git \
     libpng12 \
     libxml2-devel \
     libxslt-devel \
@@ -17,7 +16,12 @@ RUN yum --assumeyes install \
     python-devel \
     python-pip \
     http://netcologne.dl.sourceforge.net/project/wkhtmltopdf/0.12.1/wkhtmltox-0.12.1_linux-centos6-amd64.rpm
-RUN pip install git+https://github.com/odoo/odoo.git@8.0#egg=Odoo
+RUN pip install https://github.com/odoo/odoo/archive/8.0.zip#egg=Odoo
+
+# I need a debugger
+RUN pip install pudb
+ADD pudb.cfg /home/odoo/.config/pudb/
+RUN chown -R odoo:odoo /home/odoo
 
 # Create path for extra addons
 RUN mkdir --parents /opt/odoo/extra-addons
@@ -30,10 +34,13 @@ EXPOSE 8069 8072
 
 # Configure launcher
 RUN touch /firstrun
-RUN useradd openerp
+RUN useradd odoo
 ENV ADMIN_PASSWD admin
 ENV ODOO_SERVER openerp-server
-ADD launcher.sh /opt/odoo/
+ADD launch /usr/local/bin/
+ADD pot /usr/local/bin/
+ADD unittest /usr/local/bin/
+ADD variables /usr/local/bin/
 
 # Launcher will patch configuration on first run and launch Odoo
-CMD /opt/odoo/launcher.sh
+CMD launch
