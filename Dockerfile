@@ -10,6 +10,7 @@ RUN yum --assumeyes install \
 RUN yum --assumeyes install \
     gcc \
     libpng12 \
+    libpqxx-devel \
     libxml2-devel \
     libxslt-devel \
     postgresql \
