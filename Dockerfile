@@ -8,11 +8,15 @@ RUN yum --assumeyes install \
 
 # Install Odoo and dependencies
 RUN yum --assumeyes install \
+    cyrus-sasl-devel \
     gcc \
+    heimdal-devel \
     libpng12 \
     libpqxx-devel \
     libxml2-devel \
     libxslt-devel \
+    openldap-devel \
+    openssl-devel \
     postgresql \
     python-devel \
     python-pip \
@@ -23,6 +27,9 @@ RUN pip install https://github.com/odoo/odoo/archive/8.0.zip#egg=Odoo
 RUN pip install pudb
 ADD pudb.cfg /home/odoo/.config/pudb/
 RUN chown -R odoo:odoo /home/odoo
+
+# Remove unneeded dependencies
+RUN yum --assumeyes remove '*-devel'
 
 # Create path for extra addons
 RUN mkdir --parents /opt/odoo/extra-addons
