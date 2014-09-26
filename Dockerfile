@@ -11,7 +11,7 @@ RUN yum --assumeyes update
 
 # Install Odoo
 RUN yum --assumeyes install \
-    http://nightly.openerp.com/8.0/nightly/rpm/odoo_8.0rc1-latest.noarch.rpm
+    http://nightly.odoo.com/8.0/nightly/rpm/odoo_8.0-latest.noarch.rpm
 
 # Dependencies available from CentOS 7 + EPEL 7
 RUN yum --assumeyes install libpng12 postgresql python-gevent
