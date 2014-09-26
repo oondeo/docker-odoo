@@ -40,13 +40,6 @@ pg="$(echo psql \
 # Install unaccent
 $pg 'CREATE EXTENSION unaccent;'
 
-# This will have 4 lines for an empty database
-if [ $($pg 'SELECT * FROM pg_stat_user_tables;' | wc -l) -lt 5 ]; then
-    # Workaround of for web module not being installed
-    # https://github.com/odoo/odoo/issues/953#issuecomment-54597695
-    odoo="$odoo --init base,web --database '$DB_ENV_POSTGRESQL_DB'"
-fi
-
 # Run server
 echo "Executing '$odoo'"
 su odoo --command "$odoo"
