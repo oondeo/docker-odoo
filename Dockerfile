@@ -27,6 +27,7 @@ RUN yum --assumeyes install \
 RUN pip install https://github.com/odoo/odoo/archive/8.0.zip#egg=Odoo
 
 # I need a debugger
+RUN useradd odoo
 RUN pip install pudb
 ADD pudb.cfg /home/odoo/.config/pudb/
 RUN chown -R odoo:odoo /home/odoo
@@ -45,7 +46,6 @@ EXPOSE 8069 8072
 
 # Configure launcher
 RUN touch /firstrun
-RUN useradd odoo
 ENV ADMIN_PASSWD admin
 ENV ODOO_SERVER openerp-server
 ADD launch /usr/local/bin/
