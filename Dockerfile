@@ -14,11 +14,10 @@ RUN yum --assumeyes install \
     http://nightly.odoo.com/8.0/nightly/rpm/odoo_8.0-latest.noarch.rpm
 
 # Dependencies available from CentOS 7 + EPEL 7
-RUN yum --assumeyes install libpng12 postgresql python-gevent
+RUN yum --assumeyes install libpng12 postgresql pychart python-gevent
 
 # Dependencies available from Fedora 20
 RUN yum --assumeyes install \
-    http://dl.fedoraproject.org/pub/fedora/linux/releases/20/Everything/x86_64/os/Packages/p/pychart-1.39-16.fc20.noarch.rpm \
     http://dl.fedoraproject.org/pub/fedora/linux/releases/20/Everything/x86_64/os/Packages/p/python-vatnumber-1.0-5.fc20.noarch.rpm \
     http://dl.fedoraproject.org/pub/fedora/linux/releases/20/Everything/x86_64/os/Packages/p/pyPdf-1.13-6.fc20.noarch.rpm
 
