@@ -48,10 +48,10 @@ EXPOSE 8069 8072
 RUN touch /firstrun
 ENV ADMIN_PASSWD admin
 ENV ODOO_SERVER openerp-server
-ADD launch /usr/local/bin/
+ENV UNACCENT True
 ADD pot /usr/local/bin/
 ADD unittest /usr/local/bin/
-ADD variables /usr/local/bin/
+ADD launch /usr/local/bin/
 
 # Launcher will patch configuration on first run and launch Odoo
 CMD launch
