@@ -2,18 +2,21 @@
 
 # This program exports a language template for the modules selected
 
-source $(dirname $0)/variables
+location=~odoo/export.po
 
-location=$home/export.po
-command="$ODOO_SERVER --database $DB_ENV_POSTGRESQL_DB \
-                      --i18n-export $location \
-                      --init $1 \
-                      --modules $1 \
-                      --update $1"
+if [ "$DATABASE" == "" ]; then
+    echo "You must specify the database with '--env DATABASE=db_name'" \
+        > /dev/stderr
+else
+    command="$ODOO_SERVER --database $DATABASE \
+                          --i18n-export $location \
+                          --init $1 \
+                          --modules $1 \
+                          --update $1"
 
-ODOO_SERVER="$command" $(dirname $0)/launch
+    ODOO_SERVER="$command" $(dirname $0)/launch
 
-echo "Output of language template for module(s): $1"
-echo "---------------------------------------------"
+    echo "Outputting language template (*.pot) for module(s): $1" > /dev/stderr
 
-cat $location
+    cat $location
+fi
