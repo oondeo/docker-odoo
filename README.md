@@ -2,37 +2,29 @@
 
 An [Odoo][] server installed in [CentOS][] 7.
 
+## Security
+
+You **must** change the database administration password by adding
+`--env ADMIN_PASSWD=blahblah`, or it will default to `admin`, which is too
+insecure for production environments.
+
 ## Usage
 
-1.  Follow instructions from [wyaeld/postgres][] to create the
-    PostgreSQL server container.
+1.  Follow instructions from [yajo/postgres][] to:
 
-        docker run --detach --name odoo_dbsrv wyaeld/postgres
+    - Create the PostgreSQL server container:
 
-    ### Additional information
+            docker run --detach --name odoo_dbsrv yajo/postgres:9.2
 
-    That repository has information about how to split your database data files
-    from the database server itself, in case you want. Quick example:
-
-        docker run --name odoo_dbdata wyaeld/postgres
-        docker run --name odoo_dbsrv --detach --volumes-from odoo_dbdata wyaeld/postgres
-
-    Also there you can find how to set up a different username, password and
-    database name when creating the container. If you use instructions from
-    there, those values will be used in the Odoo app container.
+    - Split data files from database server.
+    - Change database user and password.
 
 2.  Create the [Odoo][] app container, and link it to the database:
 
         docker run --detach --name odoo_app --link odoo_dbsrv:db --publish-all yajo/odoo
 
-    ### Additional information
-
     Maybe you prefer to change `--publish-all` for
     `--publish 8069:8069 --publish 8072:8072`.
-
-    You **should** change the database administration password by adding
-    `--env ADMIN_PASSWD=blahblah`, or it will default to `admin`, which is too
-    insecure for production environments.
 
 ### Scripts available
 
@@ -114,5 +106,5 @@ The repository [yajo/odoo][] has these versions (tags):
 [Pip]: https://pip.pypa.io/en/latest/
 [pudb]: https://pypi.python.org/pypi/pudb
 [RPM]: http://rpm.org/
-[wyaeld/postgres]: https://registry.hub.docker.com/u/wyaeld/postgres/
+[yajo/postgres]: https://registry.hub.docker.com/u/yajo/postgres/
 [yajo/odoo]: https://registry.hub.docker.com/u/yajo/odoo/
