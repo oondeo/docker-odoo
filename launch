@@ -2,8 +2,6 @@
 
 # This program patches the configuration for Odoo and then runs the server
 
-source $(dirname $0)/variables
-
 conf=/etc/openerp/openerp-server.conf
 odoo="$ODOO_SERVER --config $conf"
 
