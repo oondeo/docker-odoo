@@ -4,7 +4,7 @@ MAINTAINER yajo@openaliasbox.org
 
 # Add EPEL
 RUN yum --assumeyes install \
-    http://download.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-2.noarch.rpm
+    http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-2.noarch.rpm
 
 # Update everything
 RUN yum --assumeyes update
