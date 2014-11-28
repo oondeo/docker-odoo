@@ -14,6 +14,9 @@ fi
 if [ -f /firstrun ]; then
     echo Patching configuration on first run > /dev/stderr
 
+    # Fix usual permissions issues with extra addons
+    chmod --recursive u=rwX,go=rX /opt/odoo/extra-addons
+
     addons=$(ls -1bd /usr/local/lib/python2.7/dist-packages/openerp/addons \
                      /opt/odoo/extra-addons/* | tr '\n' ',' | sed s/,$//)
 
