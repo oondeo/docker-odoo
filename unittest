@@ -2,8 +2,6 @@
 
 # This program runs the server in unit test mode
 
-source $(dirname $0)/variables
-
 if [ "$DATABASE" == "" ]; then
     echo "You must specify the database with '--env DATABASE=db_name'" \
         > /dev/stderr
