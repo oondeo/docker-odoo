@@ -82,6 +82,28 @@ Then, run:
     cd /path/to/my/subrepository
     docker build --tag my-odoo .
 
+### Using [Fig][]
+
+A sample `fig.yml` file:
+
+    app:
+        image: yajo/odoo
+        ports:
+            - "1984:1984"
+            - "8069:8069"
+            - "8072:8072"
+        volumes:
+            - addons:/opt/odoo/extra-addons
+        links:
+            - db
+        command: launch
+    data:
+        image: yajo/postgres:data
+    db:
+        image: yajo/postgres:9.2
+        volumes_from:
+            - data
+
 ## Debugging
 
 This image comes with [wdb][] preinstalled. See its page for documentation.
@@ -129,6 +151,7 @@ These tags were used some time ago, but right now are not updated anymore:
 
 
 [CentOS]: http://centos.org/
+[Fig]: http://www.fig.sh/
 [Git]: http://git-scm.com/
 [Odoo]: https://www.odoo.com/
 [Pip]: https://pip.pypa.io/en/latest/
