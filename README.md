@@ -24,7 +24,7 @@ insecure for production environments.
         docker run --detach --name odoo_app --link odoo_dbsrv:db --publish-all yajo/odoo
 
     Maybe you prefer to change `--publish-all` for
-    `--publish 8069:8069 --publish 8072:8072`.
+    `--publish 1984:1984 --publish 8069:8069 --publish 8072:8072`.
 
 ### Scripts available
 
