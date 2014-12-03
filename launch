@@ -2,7 +2,7 @@
 
 # This program patches the configuration for Odoo and then runs the server
 
-conf=/etc/openerp/openerp-server.conf
+conf=/etc/odoo/openerp-server.conf
 odoo="$ODOO_SERVER --config $conf"
 
 # Ensure proper content for $UNACCENT
@@ -17,7 +17,7 @@ if [ -f /firstrun ]; then
     # Fix usual permissions issues with extra addons
     chmod --recursive u=rwX,go=rX /opt/odoo/extra-addons
 
-    addons=$(ls -1bd /usr/local/lib/python2.7/dist-packages/openerp/addons \
+    addons=$(ls -1bd /usr/lib/python2.7/site-packages/openerp/addons \
                      /opt/odoo/extra-addons/* | tr '\n' ',' | sed s/,$//)
 
     echo "

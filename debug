@@ -1,0 +1,9 @@
+#!/bin/bash
+
+wdb.server.py &
+
+if [ "$1" == "start" ]; then
+    export ODOO_SERVER="python -m wdb $(which $ODOO_SERVER)"
+fi
+
+launch

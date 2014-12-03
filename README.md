@@ -1,6 +1,6 @@
 # Dockerized Odoo #
 
-An [Odoo][] server installed in [CentOS][] 7.
+An [Odoo][] 8 server installed in [CentOS][] 7.
 
 ## Security
 
@@ -28,18 +28,20 @@ insecure for production environments.
 
 ### Scripts available
 
--   `launch`: Default. Ultimately all other scripts end up running this one.
+-   `debug`: Use for debugging. See section *Debugging* below.
+
+-   `launch`: **DEFAULT**. All other scripts end up running this one.
 
     You can choose which upstream server to run by adding
     `--env ODOO_SERVER=script_name` to the `docker run` command.
 
     Choose from:
 
-    -   `openerp-server`: Default. To run just the web server (port 8069).
+    -   `openerp-server`: To run just the web server (port 8069).
 
     -   `openerp-gevent`: To run the web server with live chat (port 8072).
 
-    -   `odoo.py`: Like the first, with some more options.
+    -   `odoo.py`: **DEFAULT**. Like the first, with some more options.
 
 -   `pot`: This prints a `*.pot` template to translate your module.
 
@@ -55,7 +57,7 @@ insecure for production environments.
 
 ## Mounting extra addons for Odoo
 
-Extra addons must be located in `/opt/odoo/extra-addons/<repo>/<addon>`.
+Extra addons must be located in `/opt/odoo/extra-addons/<repo>/<addon>/`.
 
 How you put them there does not matter. I will give you some ideas:
 
@@ -82,29 +84,55 @@ Then, run:
 
 ## Debugging
 
-This image comes with [pudb][] preinstalled. To debug your modules, simply add
-this line anywhere:
+This image comes with [wdb][] preinstalled. See its page for documentation.
 
-    import pudb;pudb.set_trace()
+Adding this line anywhere will interrupt the execution in the wdb debugger:
 
-That will interrupt the execution and display the pudb screen in your terminal.
+    import wdb;wdb.set_trace()
+
+You will see a message like this one when this happens:
+
+    Unable to open browser, please go to http://localhost:1984/debug/session/some-long-random-stuff
+
+This assumes that you ran the container with the option `-p 1984:1984` in a
+local machine. If you want to change the `localhost:1984` part, you can
+do so with `-e WDB_WEB_SERVER=example.com -e WDB_WEB_PORT=42`.
+
+To debug your modules, you will need to start the container with the script
+`debug` (see above section *Scripts available*):
+
+    docker run -P --link odoo_dbsrv:db yajo/odoo debug
+
+To debug Odoo from the start, add the `start` keyword at the end:
+
+    docker run -P --link odoo_dbsrv:db yajo/odoo debug start
+
+As long as you don't use the `debug` script, the wdb server does not start,
+and port 1984 does not listen to anything, so you don't need to expose it.
 
 ## Image versions available
 
-The repository [yajo/odoo][] has these versions (tags):
+The repository [yajo/odoo][] has only one active tag:
 
-- `latest` or `rpm8.0`: It uses the official
-  [upstream nightly RPM packages](http://nightly.openerp.com/8.0/nightly/rpm/)
-  and tries to install every dependency possible with [RPM][].
-- `pip8.0`: It uses [Pip][] and [Git][] to download and install [Odoo][] from
-[the official main source code repository](https://github.com/odoo/odoo).
+-   `latest`: It uses the official
+    [upstream nightly RPM repository](http://nightly.odoo.com/8.0/nightly/rpm/)
+    and tries to install every dependency possible with [RPM][].
+    If something is not available as RPM package, it will install it other way.
+
+### Deprecated tags
+
+These tags were used some time ago, but right now are not updated anymore:
+
+-   `rpm8.0`: It was the same as `latest`.
+-   `pip8.0`: It used [Pip][] and [Git][] to download and install [Odoo][] from
+    [the official main source code repository](https://github.com/odoo/odoo).
 
 
 [CentOS]: http://centos.org/
 [Git]: http://git-scm.com/
 [Odoo]: https://www.odoo.com/
 [Pip]: https://pip.pypa.io/en/latest/
-[pudb]: https://pypi.python.org/pypi/pudb
+[wdb]: https://github.com/Kozea/wdb
 [RPM]: http://rpm.org/
 [yajo/postgres]: https://registry.hub.docker.com/u/yajo/postgres/
 [yajo/odoo]: https://registry.hub.docker.com/u/yajo/odoo/

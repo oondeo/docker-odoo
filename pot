@@ -2,7 +2,7 @@
 
 # This program exports a language template for the modules selected
 
-location=~odoo/export.po
+location=/var/lib/odoo/export.po
 
 if [ "$DATABASE" == "" ]; then
     echo "You must specify the database with '--env DATABASE=db_name'" \
