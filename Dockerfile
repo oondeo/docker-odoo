@@ -36,6 +36,7 @@ ENV ADMIN_PASSWD admin
 ENV ODOO_SERVER odoo.py
 ENV UNACCENT True
 ADD debug launch pot unittest /usr/local/bin/
+RUN chmod a+rx /usr/local/bin/*
 
 # Launcher will patch configuration on first run and launch Odoo
 CMD launch
