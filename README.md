@@ -129,6 +129,10 @@ To debug Odoo from the start, add the `start` keyword at the end:
 
     docker run -P --link odoo_dbsrv:db yajo/odoo debug start
 
+To debug your unit tests, run it as:
+
+    docker run -P --link odoo_dbsrv:db yajo/odoo debug unittest one_module,other
+
 As long as you don't use the `debug` script, the wdb server does not start,
 and port 1984 does not listen to anything, so you don't need to expose it.
 
