@@ -11,4 +11,8 @@ if [ "$1" == "start" ]; then
 # Run unit tests with debugger enabled
 elif [ "$1" == "unittest" ]; then
     unittest "$2"
+
+# Just run the normal server with wdb started
+else
+    launch
 fi
