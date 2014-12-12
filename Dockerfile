@@ -5,7 +5,7 @@ MAINTAINER yajo@openaliasbox.org
 # Install Odoo and psql (to install unaccent automatically)
 RUN curl --output /etc/yum.repos.d/odoo.repo \
     http://nightly.odoo.com/8.0/nightly/rpm/odoo.repo
-RUN yum --assumeyes install odoo psql
+RUN yum --assumeyes install odoo postgresql
 
 # Extra dependencies
 # TODO Remove after fixing https://github.com/odoo/odoo/issues/4021
