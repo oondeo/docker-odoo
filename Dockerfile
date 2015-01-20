@@ -13,7 +13,7 @@ RUN yum --assumeyes install python-gevent
 
 # Cannot use CentOS version of wkhtmltopdf because it's not patched to work
 # without an X server, so let's install the official upstream RPM instead
-RUN yum --assumeyes install http://skylink.dl.sourceforge.net/project/wkhtmltopdf/0.12.1/wkhtmltox-0.12.1_linux-centos7-amd64.rpm
+RUN yum --assumeyes install http://softlayer-ams.dl.sourceforge.net/project/wkhtmltopdf/0.12.2.1/wkhtmltox-0.12.2.1_linux-centos7-amd64.rpm
 
 # Add a debugger
 RUN yum --assumeyes install gcc python-devel python-pip
