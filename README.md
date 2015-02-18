@@ -8,6 +8,49 @@ You **must** change the database administration password by adding
 `--env ADMIN_PASSWD=blahblah`, or it will default to `admin`, which is too
 insecure for production environments.
 
+## tl;dr: [Fig][] example
+
+    app:
+        image: yajo/odoo:latest
+        environment:
+            # Default values (you **must** change ADMIN_PASSWD)
+            ADMIN_PASSWD: admin
+            DATABASE: odoo
+            ODOO_SERVER: odoo.py
+            UNACCENT: True
+            WDB_WEB_SERVER: localhost
+            WDB_WEB_PORT: 1984
+        ports:
+            - "1984:1984"
+            - "8069:8069"
+            - "8072:8072"
+        volumes:
+            - addons:/opt/odoo/extra-addons
+        volumes_from:
+            - appdata
+        links:
+            - db
+        command: launch
+
+    appdata:
+        image: yajo/odoo:data
+
+    db:
+        image: yajo/postgres:9.2
+        environment:
+            # Default values
+            USER: docker
+            PASSWORD: docker
+        volumes_from:
+            - dbdata
+
+    dbdata:
+        image: yajo/postgres:data
+
+The above is a sample `fig.yml` file. This image is a little bit complex
+because it has many launcher scripts and needs some links and volumes to work
+properly, but if you understand the above, you almost got it all.
+
 ## Usage
 
 1.  Follow instructions from [yajo/postgres][] to:
@@ -55,15 +98,29 @@ insecure for production environments.
 
         docker run -P --rm --link odoo_dbsrv:db yajo/odoo unittest one_module,other
 
-### Saving attachments separately
+### Saving variable data separately
 
-By default, Odoo saves attachments and sessions in `/var/lib/odoo/`.
+#### Auto-installed addons, attachments, sessions
+
+By default, Odoo saves those in `/var/lib/odoo/`.
 
 If you don't want them to disappear when you drop and recreate your container,
 you need to store them separately:
 
     docker run --detach --name odoo_files yajo/odoo:data
     docker run -d --name odoo_app --volumes_from odoo_files yajo/odoo
+
+#### Logs
+
+If you configure Odoo to store logs in `/var/log/odoo/`, you have
+persistent logs for free with the above method.
+
+However, by default, logs are printed to `STDOUT` so you can read them with
+the usual command:
+
+    docker logs odoo_app
+
+This is more standard and works better with [Fig][].
 
 ## Mounting extra addons for Odoo
 
@@ -91,32 +148,6 @@ Then, run:
 
     cd /path/to/my/subrepository
     docker build --tag my-odoo .
-
-### Using [Fig][]
-
-A sample `fig.yml` file:
-
-    app:
-        image: yajo/odoo
-        ports:
-            - "1984:1984"
-            - "8069:8069"
-            - "8072:8072"
-        volumes:
-            - addons:/opt/odoo/extra-addons
-        volumes_from:
-            - appdata
-        links:
-            - db
-        command: launch
-    appdata:
-        image: yajo/odoo:data
-    db:
-        image: yajo/postgres:9.2
-        volumes_from:
-            - dbdata
-    dbdata:
-        image: yajo/postgres:data
 
 ## Debugging
 
@@ -150,19 +181,17 @@ To debug your unit tests, run it as:
 As long as you don't use the `debug` script, the wdb server does not start,
 and port 1984 does not listen to anything, so you don't need to expose it.
 
-## Image versions available
+## Image tags available
 
-The repository [yajo/odoo][] has only one active tag:
+The repository [yajo/odoo][] has these active tags:
 
 -   `latest`: Right now it points to `8.0`.
-
 -   `8.0`: It uses the official
     [upstream nightly RPM repository](http://nightly.odoo.com/8.0/nightly/rpm/)
     and tries to install every dependency possible with [RPM][].
     If something is not available as RPM package, it will install it other way.
-
--   `data`: Used to create a volume in `/var/lib/odoo` to share
-    attachments and session data between containers.
+-   `data`: Used to create a volumes in `/var/{lib,log}/odoo` to store
+    variable data.
 
 ### Deprecated tags
 
