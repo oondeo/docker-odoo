@@ -46,8 +46,8 @@ admin_passwd = $ADMIN_PASSWD" > $conf
         fi
     fi
 
-    # Allow Odoo to write in its folder (needed if you mounted it)
-    chown odoo:odoo /var/lib/odoo
+    # Allow Odoo to write in its folders (needed if you mounted them)
+    chown --recursive odoo:odoo /var/{lib,log}/odoo
 
     rm /firstrun
 fi
