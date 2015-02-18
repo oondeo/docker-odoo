@@ -29,7 +29,7 @@ RUN yum clean all
 RUN mkdir --parents /opt/odoo/extra-addons
 
 # Folders modified at runtime by Odoo
-VOLUME ["/var/log/odoo", "/var/log/openerp", "/var/lib/odoo"]
+VOLUME ["/var/lib/odoo", "/var/log/odoo"]
 
 # Odoo ports for web and chat
 EXPOSE 8069 8072
