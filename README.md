@@ -154,7 +154,9 @@ and port 1984 does not listen to anything, so you don't need to expose it.
 
 The repository [yajo/odoo][] has only one active tag:
 
--   `latest`: It uses the official
+-   `latest`: Right now it points to `8.0`.
+
+-   `8.0`: It uses the official
     [upstream nightly RPM repository](http://nightly.odoo.com/8.0/nightly/rpm/)
     and tries to install every dependency possible with [RPM][].
     If something is not available as RPM package, it will install it other way.
