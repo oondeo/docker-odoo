@@ -55,6 +55,16 @@ insecure for production environments.
 
         docker run -P --rm --link odoo_dbsrv:db yajo/odoo unittest one_module,other
 
+### Saving attachments separately
+
+By default, Odoo saves attachments and sessions in `/var/lib/odoo/`.
+
+If you don't want them to disappear when you drop and recreate your container,
+you need to store them separately:
+
+    docker run --detach --name odoo_files yajo/odoo:data
+    docker run -d --name odoo_app --volumes_from odoo_files yajo/odoo
+
 ## Mounting extra addons for Odoo
 
 Extra addons must be located in `/opt/odoo/extra-addons/<repo>/<addon>/`.
@@ -94,15 +104,19 @@ A sample `fig.yml` file:
             - "8072:8072"
         volumes:
             - addons:/opt/odoo/extra-addons
+        volumes_from:
+            - appdata
         links:
             - db
         command: launch
-    data:
-        image: yajo/postgres:data
+    appdata:
+        image: yajo/odoo:data
     db:
         image: yajo/postgres:9.2
         volumes_from:
-            - data
+            - dbdata
+    dbdata:
+        image: yajo/postgres:data
 
 ## Debugging
 
@@ -144,6 +158,9 @@ The repository [yajo/odoo][] has only one active tag:
     [upstream nightly RPM repository](http://nightly.odoo.com/8.0/nightly/rpm/)
     and tries to install every dependency possible with [RPM][].
     If something is not available as RPM package, it will install it other way.
+
+-   `data`: Used to create a volume in `/var/lib/odoo` to share
+    attachments and session data between containers.
 
 ### Deprecated tags
 
