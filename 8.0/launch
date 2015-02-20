@@ -34,22 +34,22 @@ admin_passwd = $ADMIN_PASSWD" > $conf
     # If database is available, use it
     if [ "$DATABASE" != "" ]; then
         echo "database = $DATABASE" >> $conf
-
-        # Add the unaccent module for the database if needed
-        if [ "$UNACCENT" == "True" ]; then
-            PGPASSWORD="$DB_ENV_PASSWORD" psql \
-                --user "$DB_ENV_USER" \
-                --host "$DB_PORT_5432_TCP_ADDR" \
-                --port "$DB_PORT_5432_TCP_PORT" \
-                --dbname "$DATABASE" \
-                --command 'CREATE EXTENSION unaccent;'
-        fi
     fi
 
     # Allow Odoo to write in its folders (needed if you mounted them)
     chown --recursive odoo:odoo /var/{lib,log}/odoo
 
     rm /firstrun
+fi
+
+# Add the unaccent module for the database if needed
+if [ "$DATABASE" != "" ] && [ "$UNACCENT" == "True" ]; then
+    PGPASSWORD="$DB_ENV_PASSWORD" psql \
+        --user "$DB_ENV_USER" \
+        --host "$DB_PORT_5432_TCP_ADDR" \
+        --port "$DB_PORT_5432_TCP_PORT" \
+        --dbname "$DATABASE" \
+        --command 'CREATE EXTENSION IF NOT EXISTS unaccent;'
 fi
 
 # Run server
