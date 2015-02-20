@@ -8,8 +8,16 @@ You **must** change the database administration password by adding
 `--env ADMIN_PASSWD=blahblah`, or it will default to `admin`, which is too
 insecure for production environments.
 
+Odoo does not allow to be run as the user `postgres`, which is the default.
+You **must** change it with `--env POSTGRES_USER=other_user`.
+
+Also, to block access to your [PostgreSQL][] database, you **should** either
+don't expose its port (you do not need to do it anyway) or use
+`--env POSTGRES_PASSWORD=something_secure` when launching the `db` container.
+
 ## tl;dr: [Fig][] example
 
+    # Odoo server itself
     app:
         image: yajo/odoo:latest
         environment:
@@ -25,6 +33,7 @@ insecure for production environments.
             - "8069:8069"
             - "8072:8072"
         volumes:
+            # Assuming you have an addons subfolder in the working tree
             - addons:/opt/odoo/extra-addons
         volumes_from:
             - appdata
@@ -32,20 +41,24 @@ insecure for production environments.
             - db
         command: launch
 
+    # Hold separately the volumes of Odoo variable data
     appdata:
         image: yajo/odoo:data
 
+    # PostgreSQL server
     db:
-        image: yajo/postgres:9.2
+        image: postgres:9.2
         environment:
-            # Default values
-            USER: docker
-            PASSWORD: docker
+            # You **must** change these
+            POSTGRES_USER: odoo
+            POSTGRES_PASSWORD: something_secure
         volumes_from:
             - dbdata
 
+    # PostgreSQL data files
     dbdata:
-        image: yajo/postgres:data
+        image: postgres:9.2
+        command: echo
 
 The above is a sample `fig.yml` file. This image is a little bit complex
 because it has many launcher scripts and needs some links and volumes to work
@@ -53,21 +66,27 @@ properly, but if you understand the above, you almost got it all.
 
 ## Usage
 
-1.  Follow instructions from [yajo/postgres][] to:
+To get up and running using the docker CLI:
 
-    - Create the PostgreSQL server container:
+    # PostgreSQL data files
+    docker run -d --name odoo_dbdata postgres:9.2 echo
 
-            docker run --detach --name odoo_dbsrv yajo/postgres:9.2
+    # PostgreSQL server
+    docker run -d --name odoo_dbsrv --volumes-from odoo_dbdata \
+        -e POSTGRES_USER=odoo -e POSTGRES_PASSWORD=something_secure \
+        postgres:9.2
 
-    - Split data files from database server.
-    - Change database user and password.
+    # Hold separately the volumes of Odoo variable data
+    docker run -d --name odoo_appdata yajo/odoo:data
 
-2.  Create the [Odoo][] app container, and link it to the database:
+    # Odoo server itself
+    docker run -d --name odoo_app --link odoo_dbsrv:db \
+        --volumes-from odoo_appdata --publish-all \
+        -e ADMIN_PASSWD=something_more_secure yajo/odoo
 
-        docker run --detach --name odoo_app --link odoo_dbsrv:db --publish-all yajo/odoo
+Follow instructions from [postgres][] to understand the PostgreSQL part.
 
-    Maybe you prefer to change `--publish-all` for
-    `--publish 1984:1984 --publish 8069:8069 --publish 8072:8072`.
+Maybe you prefer to change `--publish-all` for `-p 1984 -p 8069 -p 8072`.
 
 ### Scripts available
 
@@ -98,29 +117,17 @@ properly, but if you understand the above, you almost got it all.
 
         docker run -P --rm --link odoo_dbsrv:db yajo/odoo unittest one_module,other
 
-### Saving variable data separately
+### Reading logs
 
-#### Auto-installed addons, attachments, sessions
-
-By default, Odoo saves those in `/var/lib/odoo/`.
-
-If you don't want them to disappear when you drop and recreate your container,
-you need to store them separately:
-
-    docker run --detach --name odoo_files yajo/odoo:data
-    docker run -d --name odoo_app --volumes_from odoo_files yajo/odoo
-
-#### Logs
-
-If you configure Odoo to store logs in `/var/log/odoo/`, you have
-persistent logs for free with the above method.
-
-However, by default, logs are printed to `STDOUT` so you can read them with
+By default, logs are printed to `STDOUT` so you can read them with
 the usual command:
 
     docker logs odoo_app
 
 This is more standard and works better with [Fig][].
+
+If you need persistent logs, use volumes from `yajo/odoo:data` and configure
+`/etc/odoo/openerp-server.conf` to store them in `/var/log/odoo/`.
 
 ## Mounting extra addons for Odoo
 
@@ -209,5 +216,6 @@ These tags were used some time ago, but right now are not updated anymore:
 [Pip]: https://pip.pypa.io/en/latest/
 [wdb]: https://github.com/Kozea/wdb
 [RPM]: http://rpm.org/
-[yajo/postgres]: https://registry.hub.docker.com/u/yajo/postgres/
+[PostgreSQL]: http://www.postgresql.org/
+[postgres]: https://registry.hub.docker.com/_/postgres/
 [yajo/odoo]: https://registry.hub.docker.com/u/yajo/odoo/

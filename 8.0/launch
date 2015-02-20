@@ -27,8 +27,8 @@ addons_path = " $addons "
 unaccent = $UNACCENT
 db_host = $DB_PORT_5432_TCP_ADDR
 db_port = $DB_PORT_5432_TCP_PORT
-db_user = $DB_ENV_USER
-db_password = $DB_ENV_PASSWORD
+db_user = ${DB_ENV_POSTGRES_USER:=postgres}
+db_password = $DB_ENV_POSTGRES_PASSWORD
 admin_passwd = $ADMIN_PASSWD" > $conf
 
     # If database is available, use it
@@ -42,10 +42,11 @@ admin_passwd = $ADMIN_PASSWD" > $conf
     rm /firstrun
 fi
 
+# TODO Wait until database is listening
 # Add the unaccent module for the database if needed
 if [ "$DATABASE" != "" ] && [ "$UNACCENT" == "True" ]; then
-    PGPASSWORD="$DB_ENV_PASSWORD" psql \
-        --user "$DB_ENV_USER" \
+    PGPASSWORD="$DB_ENV_POSTGRES_PASSWORD" psql \
+        --user "${DB_ENV_POSTGRES_USER:=postgres}" \
         --host "$DB_PORT_5432_TCP_ADDR" \
         --port "$DB_PORT_5432_TCP_PORT" \
         --dbname "$DATABASE" \
