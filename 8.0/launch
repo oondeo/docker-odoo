@@ -29,7 +29,7 @@ db_host = $DB_PORT_5432_TCP_ADDR
 db_port = $DB_PORT_5432_TCP_PORT
 db_user = ${DB_ENV_POSTGRES_USER:=postgres}
 db_password = $DB_ENV_POSTGRES_PASSWORD
-admin_passwd = $ADMIN_PASSWD" > $conf
+ADMIN_PASSWORD = $ADMIN_PASSWORD" > $conf
 
     # If database is available, use it
     if [ "$DATABASE" != "" ]; then
