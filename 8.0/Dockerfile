@@ -36,7 +36,7 @@ EXPOSE 8069 8072
 
 # Configure launchers
 RUN touch /firstrun
-ENV ADMIN_PASSWD admin
+ENV ADMIN_PASSWORD admin
 ENV ODOO_SERVER odoo.py
 ENV UNACCENT True
 ADD debug launch pot unittest /usr/local/bin/

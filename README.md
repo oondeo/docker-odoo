@@ -5,7 +5,7 @@ An [Odoo][] 8 server installed in [CentOS][] 7.
 ## Security
 
 You **must** change the database administration password by adding
-`--env ADMIN_PASSWD=blahblah`, or it will default to `admin`, which is too
+`--env ADMIN_PASSWORD=blahblah`, or it will default to `admin`, which is too
 insecure for production environments.
 
 Odoo does not allow to be run as the user `postgres`, which is the default.
@@ -21,8 +21,8 @@ don't expose its port (you do not need to do it anyway) or use
     app:
         image: yajo/odoo:latest
         environment:
-            # Default values (you **must** change ADMIN_PASSWD)
-            ADMIN_PASSWD: admin
+            # Default values (you **must** change ADMIN_PASSWORD)
+            ADMIN_PASSWORD: admin
             DATABASE: odoo
             ODOO_SERVER: odoo.py
             UNACCENT: True
@@ -82,7 +82,7 @@ To get up and running using the docker CLI:
     # Odoo server itself
     docker run -d --name odoo_app --link odoo_dbsrv:db \
         --volumes-from odoo_appdata --publish-all \
-        -e ADMIN_PASSWD=something_more_secure yajo/odoo
+        -e ADMIN_PASSWORD=something_more_secure yajo/odoo
 
 Follow instructions from [postgres][] to understand the PostgreSQL part.
 
