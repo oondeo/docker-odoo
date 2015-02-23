@@ -58,7 +58,7 @@ don't expose its port (you do not need to do it anyway) or use
     # PostgreSQL data files
     dbdata:
         image: postgres:9.2
-        command: echo
+        command: true
 
 The above is a sample `fig.yml` file. This image is a little bit complex
 because it has many launcher scripts and needs some links and volumes to work
@@ -69,7 +69,7 @@ properly, but if you understand the above, you almost got it all.
 To get up and running using the docker CLI:
 
     # PostgreSQL data files
-    docker run -d --name odoo_dbdata postgres:9.2 echo
+    docker run -d --name odoo_dbdata postgres:9.2 true
 
     # PostgreSQL server
     docker run -d --name odoo_dbsrv --volumes-from odoo_dbdata \
