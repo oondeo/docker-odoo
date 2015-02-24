@@ -15,7 +15,11 @@ Also, to block access to your [PostgreSQL][] database, you **should** either
 don't expose its port (you do not need to do it anyway) or use
 `--env POSTGRES_PASSWORD=something_secure` when launching the `db` container.
 
-## tl;dr: [Fig][] example
+You are setting up a service which will recieve passwords from users.
+As such, you should use HTTPS for production. The easiest way to
+set it up will be proxying Odoo with [yajo/https-proxy][].
+
+## tl;dr: [Docker Compose][] example
 
     # Odoo server itself
     app:
@@ -28,6 +32,8 @@ don't expose its port (you do not need to do it anyway) or use
             UNACCENT: True
             WDB_WEB_SERVER: localhost
             WDB_WEB_PORT: 1984
+        # If you are going to use the HTTPS proxy for production,
+        # don't expose any ports
         ports:
             - "1984:1984"
             - "8069:8069"
@@ -58,11 +64,34 @@ don't expose its port (you do not need to do it anyway) or use
     # PostgreSQL data files
     dbdata:
         image: postgres:9.2
-        command: true
+        command: "true"
 
-The above is a sample `fig.yml` file. This image is a little bit complex
-because it has many launcher scripts and needs some links and volumes to work
-properly, but if you understand the above, you almost got it all.
+    # For production, you will likely use HTTPS
+    https:
+        image: yajo/https-proxy
+        ports:
+            - "80:80"
+            - "443:443"
+        links:
+            - app:www
+        environment:
+            PORT: 8069
+            # In case you have your SSL key & certs, put them here:
+            KEY: |
+                -----BEGIN PRIVATE KEY-----
+                [some random base64 garbage]
+                -----END PRIVATE KEY-----
+            CERT: |
+                -----BEGIN CERTIFICATE-----
+                [some random base64 garbage]
+                -----END CERTIFICATE-----
+                -----BEGIN CERTIFICATE-----
+                [you will probably have more of these sections]
+                -----END CERTIFICATE-----
+
+The above is a sample `docker-compose.yml` file. This image is a little bit
+complex because it has many launcher scripts and needs some links and volumes
+to work properly, but if you understand the above, you almost got it all.
 
 ## Usage
 
@@ -124,7 +153,7 @@ the usual command:
 
     docker logs odoo_app
 
-This is more standard and works better with [Fig][].
+This is more standard and works better with [Docker Compose][].
 
 If you need persistent logs, use volumes from `yajo/odoo:data` and configure
 `/etc/odoo/openerp-server.conf` to store them in `/var/log/odoo/`.
@@ -210,7 +239,7 @@ These tags were used some time ago, but right now are not updated anymore:
 
 
 [CentOS]: http://centos.org/
-[Fig]: http://www.fig.sh/
+[Docker Compose]: http://www.fig.sh/
 [Git]: http://git-scm.com/
 [Odoo]: https://www.odoo.com/
 [Pip]: https://pip.pypa.io/en/latest/
@@ -218,4 +247,5 @@ These tags were used some time ago, but right now are not updated anymore:
 [RPM]: http://rpm.org/
 [PostgreSQL]: http://www.postgresql.org/
 [postgres]: https://registry.hub.docker.com/_/postgres/
+[yajo/https-proxy]: https://registry.hub.docker.com/u/yajo/https-proxy/
 [yajo/odoo]: https://registry.hub.docker.com/u/yajo/odoo/
