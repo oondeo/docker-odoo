@@ -40,7 +40,7 @@ set it up will be proxying Odoo with [yajo/https-proxy][].
             - "8072:8072"
         volumes:
             # Assuming you have an addons subfolder in the working tree
-            - addons:/opt/odoo/extra-addons
+            - addons:/opt/odoo/extra-addons:ro
         volumes_from:
             - appdata
         links:
@@ -171,6 +171,8 @@ Good idea for developing.
 Add `--volume /path/to/addons/folder/in/host:/opt/odoo/extra-addons:ro` when
 executing step 2 of above instructions. The mounted folder must have read
 permissions for the docker process, or it will fail without notice.
+
+The `:ro` part means read-only. You will probably want that.
 
 ### Subclassing this repository
 

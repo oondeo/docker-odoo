@@ -12,8 +12,9 @@ fi
 
 echo Patching configuration > /dev/stderr
 
-# Fix usual permissions issues with extra addons
-chmod --recursive u=rwX,go=rX /opt/odoo/extra-addons
+# Fix usual permissions issues with extra addons if there's write permission
+[ -w /opt/odoo/extra-addons ] && \
+    chmod --recursive u=rwX,go=rX /opt/odoo/extra-addons
 
 addons=$(ls -1bd /usr/lib/python2.7/site-packages/openerp/addons \
                  /opt/odoo/extra-addons/* | tr '\n' ',' | sed s/,$//)
