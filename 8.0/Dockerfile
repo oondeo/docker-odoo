@@ -24,7 +24,7 @@ ENV WDB_WEB_PORT 1984
 EXPOSE 1984
 
 # Add locales
-RUN yum reinstall glibc
+RUN yum --assumeyes reinstall glibc
 
 RUN yum clean all
 
