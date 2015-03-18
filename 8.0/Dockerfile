@@ -17,11 +17,12 @@ RUN yum --assumeyes install http://softlayer-ams.dl.sourceforge.net/project/wkht
 
 # Add a debugger
 RUN yum --assumeyes install gcc python-devel python-pip
-RUN pip install wdb.server
+RUN pip install wdb
 RUN yum --assumeyes history undo last
-ENV WDB_WEB_SERVER localhost
+ENV WDB_NO_BROWSER_AUTO_OPEN True
+ENV WDB_SOCKET_SERVER wdb
 ENV WDB_WEB_PORT 1984
-EXPOSE 1984
+ENV WDB_WEB_SERVER localhost
 
 # Add locales
 RUN yum --assumeyes reinstall glibc
