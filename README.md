@@ -19,6 +19,8 @@ You are setting up a service which will recieve passwords from users.
 As such, you should use HTTPS for production. The easiest way to
 set it up will be proxying Odoo with [yajo/https-proxy][].
 
+**Never** add the debugger in production.
+
 ## tl;dr: [Docker Compose][] example
 
     # Odoo server itself
@@ -30,12 +32,13 @@ set it up will be proxying Odoo with [yajo/https-proxy][].
             DATABASE: odoo
             ODOO_SERVER: odoo.py
             UNACCENT: True
-            WDB_WEB_SERVER: localhost
+            WDB_NO_BROWSER_AUTO_OPEN: True
+            WDB_SOCKET_SERVER: wdb
             WDB_WEB_PORT: 1984
+            WDB_WEB_SERVER: localhost
         # If you are going to use the HTTPS proxy for production,
         # don't expose any ports
         ports:
-            - "1984:1984"
             - "8069:8069"
             - "8072:8072"
         volumes:
@@ -45,6 +48,7 @@ set it up will be proxying Odoo with [yajo/https-proxy][].
             - appdata
         links:
             - db
+            - wdb # Debugger, only for development
         command: launch
 
     # Hold separately the volumes of Odoo variable data
@@ -65,6 +69,12 @@ set it up will be proxying Odoo with [yajo/https-proxy][].
     dbdata:
         image: postgres:9.2
         command: "true"
+
+    # For development, add a debugger
+    wdb:
+        image: yajo/wdb-server
+        ports:
+            - "1984:1984"
 
     # For production, you will likely use HTTPS
     https:
@@ -119,7 +129,8 @@ Maybe you prefer to change `--publish-all` for `-p 1984 -p 8069 -p 8072`.
 
 ### Scripts available
 
--   `debug`: Use for debugging. See section *Debugging* below.
+-   `debug`: Use for debugging with [wdb][] from the start. See section
+    *Debugging* below.
 
 -   `launch`: **DEFAULT**. All other scripts end up running this one.
 
@@ -189,35 +200,30 @@ Then, run:
 
 ## Debugging
 
-This image comes with [wdb][] preinstalled. See its page for documentation.
+This image comes with [wdb][] client preinstalled.
 
-Adding this line anywhere will interrupt the execution in the wdb debugger:
+To use the debugger, you need to link it to a [yajo/wdb-server][] container:
 
-    import wdb;wdb.set_trace()
+    docker run -p 1984:1984 --name odoo_wdb yajo/wdb-server
+    docker run -p 80:8069 --link odoo_dbsrv:db --link odoo_wdb:wdb yajo/odoo
 
-You will see a message like this one when this happens:
+Adding this line anywhere in your modules will pause it for debugging:
 
-    Unable to open browser, please go to http://localhost:1984/debug/session/some-long-random-stuff
+    import wdb; wdb.set_trace()
 
-This assumes that you ran the container with the option `-p 1984:1984` in a
-local machine. If you want to change the `localhost:1984` part, you can
-do so with `-e WDB_WEB_SERVER=example.com -e WDB_WEB_PORT=42`.
+You will see a message like this one when Odoo executes that line:
 
-To debug your modules, you will need to start the container with the script
-`debug` (see above section *Scripts available*):
+    You can now launch your browser at http://$WDB_WEB_SERVER:$WDB_WEB_PORT/debug/session/some-long-random-stuff
 
-    docker run -P --link odoo_dbsrv:db yajo/odoo debug
+Open the browser there and debug.
 
-To debug Odoo from the start, add the `start` keyword at the end:
+To debug Odoo from the start, run the `debug` script:
 
-    docker run -P --link odoo_dbsrv:db yajo/odoo debug start
+    docker run -P --link odoo_dbsrv:db --link odoo_wdb:wdb yajo/odoo debug
 
-To debug your unit tests, run it as:
+To debug Odoo from the start in unittest mode, use:
 
-    docker run -P --link odoo_dbsrv:db yajo/odoo debug unittest one_module,other
-
-As long as you don't use the `debug` script, the wdb server does not start,
-and port 1984 does not listen to anything, so you don't need to expose it.
+    docker run -P --link odoo_dbsrv:db --link odoo_wdb:wdb yajo/odoo debug unittest one_module,other
 
 ## Image tags available
 
@@ -246,6 +252,7 @@ These tags were used some time ago, but right now are not updated anymore:
 [Odoo]: https://www.odoo.com/
 [Pip]: https://pip.pypa.io/en/latest/
 [wdb]: https://github.com/Kozea/wdb
+[yajo/wdb-server]: https://registry.hub.docker.com/u/yajo/wdb-server/
 [RPM]: http://rpm.org/
 [PostgreSQL]: http://www.postgresql.org/
 [postgres]: https://registry.hub.docker.com/_/postgres/

@@ -1,18 +1,11 @@
 #!/bin/bash
 
-# Start wdb server
-wdb.server.py &
-
 # Debug from the begining
-if [ "$1" == "start" ]; then
-    export ODOO_SERVER="python -m wdb $(which $ODOO_SERVER)"
-    launch
+export ODOO_SERVER="python -m wdb $(which $ODOO_SERVER)"
 
-# Run unit tests with debugger enabled
-elif [ "$1" == "unittest" ]; then
+# Run in unittest mode if needed
+if [ "$1" == "unittest" ]; then
     unittest "$2"
-
-# Just run the normal server with wdb started
 else
     launch
 fi
