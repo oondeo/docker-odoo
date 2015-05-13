@@ -1,7 +1,6 @@
 # Container for Odoo variable data
 
-FROM busybox
+FROM yajo/odoo
 
-MAINTAINER yajo@openaliasbox.org
-
-VOLUME /var/lib/odoo /var/log/odoo
+# Just use the main container with a dummy command
+CMD true
