@@ -12,43 +12,43 @@ VOLUME ["/var/lib/odoo", "/var/log/odoo"]
 EXPOSE 8069 8072
 
 # Variables used by the launch scripts
-ENV ADMIN_PASSWORD admin
-ENV ODOO_SERVER odoo.py
-ENV UNACCENT True
+ENV ADMIN_PASSWORD=admin \
+    ODOO_SERVER=odoo.py \
+    UNACCENT=True \
 
 # Variables used by the WDB debugger, in case you link a WDB container
-ENV WDB_NO_BROWSER_AUTO_OPEN True
-ENV WDB_SOCKET_SERVER wdb
-ENV WDB_WEB_PORT 1984
-ENV WDB_WEB_SERVER localhost
+    WDB_NO_BROWSER_AUTO_OPEN=True \
+    WDB_SOCKET_SERVER=wdb \
+    WDB_WEB_PORT=1984 \
+    WDB_WEB_SERVER=localhost
 
 # Install Odoo and psql (to install unaccent automatically)
 RUN curl --output /etc/yum.repos.d/odoo.repo \
-    http://nightly.odoo.com/8.0/nightly/rpm/odoo.repo
-RUN yum --assumeyes install odoo postgresql
+    http://nightly.odoo.com/8.0/nightly/rpm/odoo.repo && \
+    yum -y install odoo postgresql && \
 
 # Extra dependencies
 # TODO Remove after fixing https://github.com/odoo/odoo/issues/4021
-RUN yum --assumeyes install python-gevent
+    yum -y install python-gevent && \
 
 # Cannot use CentOS version of wkhtmltopdf because it's not patched to work
 # without an X server, so let's install the official upstream RPM instead
-RUN yum --assumeyes install http://softlayer-ams.dl.sourceforge.net/project/wkhtmltopdf/0.12.2.1/wkhtmltox-0.12.2.1_linux-centos7-amd64.rpm
+    yum -y install http://softlayer-ams.dl.sourceforge.net/project/wkhtmltopdf/0.12.2.1/wkhtmltox-0.12.2.1_linux-centos7-amd64.rpm  && \
 
 # Add a debugger
-RUN yum --assumeyes install gcc python-devel python-pip
-RUN pip install wdb
-RUN yum --assumeyes history undo last
+    yum -y install gcc python-devel python-pip && \
+    pip install wdb && \
+    yum -y history undo last && \
 
 # Add locales
-RUN yum --assumeyes reinstall glibc
+    yum -y reinstall glibc && \
 
-RUN yum clean all
+    yum clean all && \
 
 # Create path for extra addons
-RUN mkdir --parents /opt/odoo/extra-addons
+    mkdir --parents /opt/odoo/extra-addons && \
 
 # Configure launchers
-RUN touch /firstrun
+    touch /firstrun
 ADD debug launch pot unittest /usr/local/bin/
 RUN chmod a+rx /usr/local/bin/*
