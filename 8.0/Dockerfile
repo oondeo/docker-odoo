@@ -41,7 +41,7 @@ RUN curl --output /etc/yum.repos.d/odoo.repo \
     yum -y history undo last && \
 
 # Add locales
-    yum -y reinstall glibc && \
+    yum -y reinstall glibc-common && \
 
     yum clean all && \
 
