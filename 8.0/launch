@@ -52,5 +52,5 @@ if [ "$DATABASE" != "" ] && [ "$UNACCENT" == "True" ]; then
 fi
 
 # Run server
-echo "Executing '$odoo'" > /dev/stderr
+echo Executing \'$odoo\' > /dev/stderr
 su odoo --command "$odoo"
