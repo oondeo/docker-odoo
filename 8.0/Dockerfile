@@ -33,7 +33,7 @@ RUN curl --output /etc/yum.repos.d/odoo.repo \
 
 # Cannot use CentOS version of wkhtmltopdf because it's not patched to work
 # without an X server, so let's install the official upstream RPM instead
-    yum -y install http://softlayer-ams.dl.sourceforge.net/project/wkhtmltopdf/0.12.2.1/wkhtmltox-0.12.2.1_linux-centos7-amd64.rpm  && \
+    yum -y install http://download.gna.org/wkhtmltopdf/0.12/0.12.2.1/wkhtmltox-0.12.2.1_linux-centos7-amd64.rpm && \
 
 # Add a debugger
     yum -y install gcc python-devel python-pip && \
