@@ -177,7 +177,7 @@ How you put them there does not matter. I will give you some ideas:
 
 ### Mounting an addons folder from the host
 
-Good idea for developing.
+Recommended for developing.
 
 Add `--volume /path/to/addons/folder/in/host:/opt/odoo/extra-addons:ro` when
 executing step 2 of above instructions. The mounted folder must have read
@@ -186,6 +186,8 @@ permissions for the docker process, or it will fail without notice.
 The `:ro` part means read-only. You will probably want that.
 
 ### Subclassing this repository
+
+Recommended for production.
 
 A simple `Dockerfile` like this can help:
 
