@@ -6,7 +6,7 @@ MAINTAINER yajo@openaliasbox.org
 CMD launch
 
 # Folders modified at runtime by Odoo
-VOLUME ["/var/lib/odoo", "/var/log/odoo"]
+VOLUME ["/home/odoo", "/var/lib/odoo", "/var/log/odoo"]
 
 # Odoo ports for web and chat
 EXPOSE 8069 8072
@@ -47,6 +47,9 @@ RUN curl --output /etc/yum.repos.d/odoo.repo \
 
 # Create path for extra addons
     mkdir --parents /opt/odoo/extra-addons && \
+
+# Fix permissions for $HOME
+    chown odoo:odoo /home/odoo
 
 # Configure launchers
     touch /firstrun

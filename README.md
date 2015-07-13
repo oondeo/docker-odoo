@@ -236,8 +236,8 @@ The repository [yajo/odoo][] has these active tags:
     [upstream nightly RPM repository](http://nightly.odoo.com/8.0/nightly/rpm/)
     and tries to install every dependency possible with [RPM][].
     If something is not available as RPM package, it will install it other way.
--   `data`: Used to create a volumes in `/var/{lib,log}/odoo` to store
-    variable data.
+-   `data`: Used to create a volumes in `/home/odoo` and `/var/{lib,log}/odoo`
+    to store variable data.
 
 ### Deprecated tags
 
