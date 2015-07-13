@@ -49,7 +49,7 @@ RUN curl --output /etc/yum.repos.d/odoo.repo \
     mkdir --parents /opt/odoo/extra-addons && \
 
 # Fix permissions for $HOME
-    chown odoo:odoo /home/odoo
+    chown odoo:odoo /home/odoo && \
 
 # Configure launchers
     touch /firstrun
