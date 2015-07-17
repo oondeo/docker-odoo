@@ -36,7 +36,7 @@ if [ "$DATABASE" != "" ]; then
 fi
 
 # Allow Odoo to write in its folders (needed if you mounted them)
-chown --recursive odoo:odoo /var/{lib,log}/odoo
+chown --recursive odoo:odoo /var/{lib,log}/odoo /home/odoo
 
 # TODO Wait until database is listening
 # Add the unaccent module for the database if needed
