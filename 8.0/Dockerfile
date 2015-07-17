@@ -5,9 +5,6 @@ MAINTAINER yajo@openaliasbox.org
 # Launcher will patch configuration on first run and launch Odoo
 CMD launch
 
-# Folders modified at runtime by Odoo
-VOLUME ["/home/odoo", "/var/lib/odoo", "/var/log/odoo"]
-
 # Odoo ports for web and chat
 EXPOSE 8069 8072
 
@@ -48,10 +45,14 @@ RUN curl --output /etc/yum.repos.d/odoo.repo \
 # Create path for extra addons
     mkdir --parents /opt/odoo/extra-addons && \
 
-# Fix permissions for $HOME
+# Create odoo $HOME to store some data
+    mkdir /home/odoo && \
     chown odoo:odoo /home/odoo && \
 
 # Configure launchers
     touch /firstrun
 ADD debug launch pot unittest /usr/local/bin/
 RUN chmod a+rx /usr/local/bin/*
+
+# Folders modified at runtime by Odoo
+VOLUME ["/home/odoo", "/var/lib/odoo", "/var/log/odoo"]
