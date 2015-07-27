@@ -25,7 +25,7 @@ set it up will be proxying Odoo with [yajo/https-proxy][].
 
     # Odoo server itself
     app:
-        image: yajo/odoo:latest
+        image: yajo/odoo:8.0
         environment:
             # Default values (you **must** change ADMIN_PASSWORD)
             ADMIN_PASSWORD: admin
@@ -232,10 +232,12 @@ To debug Odoo from the start in unittest mode, use:
 The repository [yajo/odoo][] has these active tags:
 
 -   `latest`: Right now it points to `8.0`.
--   `8.0`: It uses the official
-    [upstream nightly RPM repository](http://nightly.odoo.com/8.0/nightly/rpm/)
+-   `8.0`: It uses the official [upstream `8.0` nightly RPM
+    repository](http://nightly.odoo.com/8.0/nightly/rpm/)
     and tries to install every dependency possible with [RPM][].
     If something is not available as RPM package, it will install it other way.
+-   `9.0`: Like `8.0`, but installed from the official [upstream `master`
+    nightly RPM repository](http://nightly.odoo.com/master/nightly/rpm).
 -   `data`: Used to create a volumes in `/home/odoo` and `/var/{lib,log}/odoo`
     to store variable data.
 
