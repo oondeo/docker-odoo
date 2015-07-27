@@ -238,6 +238,7 @@ The repository [yajo/odoo][] has these active tags:
     If something is not available as RPM package, it will install it other way.
 -   `9.0`: Like `8.0`, but installed from the official [upstream `master`
     nightly RPM repository](http://nightly.odoo.com/master/nightly/rpm).
+    **It is considered unstable right now.***
 -   `data`: Used to create a volumes in `/home/odoo` and `/var/{lib,log}/odoo`
     to store variable data.
 
