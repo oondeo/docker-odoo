@@ -38,7 +38,20 @@ fi
 # Allow Odoo to write in its folders (needed if you mounted them)
 chown --recursive odoo:odoo /var/{lib,log}/odoo /home/odoo
 
-# TODO Wait until database is listening
+# Know if Postgres is listening
+function db_is_listening() {
+    sleep 1
+    PGPASSWORD="$DB_ENV_POSTGRES_PASSWORD" psql \
+        --user "${DB_ENV_POSTGRES_USER:=postgres}" \
+        --host "$DB_PORT_5432_TCP_ADDR" \
+        --port "$DB_PORT_5432_TCP_PORT" \
+        --dbname "$DATABASE" \
+        --command "SELECT 'STARTED';" > /dev/null 2>&1 || db_is_listening
+}
+
+echo Waiting until the database server is listening... > /dev/stderr
+db_is_listening
+
 # Add the unaccent module for the database if needed
 if [ "$DATABASE" != "" ] && [ "$UNACCENT" == "True" ]; then
     echo Trying to install unaccent extension > /dev/stderr
