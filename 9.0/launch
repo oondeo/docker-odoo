@@ -45,7 +45,7 @@ function db_is_listening() {
         --user "${DB_ENV_POSTGRES_USER:=postgres}" \
         --host "$DB_PORT_5432_TCP_ADDR" \
         --port "$DB_PORT_5432_TCP_PORT" \
-        --command "SELECT 'STARTED';" > /dev/null 2>&1 || db_is_listening
+        --list > /dev/null 2>&1 || db_is_listening
 }
 
 echo Waiting until the database server is listening... > /dev/stderr
