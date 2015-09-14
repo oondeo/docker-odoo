@@ -20,7 +20,7 @@ ENV ADMIN_PASSWORD=admin \
     WDB_WEB_SERVER=localhost
 
 # Install Odoo and psql (to install unaccent automatically)
-RUN yum -y install postgresql http://nightly.odoo.com/master/nightly/rpm/odoo_9.0alpha1.latest.noarch.rpm && \
+RUN yum -y install postgresql http://nightly.odoo.com/9.0/nightly/rpm/odoo_9.0rc1.latest.noarch.rpm && \
 
 # Extra dependencies
 # TODO Remove after fixing https://github.com/odoo/odoo/issues/4021
