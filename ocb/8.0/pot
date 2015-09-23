@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# This program exports a language template for the modules selected
+
+location=/var/lib/odoo/export.po
+
+if [ "$DATABASE" == "" ]; then
+    echo "You must specify the database with '--env DATABASE=db_name'" \
+        > /dev/stderr
+else
+    command="$ODOO_SERVER --database $DATABASE \
+                          --i18n-export $location \
+                          --init $1 \
+                          --modules $1 \
+                          --update $1"
+
+    ODOO_SERVER="$command" $(dirname $0)/launch
+
+    echo "Outputting language template (*.pot) for module(s): $1" > /dev/stderr
+
+    cat $location
+fi
