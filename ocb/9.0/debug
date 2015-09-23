@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# Debug from the begining
+export ODOO_SERVER="python -m wdb $(which $ODOO_SERVER)"
+
+# Run in unittest mode if needed
+if [ "$1" == "unittest" ]; then
+    unittest "$2"
+else
+    launch
+fi
