@@ -43,7 +43,7 @@ set it up will be proxying Odoo with [yajo/https-proxy][].
             - "8072:8072"
         volumes:
             # Assuming you have an addons subfolder in the working tree
-            - addons:/opt/odoo/extra-addons:ro
+            - ./addons:/opt/odoo/extra-addons:ro,Z
         volumes_from:
             - appdata
         links:
@@ -76,7 +76,7 @@ set it up will be proxying Odoo with [yajo/https-proxy][].
         ports:
             - "1984:1984"
 
-    # For production, you will likely use HTTPS
+    # For production, you will need HTTPS
     https:
         image: yajo/https-proxy
         ports:
@@ -191,7 +191,7 @@ Recommended for production.
 
 A simple `Dockerfile` like this can help:
 
-    FROM yajo/odoo
+    FROM yajo/odoo:8.0
     ADD extra-addons /opt/odoo/
 
 You should obviously have an `extra-addons` folder in the directory tree.
@@ -199,6 +199,85 @@ Then, run:
 
     cd /path/to/my/subrepository
     docker build --tag my-odoo .
+
+## Mounting Odoo itself
+
+Maybe you are a core Odoo developer, or want to make your own fork to fix
+something, or want to use a variant such as [OCB][]. How to do it?
+
+Well, the most important thing you need to know is that Odoo is installed in
+`/usr/lib/python2.7/site-packages/openerp/`.
+
+You should have a folder tree similar to this one:
+
+    app/
+       /extra-addons/
+                    /one-repo/
+                             /one_module/
+                                        /__openerp__.py
+                                        /__init__.py
+                                        /...
+                    /other-repo/
+                    /...
+       /my-odoo-fork/
+                    /addons/
+                    /openerp/
+                            /addons/
+                            /...
+                    /...
+    docker-compose.yml
+    ...
+
+Then you need to link the extra core addons inside the `extra-addons` folder,
+as if it were an external repository:
+
+    $ ln -sT ../my-odoo-fork/addons app/extra-addons/core-addons
+
+And now, `docker-compose.yml` should have:
+
+    app:
+        volumes:
+            ./app:/opt/odoo:ro,Z
+            ./app/my-odoo-fork/openerp:/usr/lib/python2.7/site-packages/openerp:ro,Z
+    [... etc.]
+
+Now we have the custom addons and the extra core addons in
+`/opt/odoo/extra-addons`, and your Odoo fork in
+`/usr/lib/python2.7/site-packages/openerp`.
+
+Since everything is mounted from your computer, you can develop quickly, debug,
+etc.
+
+### Production
+
+If you plan to use this image in production, I recommend ussing a custom
+Dockerfile to build everything instead of mounting volumes, at least to have an
+easier to reproduce environment.
+
+This is a sample production `Dockerfile`:
+
+    FROM yajo/odoo:8.0
+
+    # Install dependencies for your custom addons
+    RUN yum -y install some-centos-epel-package &&\
+        pip install some-pypi-package &&\
+        yum clean all
+
+    # This time, we link it to avoid wasting disk space
+    RUN rm -Rf /usr/lib/python2.7/site-packages/openerp &&\
+        ln -s /opt/odoo/my-odoo-fork/openerp /usr/lib/python2.7/site-packages/
+
+    # Add your custom code
+    ADD app /opt/odoo
+
+    # Now compile all Python files to have better performance
+    RUN python -m compileall /opt/odoo
+
+    # This will fix possible permission issues
+    RUN chown --recursive odoo:odoo /opt/odoo &&\
+        chmod --recursive u=rwX,go=rX /opt/odoo
+
+There you have a production-ready image!
 
 ## Debugging
 
@@ -255,6 +334,7 @@ These tags were used some time ago, but right now are not updated anymore:
 [Docker Compose]: http://www.fig.sh/
 [Git]: http://git-scm.com/
 [Odoo]: https://www.odoo.com/
+[OCB]: https://github.com/OCA/OCB
 [Pip]: https://pip.pypa.io/en/latest/
 [wdb]: https://github.com/Kozea/wdb
 [yajo/wdb-server]: https://registry.hub.docker.com/u/yajo/wdb-server/
