@@ -29,7 +29,7 @@ RUN yum -y install postgresql python-pip \
 
 # Install OCB and debugger. Workaround https://github.com/OCA/OCB/issues/334
     yum -y install gcc libxml2-devel libxslt-devel openldap-devel \
-        postgresql-devel python-devel unzip && \
+        postgresql-devel python-devel python-pillow unzip && \
     pip install --upgrade pip setuptools && \
     pip install --no-deps --download /tmp/ \
         https://github.com/OCA/OCB/archive/$ODOO_VERSION.zip && \
