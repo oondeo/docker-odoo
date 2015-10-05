@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# This program runs the server in unit test mode
+
+if [ "$DATABASE" == "" ]; then
+    echo "You must specify the database with '--env DATABASE=db_name'" \
+        > /dev/stderr
+else
+    command="$ODOO_SERVER --database $DATABASE \
+                          --init $1 \
+                          --log-level test \
+                          --test-enable \
+                          --update $1"
+
+    echo "Running server in unittest mode for module(s): $1" > /dev/stderr
+
+    ODOO_SERVER="$command" $(dirname $0)/launch
+fi
