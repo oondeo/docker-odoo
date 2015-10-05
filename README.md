@@ -157,6 +157,8 @@ Maybe you prefer to change `--publish-all` for `-p 1984 -p 8069 -p 8072`.
 
         docker run -P --rm --link odoo_dbsrv:db yajo/odoo unittest one_module,other
 
+    [PhantomJS][] is included.
+
 ### Reading logs
 
 By default, logs are printed to `STDOUT` so you can read them with
@@ -308,18 +310,41 @@ To debug Odoo from the start in unittest mode, use:
 
 ## Image tags available
 
-The repository [yajo/odoo][] has these active tags:
+The repository [yajo/odoo][] has several versions of Odoo.
 
--   `latest`: Right now it points to `8.0`.
--   `8.0`: It uses the official [upstream `8.0` nightly RPM
-    repository](http://nightly.odoo.com/8.0/nightly/rpm/)
-    and tries to install every dependency possible with [RPM][].
-    If something is not available as RPM package, it will install it other way.
--   `9.0`: Like `8.0`, but installed from the official [upstream `master`
-    nightly RPM repository](http://nightly.odoo.com/master/nightly/rpm).
-    **It is considered unstable right now.***
--   `data`: Used to create a volumes in `/home/odoo` and `/var/{lib,log}/odoo`
-    to store variable data.
+Not all tags are tested by me, so if you find bugs in any of them, please
+create a BitBucket issue.
+
+You can use the automatic `latest` and `master` tags, but I strongly recommend
+using the number-versioned ones.
+
+### Data
+
+The `data` tag is a shortcut used to create a volumes in `/home/odoo` and
+`/var/{lib,log}/odoo` to store variable data.
+
+Instead, you can use any other tag running command `/usr/bin/true`, and save a
+little disk space. It's almost the same.
+
+### Core
+
+Core tags are installed from upstream Odoo code, using [nightly
+builds](http://nightly.odoo.com/) (RPM version, of course).
+
+- `latest`: Latest stable version. Right now it points to `9.0`.
+- `master`: Latest development version. Right now it points to `10.0`.
+- `8.0`: Stable.
+- `9.0`: Stable. Not tested by me.
+- `10.0`: Unstable. Not tested by me.
+
+### OCB
+
+These are installed from [OCB][]. Can be useful if there are fixes that you
+need.
+
+- `ocb-latest`: Latest stable version. Right now it points to `ocb-9.0`.
+- `ocb-8.0`: Stable. Not tested by me.
+- `ocb-9.0`: Stable. Not tested by me.
 
 ### Deprecated tags
 
@@ -339,6 +364,7 @@ These tags were used some time ago, but right now are not updated anymore:
 [wdb]: https://github.com/Kozea/wdb
 [yajo/wdb-server]: https://registry.hub.docker.com/u/yajo/wdb-server/
 [RPM]: http://rpm.org/
+[PhantomJS]: http://phantomjs.org/
 [PostgreSQL]: http://www.postgresql.org/
 [postgres]: https://registry.hub.docker.com/_/postgres/
 [yajo/https-proxy]: https://registry.hub.docker.com/u/yajo/https-proxy/
