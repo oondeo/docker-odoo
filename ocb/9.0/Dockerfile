@@ -31,13 +31,15 @@ RUN yum -y install postgresql python-pip \
     yum -y install gcc libxml2-devel libxslt-devel openldap-devel \
         postgresql-devel python-devel python-pillow unzip && \
     pip install --upgrade pip setuptools && \
-    pip install --no-deps --download /tmp/ \
+    cd /tmp/ && \
+    curl --location --remote-name \
         https://github.com/OCA/OCB/archive/$ODOO_VERSION.zip && \
-    unzip -q /tmp/$ODOO_VERSION.zip -d /tmp/ && \
-    pip install wdb /tmp/OCB-$ODOO_VERSION/ && \
-    mv /tmp/OCB-$ODOO_VERSION/addons/* \
+    unzip -q ./$ODOO_VERSION.zip -d ./ && \
+    pip install wdb ./OCB-$ODOO_VERSION/ && \
+    mv ./OCB-$ODOO_VERSION/addons/* \
         /usr/lib/python2.7/site-packages/openerp/addons/ && \
-    rm -Rf /tmp/* && \
+    rm -Rf ./* && \
+    cd / && \
     yum -y history undo last && \
 
 # Add PhantomJS for headless ECMAScript tests
