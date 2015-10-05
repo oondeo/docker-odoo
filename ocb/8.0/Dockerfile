@@ -39,6 +39,10 @@ RUN yum -y install postgresql python-pip &&\
     rm -Rf /tmp/* && \
     yum -y history undo last && \
 
+# Add PhantomJS for headless ECMAScript tests
+    yum -y install freetype fontconfig bzip2 npm && \
+    npm install --global phantomjs && \
+
 # Add locales
     yum -y reinstall glibc-common && \
 
