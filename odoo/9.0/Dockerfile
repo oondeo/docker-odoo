@@ -35,6 +35,10 @@ RUN yum -y install postgresql http://nightly.odoo.com/9.0/nightly/rpm/odoo_9.0rc
     pip install wdb && \
     yum -y history undo last && \
 
+# Add PhantomJS for headless ECMAScript tests
+    yum -y install freetype fontconfig bzip2 npm && \
+    npm install --global phantomjs && \
+
 # Add locales
     yum -y reinstall glibc-common && \
 
