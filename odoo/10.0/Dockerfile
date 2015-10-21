@@ -22,9 +22,10 @@ ENV ADMIN_PASSWORD=admin \
 # Install Odoo and psql (to install unaccent automatically)
 RUN yum -y install postgresql http://nightly.odoo.com/master/nightly/rpm/odoo_10.0alpha1.latest.noarch.rpm && \
 
-# Extra dependencies
-# TODO Remove after fixing https://github.com/odoo/odoo/issues/4021
-    yum -y install python-gevent && \
+# Extra dependencies. TODO remove them when not needed. See:
+# - https://github.com/odoo/odoo/issues/4021
+# - https://github.com/odoo/odoo/issues/9186
+    yum -y install python-gevent poppler-utils && \
 
 # Cannot use CentOS version of wkhtmltopdf because it's not patched to work
 # without an X server, so let's install the official upstream RPM instead

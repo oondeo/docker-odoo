@@ -24,9 +24,10 @@ RUN curl --output /etc/yum.repos.d/odoo.repo \
     http://nightly.odoo.com/8.0/nightly/rpm/odoo.repo && \
     yum -y install odoo postgresql && \
 
-# Extra dependencies
-# TODO Remove after fixing https://github.com/odoo/odoo/issues/4021
-    yum -y install python-gevent && \
+# Extra dependencies. TODO remove them when not needed. See:
+# - https://github.com/odoo/odoo/issues/4021
+# - https://github.com/odoo/odoo/issues/9186
+    yum -y install python-gevent poppler-utils && \
 
 # Cannot use CentOS version of wkhtmltopdf because it's not patched to work
 # without an X server, so let's install the official upstream RPM instead
