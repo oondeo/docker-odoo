@@ -25,7 +25,8 @@ RUN yum -y install postgresql http://nightly.odoo.com/master/nightly/rpm/odoo_10
 # Extra dependencies. TODO remove them when not needed. See:
 # - https://github.com/odoo/odoo/issues/4021
 # - https://github.com/odoo/odoo/issues/9186
-    yum -y install python-gevent poppler-utils && \
+# - https://github.com/odoo/odoo/issues/10067
+    yum -y install python-gevent poppler-utils mailcap && \
 
 # Cannot use CentOS version of wkhtmltopdf because it's not patched to work
 # without an X server, so let's install the official upstream RPM instead
