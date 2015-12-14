@@ -21,7 +21,7 @@ ENV ADMIN_PASSWORD=admin \
     WDB_WEB_SERVER=localhost
 
 # Runtime dependencies
-RUN yum -y install postgresql python-pip \
+RUN yum -y install postgresql python-pip mailcap \
 
 # Cannot use CentOS version of wkhtmltopdf because it's not patched to work
 # without an X server, so let's install the official upstream RPM instead
