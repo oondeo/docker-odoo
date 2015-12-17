@@ -26,6 +26,8 @@ set it up will be proxying Odoo with [yajo/https-proxy][].
     # Odoo server itself
     app:
         image: yajo/odoo:8.0
+        # Allow colorized output
+        tty: true
         environment:
             # Default values (you **must** change ADMIN_PASSWORD)
             ADMIN_PASSWORD: admin
@@ -49,6 +51,7 @@ set it up will be proxying Odoo with [yajo/https-proxy][].
         links:
             - db
             - wdb # Debugger, only for development
+        # This is the default command
         command: launch
 
     # Hold separately the volumes of Odoo variable data
