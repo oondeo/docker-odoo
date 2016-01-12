@@ -26,14 +26,17 @@ RUN yum -y install postgresql http://nightly.odoo.com/master/nightly/rpm/odoo_10
 # - https://github.com/odoo/odoo/issues/4021
 # - https://github.com/odoo/odoo/issues/9186
 # - https://github.com/odoo/odoo/issues/10067
-    yum -y install python-gevent poppler-utils mailcap && \
+    yum -y install python-gevent poppler-utils mailcap python-pip && \
+
+# Need babel >= 1.0, CentOS' version is older
+    pip install --upgrade babel && \
 
 # Cannot use CentOS version of wkhtmltopdf because it's not patched to work
 # without an X server, so let's install the official upstream RPM instead
     yum -y install http://download.gna.org/wkhtmltopdf/0.12/0.12.2.1/wkhtmltox-0.12.2.1_linux-centos7-amd64.rpm && \
 
 # Add a debugger
-    yum -y install gcc python-devel python-pip && \
+    yum -y install gcc python-devel && \
     pip install wdb && \
     yum -y history undo last && \
 
