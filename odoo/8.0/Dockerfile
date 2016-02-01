@@ -28,7 +28,8 @@ RUN curl --output /etc/yum.repos.d/odoo.repo \
 # - https://github.com/odoo/odoo/issues/4021
 # - https://github.com/odoo/odoo/issues/9186
 # - https://github.com/odoo/odoo/issues/10067
-    yum -y install python-gevent poppler-utils mailcap python-pip && \
+    yum -y install \
+        mailcap poppler-utils python-gevent python-inotify python-pip && \
 
 # Need babel >= 1.0, CentOS' version is older
     pip install --upgrade babel && \
