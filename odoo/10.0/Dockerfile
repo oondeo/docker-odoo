@@ -36,6 +36,9 @@ RUN yum -y install postgresql http://nightly.odoo.com/master/nightly/rpm/odoo_10
 # without an X server, so let's install the official upstream RPM instead
     yum -y install http://download.gna.org/wkhtmltopdf/0.12/0.12.2.1/wkhtmltox-0.12.2.1_linux-centos7-amd64.rpm && \
 
+# Add openupgradelib for your migrations
+    pip install openupgradelib && \
+
 # Add a debugger
     yum -y install gcc python-devel && \
     pip install wdb && \
