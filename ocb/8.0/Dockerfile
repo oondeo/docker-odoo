@@ -22,10 +22,18 @@ ENV ADMIN_PASSWORD=admin \
 
 # Runtime dependencies
 RUN yum -y install postgresql python-pip mailcap \
+    mailcap poppler-utils python-gevent python-inotify \
+    python-lxml
 
 # Cannot use CentOS version of wkhtmltopdf because it's not patched to work
 # without an X server, so let's install the official upstream RPM instead
     http://download.gna.org/wkhtmltopdf/0.12/0.12.2.1/wkhtmltox-0.12.2.1_linux-centos7-amd64.rpm && \
+
+# Need babel >= 1.0, CentOS' version is older
+    pip install --upgrade babel && \
+
+# Add openupgradelib for your migrations
+    pip install openupgradelib && \
 
 # Install OCB and debugger. Workaround https://github.com/OCA/OCB/issues/334
     yum -y install gcc libxml2-devel libxslt-devel openldap-devel \
@@ -49,7 +57,6 @@ RUN yum -y install postgresql python-pip mailcap \
 # Add locales
     yum -y reinstall glibc-common && \
 
-# Clean garbage
     yum clean all && \
 
 # Create path for extra addons
