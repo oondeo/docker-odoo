@@ -23,7 +23,7 @@ ENV ADMIN_PASSWORD=admin \
 # Runtime dependencies
 RUN yum -y install postgresql python-pip mailcap \
     mailcap poppler-utils python-gevent python-inotify \
-    python-lxml
+    python-lxml file
 
 # Cannot use CentOS version of wkhtmltopdf because it's not patched to work
 # without an X server, so let's install the official upstream RPM instead
