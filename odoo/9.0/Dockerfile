@@ -26,8 +26,9 @@ RUN yum -y install postgresql http://nightly.odoo.com/9.0/nightly/rpm/odoo_9.0.l
 # - https://github.com/odoo/odoo/issues/4021
 # - https://github.com/odoo/odoo/issues/9186
 # - https://github.com/odoo/odoo/issues/10067
+# - https://github.com/odoo/odoo/issues/10947
     yum -y install \
-        mailcap poppler-utils python-gevent python-inotify python-pip && \
+        mailcap poppler-utils python-gevent python-inotify python-pip file && \
 
 # Need babel >= 1.0, CentOS' version is older
     pip install --upgrade babel && \
