@@ -38,6 +38,10 @@ fi
 # Allow Odoo to write in its folders (needed if you mounted them)
 chown --recursive odoo:odoo /var/{lib,log}/odoo /home/odoo
 
+# TODO Remove when fixed
+echo Applying workaround for https://github.com/docker/docker/issues/20240
+ls -R /opt/odoo > /dev/null
+
 # Know if Postgres is listening
 function db_is_listening() {
     sleep 1
