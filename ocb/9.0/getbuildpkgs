@@ -1,0 +1,17 @@
+#!/bin/sh
+
+RET=""
+for i in $1
+do
+    INCLUDED="no"
+    for e in $2; do
+        if [ "$e" = "$i" ]; then
+            INCLUDED="yes"
+        fi
+    done
+    if [ "$INCLUDED" = "no" ]; then
+        RET="$RET $i"
+    fi
+done
+
+echo $RET
