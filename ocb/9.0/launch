@@ -22,13 +22,13 @@ echo "
 ; Database for domain gestion.oondeo.es is gestion-oondeo-es
 dbfilter= %h 
 proxy_mode = true
-workers=${ODOO_WORKERS}
+workers=${ODOO_WORKERS:=6}
 addons_path = " $addons "
 unaccent = $UNACCENT
-db_host = ${DB_PORT_5432_TCP_ADDR:=postgres}
-db_port = ${DB_PORT_5432_TCP_PORT:=5432}
-db_user = ${DB_ENV_POSTGRES_USER:=postgres}
-db_password = ${DB_ENV_POSTGRES_PASSWORD:=postgres}
+db_host = ${POSTGRES_HOST:=postgres}
+db_port = ${POSTGRES_PORT:=5432}
+db_user = ${POSTGRES_USER:=postgres}
+db_password = ${POSTGRES_PASSWORD:=postgres}
 admin_passwd = ${ADMIN_PASSWORD:=admin}" > $conf
 
 # If database is available, use it

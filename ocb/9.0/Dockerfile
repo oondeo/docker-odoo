@@ -4,7 +4,6 @@ MAINTAINER Juan Ramon Alfaro <info@oondeo.es>
 # set ODOO_WORKERS in prod
 # Variables used by the launch scripts
 ENV ODOO_WORKKERS=0 \
-    ADMIN_PASSWORD=admin \
     ODOO_SERVER=odoo.py \
     UNACCENT=True \
     ODOO_VERSION=9.0 \
@@ -57,7 +56,7 @@ ENV ODOO_WORKKERS=0 \
         xz-utils \
         zlib1g-dev \
         npm \
-        fontconig \
+        fontconfig \
         libfreetype6-dev \
         node-less \
         node-clean-css \
