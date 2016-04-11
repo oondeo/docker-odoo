@@ -119,7 +119,6 @@ RUN  mkdir -p /mnt/extra-addons /etc/odoo && \
     tar -jxf phantomjs.tar.bz2 && \
     cp phantomjs-$PHANTOMJS_VERSION-linux-x86_64/bin/phantomjs /usr/local/bin/ && \
     rm -rf phantomjs* && \
-    npm install --global phantomjs-prebuilt && \
     chown -R odoo /usr/local/lib/python2.7/dist-packages /mnt/extra-addons  && \
 #------------------------------------------------------------------
 #----------Production----------------------------------------------

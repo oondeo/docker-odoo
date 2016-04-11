@@ -2,6 +2,13 @@
 
 # This program patches the configuration for Odoo and then runs the server
 
+# Set some running config options
+if [ -f /etc/initrc ]
+then 
+. /etc/initrc
+fi
+
+
 conf=/etc/odoo/openerp-server.conf
 odoo="$ODOO_SERVER --config $conf"
 
