@@ -9,6 +9,7 @@ ENV ODOO_WORKKERS=0 \
     ODOO_VERSION=9.0 \
     ODOO_RELEASE=20160324 \
     WKHTMLTOPDF_VERSION=0.12.1.2 \
+    PHANTOMJS_VERSION=2.1.1 \
     REMOTE_MODULE_INSTALLER_VERSION=0.1 \
 
 # Variables used by the WDB debugger, in case you link a WDB container
@@ -58,6 +59,7 @@ ENV ODOO_WORKKERS=0 \
         npm \
         fontconfig \
         libfreetype6-dev \
+        node \
         node-less \
         node-clean-css \
         python-pip \
@@ -92,7 +94,8 @@ RUN set -x; \
         && rm -rf wkhtmltox.deb /var/lib/apt/*
 
 # Install Odoo
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN  mkdir -p /mnt/extra-addons /etc/odoo && \
+    apt-get update && apt-get install -y --no-install-recommends \
     $(getbuildpkgs "$BUILD_PACKAGES" "$RUN_PACKAGES") && \
     pip install --upgrade pip setuptools && \
     cd /tmp/ && \
@@ -112,8 +115,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 #Install wdb for development
     pip install wdb && \
 # Add PhantomJS for headless ECMAScript tests
-    npm install --global phantomjs && \
-    chown -R odoo /usr/local/lib/python2.7/dist-packages && \
+    curl -sL -o phantomjs.tar.bz2 https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-$PHANTOMJS_VERSION-linux-x86_64.tar.bz2 && \
+    tar -jxf phantomjs.tar.bz2 && \
+    cp phantomjs-$PHANTOMJS_VERSION-linux-x86_64/bin/phantomjs /usr/local/bin/ && \
+    rm -rf phantomjs* && \
+    npm install --global phantomjs-prebuilt && \
+    chown -R odoo /usr/local/lib/python2.7/dist-packages /mnt/extra-addons  && \
 #------------------------------------------------------------------
 #----------Production----------------------------------------------
 #apt-get -y --auto-remove purge $(getbuildpkgs "$BUILD_PACKAGES" "$RUN_PACKAGES") && \
@@ -121,8 +128,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     rm -rf /var/lib/apt/* && \
     rm -Rf ./* && \
 # Create path for extra addons
-    mkdir -p /mnt/extra-addons /etc/odoo && \
-    chown -R odoo /mnt/extra-addons /var/{lib,log}/odoo /home/odoo && \
+    chown -R odoo /var/{lib,log}/odoo /home/odoo && \
     cd /
 
 
