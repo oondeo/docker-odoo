@@ -94,7 +94,7 @@ RUN set -x; \
         && rm -rf wkhtmltox.deb /var/lib/apt/*
 
 # Install Odoo
-RUN  mkdir -p /mnt/extra-addons /etc/odoo && \
+RUN  mkdir -p /mnt/extra-addons /etc/odoo /opt/odoo/addons /var/log/odoo /var/lib/odoo /home/odoo && \
     apt-get update && apt-get install -y --no-install-recommends \
     $(getbuildpkgs "$BUILD_PACKAGES" "$RUN_PACKAGES") && \
     pip install --upgrade pip setuptools && \
@@ -119,7 +119,7 @@ RUN  mkdir -p /mnt/extra-addons /etc/odoo && \
     tar -jxf phantomjs.tar.bz2 && \
     cp phantomjs-$PHANTOMJS_VERSION-linux-x86_64/bin/phantomjs /usr/local/bin/ && \
     rm -rf phantomjs* && \
-    chown -R odoo /usr/local/lib/python2.7/dist-packages /mnt/extra-addons  && \
+    chown -R odoo /usr/local/lib/python2.7/dist-packages /mnt/extra-addons /opt/odoo && \
 #------------------------------------------------------------------
 #----------Production----------------------------------------------
 #apt-get -y --auto-remove purge $(getbuildpkgs "$BUILD_PACKAGES" "$RUN_PACKAGES") && \
@@ -127,7 +127,7 @@ RUN  mkdir -p /mnt/extra-addons /etc/odoo && \
     rm -rf /var/lib/apt/* && \
     rm -Rf ./* && \
 # Create path for extra addons
-    chown -R odoo /var/{lib,log}/odoo /home/odoo && \
+    chown -R odoo /var/log/odoo /var/lib/odoo /home/odoo && \
     cd /
 
 
