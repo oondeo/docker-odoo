@@ -4,10 +4,11 @@ MAINTAINER Juan Ramon Alfaro <info@oondeo.es>
 # set ODOO_WORKERS in prod
 # Variables used by the launch scripts
 ENV ODOO_WORKKERS=0 \
-    ODOO_SERVER=odoo.py \
+    ODOO_SERVER="python odoo.py" \
     UNACCENT=True \
     ODOO_VERSION=9.0 \
     ODOO_RELEASE=20160324 \
+    NODE_VERSION=5.10.1 \
     WKHTMLTOPDF_VERSION=0.12.1.2 \
     PHANTOMJS_VERSION=2.1.1 \
     REMOTE_MODULE_INSTALLER_VERSION=0.1 \
@@ -59,7 +60,9 @@ ENV ODOO_WORKKERS=0 \
         npm \
         fontconfig \
         libfreetype6-dev \
+        npm \
         node \
+        nodejs \
         node-less \
         node-clean-css \
         python-pip \
@@ -68,6 +71,9 @@ ENV ODOO_WORKKERS=0 \
         python-support \
         libldap2-dev \
         libsasl2-dev \
+        ruby-sass \
+        ruby-compass \
+        paxctl \
         " \
     RUN_PACKAGES="ca-certificates file curl \
             adduser \
@@ -98,20 +104,20 @@ RUN  mkdir -p /mnt/extra-addons /etc/odoo /opt/odoo/addons /var/log/odoo /var/li
     apt-get update && apt-get install -y --no-install-recommends \
     $(getbuildpkgs "$BUILD_PACKAGES" "$RUN_PACKAGES") && \
     pip install --upgrade pip setuptools && \
-    cd /tmp/ && \
+    cd /tmp && paxctl -Cm /usr/lib/nodejs \
     curl --location --remote-name \
         https://github.com/OCA/OCB/archive/$ODOO_VERSION.zip && \
     unzip -q ./$ODOO_VERSION.zip -d ./ && \
-    pip install reportlab pyinotify gevent && \
-    pip install ./OCB-$ODOO_VERSION/ && \
-    mv ./OCB-$ODOO_VERSION/addons/* \
-        /usr/local/lib/python2.7/dist-packages/openerp/addons/ && \
+    cp -a OCB-$ODOO_VERSION/* /opt/odoo && \
+    pip install  reportlab pyinotify gevent && \
+    cd /opt/odoo && pip install -r requirements.txt && \
+    python setup.py develop && \
 # Create odoo user with $HOME to store some data
     useradd --create-home odoo && \
 #----------Development---------------------------------------------
     curl -SL -o oca_install.zip https://github.com/amon-ra/oca_install/archive/$REMOTE_MODULE_INSTALLER_VERSION.zip && \
     unzip oca_install.zip && \
-    mv oca_install-$REMOTE_MODULE_INSTALLER_VERSION/oca_install /usr/local/lib/python2.7/dist-packages/openerp/addons/ && \
+    mv oca_install-$REMOTE_MODULE_INSTALLER_VERSION/oca_install /opt/odoo/addons/ && \
 #Install wdb for development
     pip install wdb && \
 # Add PhantomJS for headless ECMAScript tests
@@ -119,13 +125,13 @@ RUN  mkdir -p /mnt/extra-addons /etc/odoo /opt/odoo/addons /var/log/odoo /var/li
     tar -jxf phantomjs.tar.bz2 && \
     cp phantomjs-$PHANTOMJS_VERSION-linux-x86_64/bin/phantomjs /usr/local/bin/ && \
     rm -rf phantomjs* && \
-    chown -R odoo /usr/local/lib/python2.7/dist-packages /mnt/extra-addons /opt/odoo && \
+    chown -R odoo /usr/local/lib/python2.7 /mnt/extra-addons /opt/odoo && \
 #------------------------------------------------------------------
 #----------Production----------------------------------------------
 #apt-get -y --auto-remove purge $(getbuildpkgs "$BUILD_PACKAGES" "$RUN_PACKAGES") && \
 #-------------------------------------------------------------------
     rm -rf /var/lib/apt/* && \
-    rm -Rf ./* && \
+    rm -Rf /tmp/* && \
 # Create path for extra addons
     chown -R odoo /var/log/odoo /var/lib/odoo /home/odoo && \
     cd /

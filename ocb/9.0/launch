@@ -10,7 +10,7 @@ fi
 
 
 conf=/etc/odoo/openerp-server.conf
-odoo="$ODOO_SERVER --config $conf"
+odoo="cd /opt/odoo;$ODOO_SERVER --config $conf"
 
 # Ensure proper content for $UNACCENT
 if [ "$UNACCENT" != "True" ]; then
@@ -31,7 +31,7 @@ dbfilter= %h
 proxy_mode = true
 workers=${ODOO_WORKERS:=6}
 addons_path = " $addons "
-unaccent = $UNACCENT
+;unaccent = $UNACCENT
 db_host = ${POSTGRES_HOST:=postgres}
 db_port = ${POSTGRES_PORT:=5432}
 db_user = ${POSTGRES_USER:=postgres}
