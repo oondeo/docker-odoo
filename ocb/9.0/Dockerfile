@@ -3,7 +3,7 @@ MAINTAINER Juan Ramon Alfaro <info@oondeo.es>
 
 # set ODOO_WORKERS in prod
 # Variables used by the launch scripts
-ENV DEBIAN_FRONTEND=noninteractive LANG=es_ES.UTF-8 LANGUAGE=es_ES.UTF-8 LC_ALL=es_ES.UTF-8 \
+ENV DEBIAN_FRONTEND=noninteractive LANG=es_ES.UTF-8 LANGUAGE=es_ES.UTF-8 LC_ALL=es_ES.UTF-8 XDG_DATA_HOME="/home/odoo/.local/share" \
     ODOO_SERVER="python odoo.py" \
     UNACCENT=True \
     ODOO_VERSION=9.0 \
@@ -105,7 +105,7 @@ RUN  mkdir -p /mnt/extra-addons /etc/odoo /opt/odoo/addons /var/log/odoo /var/li
     apt-get update && apt-get install -y --no-install-recommends \
     $(getbuildpkgs "$BUILD_PACKAGES" "$RUN_PACKAGES") && \
     pip install --upgrade pip setuptools && \
-    cd /tmp && paxctl -Cm /usr/lib/nodejs && \
+    cd /tmp && paxctl -Cm /usr/bin/nodejs && \
     curl --location --remote-name \
         https://github.com/OCA/OCB/archive/$ODOO_VERSION.zip && \
     unzip -q ./$ODOO_VERSION.zip -d ./ && \
