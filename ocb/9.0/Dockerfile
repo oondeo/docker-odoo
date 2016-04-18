@@ -7,7 +7,6 @@ ENV DEBIAN_FRONTEND=noninteractive LANG=es_ES.UTF-8 LANGUAGE=es_ES.UTF-8 LC_ALL=
     ODOO_SERVER="python odoo.py" \
     UNACCENT=True \
     ODOO_VERSION=9.0 \
-    ODOO_RELEASE=20160324 \
     NODE_VERSION=5.10.1 \
     WKHTMLTOPDF_VERSION=0.12.1.2 \
     PHANTOMJS_VERSION=2.1.1 \
@@ -98,7 +97,7 @@ RUN set -x; \
         && curl -o wkhtmltox.deb -SL http://nightly.odoo.com/extra/wkhtmltox-${WKHTMLTOPDF_VERSION}_linux-jessie-amd64.deb \
         && dpkg --force-depends -i wkhtmltox.deb \
         && apt-get -y install -f --no-install-recommends \
-        && rm -rf wkhtmltox.deb /var/lib/apt/*
+        && rm -rf wkhtmltox.deb /var/lib/apt/* \
         && locale-gen $LANG 
 
 # Install Odoo
