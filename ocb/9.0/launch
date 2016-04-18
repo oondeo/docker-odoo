@@ -47,7 +47,8 @@ fi
 # TODO Remove when fixed
 echo Applying workaround for https://github.com/docker/docker/issues/20240
 ls -R /var/lib/odoo > /dev/null
-
+cd /mnt/extra-addons
+python -m compileall .
 
 # Run server
 echo Executing \'$odoo\' > /dev/stderr

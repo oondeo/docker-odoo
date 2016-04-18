@@ -3,7 +3,7 @@ MAINTAINER Juan Ramon Alfaro <info@oondeo.es>
 
 # set ODOO_WORKERS in prod
 # Variables used by the launch scripts
-ENV ODOO_WORKKERS=0 \
+ENV DEBIAN_FRONTEND=noninteractive LANG=es_ES.UTF-8 LANGUAGE=es_ES.UTF-8 LC_ALL=es_ES.UTF-8 \
     ODOO_SERVER="python odoo.py" \
     UNACCENT=True \
     ODOO_VERSION=9.0 \
@@ -75,8 +75,9 @@ ENV ODOO_WORKKERS=0 \
         ruby-compass \
         paxctl \
         " \
-    RUN_PACKAGES="ca-certificates file curl \
+    RUN_PACKAGES="locales ca-certificates file curl \
             adduser \
+	    locales \
             python \
             python-renderpm \
             antiword \
@@ -98,26 +99,31 @@ RUN set -x; \
         && dpkg --force-depends -i wkhtmltox.deb \
         && apt-get -y install -f --no-install-recommends \
         && rm -rf wkhtmltox.deb /var/lib/apt/*
+        && locale-gen $LANG 
 
 # Install Odoo
 RUN  mkdir -p /mnt/extra-addons /etc/odoo /opt/odoo/addons /var/log/odoo /var/lib/odoo /home/odoo && \
     apt-get update && apt-get install -y --no-install-recommends \
     $(getbuildpkgs "$BUILD_PACKAGES" "$RUN_PACKAGES") && \
     pip install --upgrade pip setuptools && \
-    cd /tmp && paxctl -Cm /usr/lib/nodejs \
+    cd /tmp && paxctl -Cm /usr/lib/nodejs && \
     curl --location --remote-name \
         https://github.com/OCA/OCB/archive/$ODOO_VERSION.zip && \
     unzip -q ./$ODOO_VERSION.zip -d ./ && \
     cp -a OCB-$ODOO_VERSION/* /opt/odoo && \
     pip install  reportlab pyinotify gevent && \
     cd /opt/odoo && pip install -r requirements.txt && \
-    python setup.py develop && \
+    python setup.py develop && make && \
+    python -m compileall . && \
+    cd /usr/local/lib/python2.7 && python -m compileall . && \
+    cd /tmp && \
+    echo es_ES.UTF-8 UTF-8 > /etc/locale.gen && locale-gen && \
 # Create odoo user with $HOME to store some data
-    useradd --create-home odoo && \
+    useradd --create-home odoo && mkdir -p /home/odoo/.local/share/Odoo/addons/9.0 && \
 #----------Development---------------------------------------------
     curl -SL -o oca_install.zip https://github.com/amon-ra/oca_install/archive/$REMOTE_MODULE_INSTALLER_VERSION.zip && \
     unzip oca_install.zip && \
-    mv oca_install-$REMOTE_MODULE_INSTALLER_VERSION/oca_install /opt/odoo/addons/ && \
+    mv oca_install-$REMOTE_MODULE_INSTALLER_VERSION/oca_install /home/odoo/.local/share/Odoo/addons/9.0/ && \
 #Install wdb for development
     pip install wdb && \
 # Add PhantomJS for headless ECMAScript tests
