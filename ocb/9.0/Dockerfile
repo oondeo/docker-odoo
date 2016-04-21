@@ -2,6 +2,15 @@ FROM oondeo/odoo:9
 
 MAINTAINER Juan Ramon Alfaro <info@oondeo.es>
 
+ENV PHANTOMJS_VERSION=2.1.1 \
+    REMOTE_MODULE_INSTALLER_VERSION=0.1 \
+
+# Variables used by the WDB debugger, in case you link a WDB container
+    WDB_NO_BROWSER_AUTO_OPEN=True \
+    WDB_SOCKET_SERVER=wdb \
+    WDB_WEB_PORT=1984 \
+    WDB_WEB_SERVER=localhost 
+
 # Install Odoo build requirements
 RUN apt-get update && apt-get install -y --no-install-recommends \
     $(getbuildpkgs "$BUILD_PACKAGES" "$RUN_PACKAGES") && \
