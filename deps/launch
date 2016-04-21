@@ -1,27 +1,32 @@
-#!/bin/bash
+#!/bin/sh
 
 # This program patches the configuration for Odoo and then runs the server
 
 # Set some running config options
-if [ -f /etc/initrc ]
+if [ -f /etc/skel/initrc ]
 then 
-. /etc/initrc
+. /etc/skel/initrc
 fi
-
+if [ -f ~/.bashrc ]
+then
+. ~/.bashrc
+fi
 
 conf=/etc/odoo/openerp-server.conf
 odoo="cd /opt/odoo;$ODOO_SERVER --config $conf"
 
 # Ensure proper content for $UNACCENT
-if [ "$UNACCENT" != "True" ]; then
-    UNACCENT=False
+if [ "$UNACCENT" != "False" ]; then
+    UNACCENT=True
 fi
 
+if [ ! -f /etc/odoo/openerp-server.conf ]
+then
 echo Patching configuration > /dev/stderr
 
 
 addons=$(ls -1bd /usr/local/lib/python2.7/dist-packages/openerp/addons \
-                 /mnt/extra-addons/* | tr '\n' ',' | sed s/,$//)
+                 /etc/odoo/addons /etc/odoo/src/* /mnt/extra-addons/* | tr '\n' ',' | sed s/,$//)
 
 echo "
 [options]
@@ -51,10 +56,9 @@ if [ "$DATABASE" != "" ]; then
     echo "database = $DATABASE" >> $conf
 fi
 
+fi
 
-# TODO Remove when fixed
-echo Applying workaround for https://github.com/docker/docker/issues/20240
-ls -R /var/lib/odoo > /dev/null
+#prevent running problems as user odoo
 cd /mnt/extra-addons
 python -m compileall .
 

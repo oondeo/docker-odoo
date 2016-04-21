@@ -5,7 +5,7 @@ MAINTAINER Juan Ramon Alfaro <info@oondeo.es>
 #ENV PYTHON_MODULES="unicodecsv pyinotify openupgradelib ofxparse" 
 ENV  ODOO_VERSION=8.0 
 
-#COPY addons /home/odoo/.local/share/Odoo/addons/$ODOO_VERSION/
+#COPY addons /etc/odoo/addons/
 
 # Install Odoo
 RUN  apt-get update && apt-get install -y --no-install-recommends \
@@ -18,10 +18,10 @@ RUN  apt-get update && apt-get install -y --no-install-recommends \
     cp -a OCB-$ODOO_VERSION/* /opt/odoo && \
     pip install -r /opt/odoo/requirements.txt && \
     pip install  $PYTHON_MODULES && \
-    cd /usr/local/lib/python2.7 && python -m compileall . && \
     cd /opt/odoo && \
+    python setup.py develop && make && \    
     python -m compileall . && \    
-    python setup.py develop && make && \
+    cd /usr/local/lib/python2.7 && python -m compileall . && \
     cd /tmp && \
 #----------Production----------------------------------------------
     #INSTALL ADDONS

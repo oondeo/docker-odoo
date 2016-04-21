@@ -3,7 +3,7 @@ MAINTAINER Juan Ramon Alfaro <info@oondeo.es>
 
 # set ODOO_WORKERS in prod
 # Variables used by the launch scripts
-ENV DEBIAN_FRONTEND=noninteractive LANG=es_ES.UTF-8 LANGUAGE=es_ES.UTF-8 LC_ALL=es_ES.UTF-8 XDG_DATA_HOME="/home/odoo/.local/share" \
+ENV DEBIAN_FRONTEND=noninteractive LANG=es_ES.UTF-8 LANGUAGE=es_ES.UTF-8 LC_ALL=es_ES.UTF-8 XDG_DATA_HOME="/var/lib/odoo" \
     ODOO_SERVER="python odoo.py" \
     UNACCENT=True \
     NODE_VERSION=5.10.1 \
@@ -65,7 +65,7 @@ ENV DEBIAN_FRONTEND=noninteractive LANG=es_ES.UTF-8 LANGUAGE=es_ES.UTF-8 LC_ALL=
         ruby-compass \
         paxctl \
         " \
-    RUN_PACKAGES="locales ca-certificates file 
+    RUN_PACKAGES="locales ca-certificates file \
             adduser \
 	        locales \
             python \
@@ -74,7 +74,6 @@ ENV DEBIAN_FRONTEND=noninteractive LANG=es_ES.UTF-8 LANGUAGE=es_ES.UTF-8 LC_ALL=
             graphviz \
             ghostscript \
             poppler-utils \
-	        xdg-user-dirs \
             libpq5 \
             postgresql-client \
         " \
@@ -85,21 +84,23 @@ ADD debug launch pot unittest getbuildpkgs /usr/local/bin/
 
 # Install some deps, lessc and less-plugin-clean-css, and wkhtmltopdf
 RUN set -x; \
-        apt-get update \
+        apt-get update && apt-get install -y --no-install-recommends curl \
         && apt-get install -y --no-install-recommends $RUN_PACKAGES \
         && curl -o wkhtmltox.deb -SL http://nightly.odoo.com/extra/wkhtmltox-${WKHTMLTOPDF_VERSION}_linux-jessie-amd64.deb \
         && dpkg --force-depends -i wkhtmltox.deb \
         && apt-get -y install -f --no-install-recommends \
-        && rm -rf wkhtmltox.deb /var/lib/apt/* \
-        && locale-gen $LANG && \
-        mkdir -p /mnt/extra-addons /etc/odoo /opt/odoo/addons /var/log/odoo /var/lib/odoo /home/odoo && \
+        && locale-gen $LANG \
+        && apt-get --auto-remove -y purge  curl && rm -rf wkhtmltox.deb /var/lib/apt/* \
         # Create odoo user with $HOME to store some data
-        useradd --create-home odoo        
+        && useradd --create-home odoo  \
+        && mkdir -p /mnt/extra-addons /etc/odoo/addons /etc/odoo/src /opt/odoo/addons /var/log/odoo /var/lib/odoo/addons /home/odoo/.local/share /etc/skel \
+        && chown -R odoo /home/odoo/.local/share /var/lib/odoo
+     
 
 
 
 
-VOLUME ["/var/lib/odoo", "/mnt/extra-addons", "/var/log/odoo"]
+VOLUME ["/var/lib/odoo", "/mnt/extra-addons", "/var/log/odoo" , "/etc/odoo","/etc/skel"]
 
 WORKDIR /opt/odoo
 # Expose Odoo services
