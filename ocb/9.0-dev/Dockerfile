@@ -19,6 +19,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 #----------Development---------------------------------------------
     curl -SL -o oca_install.zip https://github.com/amon-ra/oca_install/archive/$REMOTE_MODULE_INSTALLER_VERSION.zip && \
     unzip oca_install.zip && \
+    mkdir -p /home/odoo/.local/share/Odoo/addons/$ODOO_VERSION && \
     mv oca_install-$REMOTE_MODULE_INSTALLER_VERSION/oca_install /home/odoo/.local/share/Odoo/addons/$ODOO_VERSION/ && \
 #Install wdb for development
     pip install wdb && \
