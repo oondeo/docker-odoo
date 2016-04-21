@@ -25,9 +25,9 @@ RUN  apt-get update && apt-get install -y --no-install-recommends \
     cd /tmp && \
 #----------Production----------------------------------------------
     #INSTALL ADDONS
-    chown -R odoo /home/odoo && \
     #CLEAN
     apt-get -y --auto-remove purge $(getbuildpkgs "$BUILD_PACKAGES" "$RUN_PACKAGES") && \
 #-------------------------------------------------------------------
+    chown -R odoo /home/odoo /var/lib/odoo /var/log/odoo && \
     rm -rf /var/lib/apt/* && rm -Rf /tmp/* 
 

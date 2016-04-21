@@ -8,14 +8,6 @@ ENV DEBIAN_FRONTEND=noninteractive LANG=es_ES.UTF-8 LANGUAGE=es_ES.UTF-8 LC_ALL=
     UNACCENT=True \
     NODE_VERSION=5.10.1 \
     WKHTMLTOPDF_VERSION=0.12.1.2 \
-    PHANTOMJS_VERSION=2.1.1 \
-    REMOTE_MODULE_INSTALLER_VERSION=0.1 \
-
-# Variables used by the WDB debugger, in case you link a WDB container
-    WDB_NO_BROWSER_AUTO_OPEN=True \
-    WDB_SOCKET_SERVER=wdb \
-    WDB_WEB_PORT=1984 \
-    WDB_WEB_SERVER=localhost \
 
     BUILD_PACKAGES="curl \
         bzr \
