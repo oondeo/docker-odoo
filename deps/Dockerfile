@@ -76,7 +76,29 @@ ENV DEBIAN_FRONTEND=noninteractive LANG=es_ES.UTF-8 LANGUAGE=es_ES.UTF-8 LC_ALL=
             poppler-utils \
             libpq5 \
             postgresql-client \
-        " \
+            docutils-common \
+            fontconfig  \
+            fonts-liberation  \
+            graphviz  \
+            javascript-common \
+            libgdbm3  \
+            libgvc6  \
+            libjs-jquery  \
+            libpango-1.0-0 \
+            libpangocairo-1.0-0  \
+            libpangoft2-1.0-0  \
+            libpaper-utils  \
+            libpython2.7  \
+            libtidy-0.99-0  \
+            libwebp5  \
+            libwebpdemux1  \
+            libwebpmux1  \
+            libxslt1.1 \
+            libyaml-0-2  \
+            rename  \
+            sgml-base  \
+            xml-core  \           
+            " \
     PYTHON_MODULES="unicodecsv pyinotify openupgradelib ofxparse" \
     ODOO_MODULES_URLS=""
 
@@ -89,7 +111,9 @@ RUN set -x; \
         && curl -o wkhtmltox.deb -SL http://nightly.odoo.com/extra/wkhtmltox-${WKHTMLTOPDF_VERSION}_linux-jessie-amd64.deb \
         && dpkg --force-depends -i wkhtmltox.deb \
         && apt-get -y install -f --no-install-recommends \
-        && locale-gen $LANG \
+        && echo "en_US.UTF-8 UTF-8" > /etc/locale.gen \
+        && echo $LANG UTF-8 >> /etc/locale.gen \
+        && locale-gen \
         && apt-get --auto-remove -y purge  curl && rm -rf wkhtmltox.deb /var/lib/apt/* \
         # Create odoo user with $HOME to store some data
         && useradd --create-home odoo  \
