@@ -26,7 +26,9 @@ echo Patching configuration > /dev/stderr
 
 
 addons=$(ls -1bd /usr/local/lib/python2.7/dist-packages/openerp/addons \
-                 /etc/odoo/addons /etc/odoo/src/* /mnt/extra-addons/* | tr '\n' ',' | sed s/,$//)
+                 /etc/odoo/addons /etc/odoo/src/* /mnt/extra-addons/* \
+                 /var/lib/odoo/Odoo/addons/8.0 /opt/odoo/openerp/addons \
+                 /opt/odoo/addons | tr '\n' ',' | sed s/,$//)
 
 echo "
 [options]
@@ -59,8 +61,11 @@ fi
 fi
 
 #prevent running problems as user odoo
-cd /mnt/extra-addons
-python -m compileall .
+for adir in $addons
+do
+  cd $adir
+  python -m compileall .
+done
 
 # Run server
 echo Executing \'$odoo\' > /dev/stderr
