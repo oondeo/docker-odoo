@@ -119,6 +119,9 @@ To get up and running using the docker CLI:
         -e POSTGRES_USER=odoo -e POSTGRES_PASSWORD=something_secure \
         postgres:9.2
 
+    #install unaccent extension on POSTGRES
+    CREATE extension unaccent
+
     # Hold separately the volumes of Odoo variable data
     docker run -d --name odoo_appdata oondeo/odoo:data
 

@@ -106,7 +106,7 @@ ADD debug launch pot unittest getbuildpkgs /usr/local/bin/
 
 # Install some deps, lessc and less-plugin-clean-css, and wkhtmltopdf
 RUN set -x; \
-        apt-get update && apt-get install -y --no-install-recommends curl \
+        apt-get update && apt-get install -y --no-install-recommends curl paxctl \
         && apt-get install -y --no-install-recommends $RUN_PACKAGES \
         && curl -o wkhtmltox.deb -SL http://nightly.odoo.com/extra/wkhtmltox-${WKHTMLTOPDF_VERSION}_linux-jessie-amd64.deb \
         && dpkg --force-depends -i wkhtmltox.deb \
@@ -114,7 +114,9 @@ RUN set -x; \
         && echo "en_US.UTF-8 UTF-8" > /etc/locale.gen \
         && echo $LANG UTF-8 >> /etc/locale.gen \
         && locale-gen \
-        && apt-get --auto-remove -y purge  curl && rm -rf wkhtmltox.deb /var/lib/apt/* \
+        && paxctl -Cm /usr/local/bin/wkhtmltopdf \
+        && paxctl -Cm /usr/local/bin/wkhtmltoimage \
+        && apt-get --auto-remove -y purge  curl paxctl && rm -rf wkhtmltox.deb /var/lib/apt/* \
         # Create odoo user with $HOME to store some data
         && useradd --create-home odoo  \
         && mkdir -p /mnt/extra-addons /etc/odoo/addons /etc/odoo/src /opt/odoo/addons /var/log/odoo /var/lib/odoo/addons /home/odoo/.local/share /etc/skel \

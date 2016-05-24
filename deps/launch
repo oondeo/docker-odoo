@@ -45,7 +45,7 @@ addons_path = " $addons "
 unaccent = $UNACCENT
 ;log_level = debug_sql ['debug_rpc_answer', 'debug_rpc', 'debug', 'debug_sql', 'info', 'warn', 'error', 'critical']
 log_level = warn
-;log_handler = openerp.addons.my_addon1:DEBUG,openerp.addons.my_addon2:DEBUG
+log_handler = werkzeug:CRITICAL,openerp.netsvc.rpc.response:CRITICAL
 
 db_host = ${POSTGRES_HOST:=postgres}
 db_port = ${POSTGRES_PORT:=5432}
