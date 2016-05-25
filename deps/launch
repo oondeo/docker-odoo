@@ -1,8 +1,11 @@
-#!/bin/sh
+#!/bin/dash
 
 # This program patches the configuration for Odoo and then runs the server
 
 # Set some running config options
+#set XDG_DATA_HOME for module install 
+#export XDG_DATA_HOME=/var/lib/odoo/Odoo/addons/$ODOO_VERSION 
+
 if [ -f /etc/skel/initrc ]
 then 
 . /etc/skel/initrc
@@ -10,6 +13,11 @@ fi
 if [ -f ~/.bashrc ]
 then
 . ~/.bashrc
+fi
+
+if [ -n ${TZ} ]; then
+  rm /etc/localtime
+  ln -sf /usr/share/zoneinfo/${TZ}  /etc/localtime
 fi
 
 conf=/etc/odoo/openerp-server.conf
@@ -24,10 +32,11 @@ if [ ! -f /etc/odoo/openerp-server.conf ]
 then
 echo Patching configuration > /dev/stderr
 
-
+mkdir -p $XDG_DATA_HOME/Odoo/addons/$ODOO_VERSION
+chown odoo $XDG_DATA_HOME/Odoo/addons/$ODOO_VERSION 
 addons=$(ls -1bd /usr/local/lib/python2.7/dist-packages/openerp/addons \
-                 /etc/odoo/addons /etc/odoo/src/* /mnt/extra-addons/* \
-                 /var/lib/odoo/Odoo/addons/8.0 /opt/odoo/openerp/addons \
+  /etc/odoo/addons /etc/odoo/src/* /mnt/extra-addons /var/lib/odoo/addons /var/lib/odoo/src/* \
+                 $XDG_DATA_HOME/Odoo/addons/$ODOO_VERSION /opt/odoo/openerp/addons \
                  /opt/odoo/addons | tr '\n' ',' | sed s/,$//)
 
 echo "

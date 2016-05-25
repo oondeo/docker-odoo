@@ -119,6 +119,9 @@ To get up and running using the docker CLI:
         -e POSTGRES_USER=odoo -e POSTGRES_PASSWORD=something_secure \
         postgres:9.2
 
+    #install unaccent extension on POSTGRES
+    CREATE extension unaccent
+
     # Hold separately the volumes of Odoo variable data
     docker run -d --name odoo_appdata oondeo/odoo:data
 
@@ -177,7 +180,8 @@ If you need persistent logs, use volumes from `oondeo/odoo:data` and configure
 
 ## Mounting extra addons for Odoo
 
-Extra addons must be located in `/opt/odoo/extra-addons/<repo>/<addon>/`.
+Extra addons must be located in `/var/lib/odoo/src/<repo>/<addon>/` for development.
+In production you may use `/etc/odoo/src/<repo>/<addon>/` or `/etc/odoo/addons/<addon>`
 
 How you put them there does not matter. I will give you some ideas:
 
@@ -198,7 +202,7 @@ Recommended for production.
 A simple `Dockerfile` like this can help:
 
     FROM oondeo/odoo:8.0
-    ADD extra-addons /opt/odoo/
+    ADD src /var/lib/odoo/
 
 You should obviously have an `extra-addons` folder in the directory tree.
 Then, run:
@@ -211,8 +215,6 @@ Then, run:
 Maybe you are a core Odoo developer, or want to make your own fork to fix
 something, or want to use a variant such as [OCB][]. How to do it?
 
-Well, the most important thing you need to know is that Odoo is installed in
-`/usr/lib/python2.7/site-packages/openerp/`.
 
 You should have a folder tree similar to this one:
 

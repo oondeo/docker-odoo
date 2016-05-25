@@ -1,16 +1,12 @@
 FROM debian:jessie
 MAINTAINER Juan Ramon Alfaro <info@oondeo.es>
 
+ADD debug launch pot unittest getbuildpkgs /usr/local/bin/
+
 # set ODOO_WORKERS in prod
 # Variables used by the launch scripts
-ENV DEBIAN_FRONTEND=noninteractive LANG=es_ES.UTF-8 LANGUAGE=es_ES.UTF-8 LC_ALL=es_ES.UTF-8 XDG_DATA_HOME="/var/lib/odoo" \
-    ODOO_SERVER="python odoo.py" \
-    UNACCENT=True \
-    NODE_VERSION=5.10.1 \
-    WKHTMLTOPDF_VERSION=0.12.1.2 \
-
-    BUILD_PACKAGES="curl \
-        bzr \
+ENV DEBIAN_FRONTEND=noninteractive LANG=es_ES.UTF-8 LANGUAGE=es_ES.UTF-8 LC_ALL=es_ES.UTF-8  \
+    BUILD_PACKAGES="bzr \
         git \
         mercurial \
         openssh-client \
@@ -63,7 +59,6 @@ ENV DEBIAN_FRONTEND=noninteractive LANG=es_ES.UTF-8 LANGUAGE=es_ES.UTF-8 LC_ALL=
         libsasl2-dev \
         ruby-sass \
         ruby-compass \
-        paxctl \
         " \
     RUN_PACKAGES="locales ca-certificates file \
             adduser \
@@ -97,39 +92,42 @@ ENV DEBIAN_FRONTEND=noninteractive LANG=es_ES.UTF-8 LANGUAGE=es_ES.UTF-8 LC_ALL=
             libyaml-0-2  \
             rename  \
             sgml-base  \
-            xml-core  \           
-            " \
-    PYTHON_MODULES="unicodecsv pyinotify openupgradelib ofxparse" \
-    ODOO_MODULES_URLS=""
+            xml-core  \
+            " 
 
-ADD debug launch pot unittest getbuildpkgs /usr/local/bin/
 
 # Install some deps, lessc and less-plugin-clean-css, and wkhtmltopdf
 RUN set -x; \
         apt-get update && apt-get install -y --no-install-recommends curl paxctl \
         && apt-get install -y --no-install-recommends $RUN_PACKAGES \
-        && curl -o wkhtmltox.deb -SL http://nightly.odoo.com/extra/wkhtmltox-${WKHTMLTOPDF_VERSION}_linux-jessie-amd64.deb \
-        && dpkg --force-depends -i wkhtmltox.deb \
-        && apt-get -y install -f --no-install-recommends \
         && echo "en_US.UTF-8 UTF-8" > /etc/locale.gen \
         && echo $LANG UTF-8 >> /etc/locale.gen \
         && locale-gen \
-        && paxctl -Cm /usr/local/bin/wkhtmltopdf \
-        && paxctl -Cm /usr/local/bin/wkhtmltoimage \
-        && apt-get --auto-remove -y purge  curl paxctl && rm -rf wkhtmltox.deb /var/lib/apt/* \
         # Create odoo user with $HOME to store some data
-        && useradd --create-home odoo  \
-        && mkdir -p /mnt/extra-addons /etc/odoo/addons /etc/odoo/src /opt/odoo/addons /var/log/odoo /var/lib/odoo/addons /home/odoo/.local/share /etc/skel \
-        && chown -R odoo /home/odoo/.local/share /var/lib/odoo
+        && mkdir -p /mnt/extra-addons /etc/odoo/addons /etc/odoo/src /opt/odoo/addons /var/log/odoo /var/lib/odoo/src \
+        /var/lib/odoo/addons /var/lib/odoo/.local/share/Odoo/addons /home/odoo/.local/share /home/odoo/.cache \
+        /home/odoo/.local  /etc/skel \
+        && useradd -b /var/lib/odoo odoo  \
+        && chown -R odoo /home/odoo /var/lib/odoo 
      
 
 
 
 
-VOLUME ["/var/lib/odoo", "/mnt/extra-addons", "/var/log/odoo" , "/etc/odoo","/etc/skel"]
+VOLUME ["/opt/odoo","/var/lib/odoo", "/mnt/extra-addons", "/var/log/odoo" , "/etc/odoo","/etc/skel"]
 
 WORKDIR /opt/odoo
-# Expose Odoo services
-EXPOSE 8069 8071 1984
 
-CMD ["launch"]
+
+ENV WKHTMLTOPDF_VERSION=0.12.1.2 
+RUN     curl -o wkhtmltox.deb -SL http://nightly.odoo.com/extra/wkhtmltox-${WKHTMLTOPDF_VERSION}_linux-jessie-amd64.deb \
+        && dpkg --force-depends -i wkhtmltox.deb \
+        && apt-get update && apt-get -y install -f --no-install-recommends  \
+        && paxctl -Cm /usr/local/bin/wkhtmltopdf \
+        && paxctl -Cm /usr/local/bin/wkhtmltoimage \
+        && rm -rf wkhtmltox.deb /var/lib/apt/* 
+         
+
+
+
+ ENTRYPOINT ["launch"]
