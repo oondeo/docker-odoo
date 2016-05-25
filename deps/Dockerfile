@@ -1,7 +1,6 @@
 FROM debian:jessie
 MAINTAINER Juan Ramon Alfaro <info@oondeo.es>
 
-ADD debug launch pot unittest getbuildpkgs /usr/local/bin/
 
 # set ODOO_WORKERS in prod
 # Variables used by the launch scripts
@@ -62,7 +61,7 @@ ENV DEBIAN_FRONTEND=noninteractive LANG=es_ES.UTF-8 LANGUAGE=es_ES.UTF-8 LC_ALL=
         " \
     RUN_PACKAGES="locales ca-certificates file \
             adduser \
-	        locales \
+            locales \
             python \
             python-renderpm \
             antiword \
@@ -127,7 +126,13 @@ RUN     curl -o wkhtmltox.deb -SL http://nightly.odoo.com/extra/wkhtmltox-${WKHT
         && paxctl -Cm /usr/local/bin/wkhtmltoimage \
         && rm -rf wkhtmltox.deb /var/lib/apt/* 
          
+# Add Tini
+ENV TINI_VERSION v0.9.0
+ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
+RUN curl -o /tini https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini && chmod +x /tini
 
+ADD debug launch pot unittest getbuildpkgs /usr/local/bin/
 
+ENTRYPOINT ["/tini", "--"]
 
- ENTRYPOINT ["launch"]
+RUN ["launch"]

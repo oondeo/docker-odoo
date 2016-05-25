@@ -39,14 +39,17 @@ set it up will be proxying Odoo with [yajo/https-proxy][].
             WDB_SOCKET_SERVER: wdb
             WDB_WEB_PORT: 1984
             WDB_WEB_SERVER: localhost
-        # If you are going to use the HTTPS proxy for production,
+            XDG_DATA_HOME="/var/lib/odoo" 
+            ODOO_SERVER="python odoo.py" 
+            UNACCENT=True 
+     # If you are going to use the HTTPS proxy for production,
         # don't expose any ports
         ports:
             - "8069:8069"
             - "8072:8072"
         volumes:
             # Assuming you have an addons subfolder in the working tree
-            - ./addons:/opt/odoo/extra-addons:ro,Z
+            - ./addons:/mnt/extra-addons:ro,Z
         volumes_from:
             - appdata
         links:
@@ -57,7 +60,7 @@ set it up will be proxying Odoo with [yajo/https-proxy][].
 
     # Hold separately the volumes of Odoo variable data
     appdata:
-        image: oondeo/odoo:data
+        image: yajo/odoo:data
 
     # PostgreSQL server
     db:
@@ -76,13 +79,13 @@ set it up will be proxying Odoo with [yajo/https-proxy][].
 
     # For development, add a debugger
     wdb:
-        image: oondeo/wdb-server
+        image: yajo/wdb-server
         ports:
             - "1984:1984"
 
     # For production, you will need HTTPS
     https:
-        image: oondeo/https-proxy
+        image: yajo/https-proxy
         ports:
             - "80:80"
             - "443:443"
@@ -123,7 +126,7 @@ To get up and running using the docker CLI:
     CREATE extension unaccent
 
     # Hold separately the volumes of Odoo variable data
-    docker run -d --name odoo_appdata oondeo/odoo:data
+    docker run -d --name odoo_appdata yajo/odoo:data
 
     # Odoo server itself
     docker run -d --name odoo_app --link odoo_dbsrv:db \
@@ -180,8 +183,10 @@ If you need persistent logs, use volumes from `oondeo/odoo:data` and configure
 
 ## Mounting extra addons for Odoo
 
-Extra addons must be located in `/var/lib/odoo/src/<repo>/<addon>/` for development.
+Extra addons must be located in `/var/lib/odoo/src/<repo>/<addon>/` or `/var/lib/odoo/addons` for development.
 In production you may use `/etc/odoo/src/<repo>/<addon>/` or `/etc/odoo/addons/<addon>`
+
+Official mountpoint `/mnt/extra-addons` also works
 
 How you put them there does not matter. I will give you some ideas:
 
@@ -219,7 +224,11 @@ something, or want to use a variant such as [OCB][]. How to do it?
 You should have a folder tree similar to this one:
 
     app/
-       /extra-addons/
+       /data/
+            /addons/
+                    /one_module/
+                    /...
+            /src/
                     /one-repo/
                              /one_module/
                                         /__openerp__.py
@@ -236,22 +245,13 @@ You should have a folder tree similar to this one:
     docker-compose.yml
     ...
 
-Then you need to link the extra core addons inside the `extra-addons` folder,
-as if it were an external repository:
-
-    $ ln -sT ../my-odoo-fork/addons app/extra-addons/core-addons
-
 And now, `docker-compose.yml` should have:
 
     app:
         volumes:
-            ./app:/opt/odoo:ro,Z
-            ./app/my-odoo-fork/openerp:/usr/lib/python2.7/site-packages/openerp:ro,Z
+            ./app/my-odoo-fork:/opt/odoo:ro,Z
+            ./app/data:/var/lib/odoo:rw,Z
     [... etc.]
-
-Now we have the custom addons and the extra core addons in
-`/opt/odoo/extra-addons`, and your Odoo fork in
-`/usr/lib/python2.7/site-packages/openerp`.
 
 Since everything is mounted from your computer, you can develop quickly, debug,
 etc.
@@ -271,19 +271,6 @@ This is a sample production `Dockerfile`:
         pip install some-pypi-package &&\
         yum clean all
 
-    # This time, we link it to avoid wasting disk space
-    RUN rm -Rf /usr/lib/python2.7/site-packages/openerp &&\
-        ln -s /opt/odoo/my-odoo-fork/openerp /usr/lib/python2.7/site-packages/
-
-    # Add your custom code
-    ADD app /opt/odoo
-
-    # Now compile all Python files to have better performance
-    RUN python -m compileall /opt/odoo
-
-    # This will fix possible permission issues
-    RUN chown --recursive odoo:odoo /opt/odoo &&\
-        chmod --recursive u=rwX,go=rX /opt/odoo
 
 There you have a production-ready image!
 
@@ -291,9 +278,9 @@ There you have a production-ready image!
 
 This image comes with [wdb][] client preinstalled.
 
-To use the debugger, you need to link it to a [oondeo/wdb-server][] container:
+To use the debugger, you need to link it to a [oondeo/wdb][] container:
 
-    docker run -p 1984:1984 --name odoo_wdb oondeo/wdb-server
+    docker run -p 1984:1984 --name odoo_wdb oondeo/wdb
     docker run -p 80:8069 --link odoo_dbsrv:db --link odoo_wdb:wdb oondeo/odoo
 
 Adding this line anywhere in your modules will pause it for debugging:
