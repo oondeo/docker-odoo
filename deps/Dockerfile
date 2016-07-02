@@ -106,7 +106,7 @@ RUN set -x; \
         && mkdir -p /mnt/extra-addons /etc/odoo/addons /etc/odoo/src /opt/odoo/addons /var/log/odoo /var/lib/odoo/src \
         /var/lib/odoo/addons /var/lib/odoo/.local/share/Odoo/addons /home/odoo/.local/share /home/odoo/.cache \
         /home/odoo/.local  /etc/skel \
-        && useradd -b /var/lib/odoo odoo  \
+        && useradd -b /var/lib odoo  \
         && chown -R odoo /home/odoo /var/lib/odoo 
      
 
