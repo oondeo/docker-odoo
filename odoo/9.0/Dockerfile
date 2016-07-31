@@ -1,70 +1,39 @@
-FROM yajo/centos-epel
+FROM oondeo/odoo:deps
 
-MAINTAINER yajo@openaliasbox.org
+MAINTAINER Juan Ramon Alfaro <info@oondeo.es>
 
-# Launcher will patch configuration on first run and launch Odoo
-CMD launch
+#ENV PYTHON_MODULES="unicodecsv pyinotify openupgradelib ofxparse"
+ENV  ODOO_VERSION=9.0 \
+     ODOO_URL="https://github.com/odoo/odoo/archive" \
+     XDG_DATA_HOME="/var/lib/odoo" \
+     ODOO_SERVER="/opt/odoo/.env/bin/python odoo.py" \
+     UNACCENT=True \
+     ODOO_MODULES_URLS=""
 
-# Odoo ports for web and chat
-EXPOSE 8069 8072
 
-# Variables used by the launch scripts
-ENV ADMIN_PASSWORD=admin \
-    ODOO_SERVER=odoo.py \
-    UNACCENT=True \
+#COPY addons /etc/odoo/addons/
 
-# Variables used by the WDB debugger, in case you link a WDB container
-    WDB_NO_BROWSER_AUTO_OPEN=True \
-    WDB_SOCKET_SERVER=wdb \
-    WDB_WEB_PORT=1984 \
-    WDB_WEB_SERVER=localhost
-
-# Install Odoo and psql (to install unaccent automatically)
-RUN yum -y install postgresql http://nightly.odoo.com/9.0/nightly/rpm/odoo_9.0.latest.noarch.rpm && \
-
-# Extra dependencies. TODO remove them when not needed. See:
-# - https://github.com/odoo/odoo/issues/4021
-# - https://github.com/odoo/odoo/issues/9186
-# - https://github.com/odoo/odoo/issues/10067
-# - https://github.com/odoo/odoo/issues/10947
-    yum -y install \
-        mailcap poppler-utils python-gevent python-inotify python-pip file && \
-
-# Need babel >= 1.0, CentOS' version is older
-    pip install --upgrade babel && \
-
-# Cannot use CentOS version of wkhtmltopdf because it's not patched to work
-# without an X server, so let's install the official upstream RPM instead
-    yum -y install http://download.gna.org/wkhtmltopdf/0.12/0.12.2.1/wkhtmltox-0.12.2.1_linux-centos7-amd64.rpm && \
-
-# Add openupgradelib for your migrations
-    pip install openupgradelib && \
-
-# Add a debugger
-    yum -y install gcc python-devel && \
-    pip install wdb && \
-    yum -y history undo last && \
-
-# Add PhantomJS for headless ECMAScript tests
-    yum -y install freetype fontconfig bzip2 npm && \
-    npm install --global phantomjs && \
-
-# Add locales
-    yum -y reinstall glibc-common && \
-
-    yum clean all && \
-
-# Create path for extra addons
-    mkdir --parents /opt/odoo/extra-addons && \
-
-# Create odoo $HOME to store some data
-    mkdir /home/odoo && \
-    chown odoo:odoo /home/odoo && \
-
-# Configure launchers
-    touch /firstrun
-ADD debug launch pot unittest /usr/local/bin/
-RUN chmod a+rx /usr/local/bin/*
-
-# Folders modified at runtime by Odoo
-VOLUME ["/home/odoo", "/var/lib/odoo", "/var/log/odoo"]
+# Install Odoo
+RUN  apt-get update && apt-get install -y --no-install-recommends \
+    $(getbuildpkgs "$BUILD_PACKAGES" "$RUN_PACKAGES") && \
+    virtualenv /opt/odoo/.env && \
+    #pip install --upgrade pip setuptools && \
+    cd /tmp && paxctl -Cm /usr/bin/nodejs && \
+    curl --location --remote-name $ODOO_URL/$ODOO_VERSION.zip \
+        $ODOO_VERSION.zip && \
+    unzip -q ./$ODOO_VERSION.zip -d ./ && \
+    cp -a $ODOO_VERSION/* /opt/odoo && \
+    /opt/odoo/.env/bin/pip install -r /opt/odoo/requirements.txt && \
+    /opt/odoo/.env/bin/pip install  $PYTHON_MODULES && \
+    cd /opt/odoo && \
+    /opt/odoo/.env/bin/python setup.py develop && make && \
+    /opt/odoo/.env/bin/python -m compileall . && \
+    cd /usr/local/lib/python2.7 && /opt/odoo/.env/bin/python -m compileall . && \
+    cd /tmp && \
+#----------Production----------------------------------------------
+    #INSTALL ADDONS
+    #CLEAN
+    #apt-get -y --auto-remove purge $(getbuildpkgs "$BUILD_PACKAGES" "$RUN_PACKAGES") && \
+#-------------------------------------------------------------------
+    chown -R odoo /home/odoo /var/lib/odoo /var/log/odoo && \
+    rm -rf /var/lib/apt/* && rm -Rf /tmp/*
