@@ -2,12 +2,11 @@ FROM oondeo/odoo:deps
 
 MAINTAINER Juan Ramon Alfaro <info@oondeo.es>
 
-#ENV PYTHON_MODULES="unicodecsv pyinotify openupgradelib ofxparse" 
+#ENV PYTHON_MODULES="unicodecsv pyinotify openupgradelib ofxparse"
 ENV  ODOO_VERSION=8.0 \
      XDG_DATA_HOME="/var/lib/odoo" \
-     ODOO_SERVER="python odoo.py" \
+     ODOO_SERVER="/opt/odoo/.env/bin/python odoo.py" \
      UNACCENT=True \
-     PYTHON_MODULES="unicodecsv pyinotify openupgradelib ofxparse" \
      ODOO_MODULES_URLS=""
 
 
@@ -16,24 +15,24 @@ ENV  ODOO_VERSION=8.0 \
 # Install Odoo
 RUN  apt-get update && apt-get install -y --no-install-recommends \
     $(getbuildpkgs "$BUILD_PACKAGES" "$RUN_PACKAGES") && \
-    pip install --upgrade pip setuptools && \
+    virtualenv /opt/odoo/.env && \
+    #pip install --upgrade pip setuptools && \
     cd /tmp && paxctl -Cm /usr/bin/nodejs && \
     curl --location --remote-name \
         https://github.com/OCA/OCB/archive/$ODOO_VERSION.zip && \
     unzip -q ./$ODOO_VERSION.zip -d ./ && \
     cp -a OCB-$ODOO_VERSION/* /opt/odoo && \
-    pip install -r /opt/odoo/requirements.txt && \
-    pip install  $PYTHON_MODULES && \
+    /opt/odoo/.env/bin/pip install -r /opt/odoo/requirements.txt && \
+    /opt/odoo/.env/bin/pip install  $PYTHON_MODULES && \
     cd /opt/odoo && \
-    python setup.py develop && make && \    
-    python -m compileall . && \    
-    cd /usr/local/lib/python2.7 && python -m compileall . && \
+    /opt/odoo/.env/bin/python setup.py develop && make && \
+    /opt/odoo/.env/bin/python -m compileall . && \
+    cd /usr/local/lib/python2.7 && /opt/odoo/.env/bin/python -m compileall . && \
     cd /tmp && \
 #----------Production----------------------------------------------
     #INSTALL ADDONS
     #CLEAN
-    apt-get -y --auto-remove purge $(getbuildpkgs "$BUILD_PACKAGES" "$RUN_PACKAGES") && \
+    #apt-get -y --auto-remove purge $(getbuildpkgs "$BUILD_PACKAGES" "$RUN_PACKAGES") && \
 #-------------------------------------------------------------------
     chown -R odoo /home/odoo /var/lib/odoo /var/log/odoo && \
-    rm -rf /var/lib/apt/* && rm -Rf /tmp/* 
-
+    rm -rf /var/lib/apt/* && rm -Rf /tmp/*

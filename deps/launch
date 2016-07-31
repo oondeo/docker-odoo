@@ -3,11 +3,11 @@
 # This program patches the configuration for Odoo and then runs the server
 
 # Set some running config options
-#set XDG_DATA_HOME for module install 
-#export XDG_DATA_HOME=/var/lib/odoo/Odoo/addons/$ODOO_VERSION 
+#set XDG_DATA_HOME for module install
+#export XDG_DATA_HOME=/var/lib/odoo/Odoo/addons/$ODOO_VERSION
 
 if [ -f /etc/skel/initrc ]
-then 
+then
 . /etc/skel/initrc
 fi
 if [ -f ~/.bashrc ]
@@ -33,11 +33,11 @@ then
 echo Patching configuration > /dev/stderr
 
 mkdir -p $XDG_DATA_HOME/Odoo/addons/$ODOO_VERSION
-chown odoo $XDG_DATA_HOME/Odoo/addons/$ODOO_VERSION 
-addons=$(ls -1bd /usr/local/lib/python2.7/dist-packages/openerp/addons \
-  /etc/odoo/addons /etc/odoo/src/* /mnt/extra-addons /var/lib/odoo/addons /var/lib/odoo/src/* \
-                 $XDG_DATA_HOME/Odoo/addons/$ODOO_VERSION /opt/odoo/openerp/addons \
-                 /opt/odoo/addons | tr '\n' ',' | sed s/,$//)
+chown odoo $XDG_DATA_HOME/Odoo/addons/$ODOO_VERSION
+addons=$(ls -1bd /opt/odoo/openerp/addons /opt/odoo/addons \
+  /usr/local/lib/python2.7/dist-packages/openerp/addons /etc/odoo/addons \
+  /etc/odoo/src/* /mnt/extra-addons /var/lib/odoo/addons /var/lib/odoo/src/* \
+  $XDG_DATA_HOME/Odoo/addons/$ODOO_VERSION | tr '\n' ',' | sed s/,$//)
 
 echo "
 [options]
@@ -45,7 +45,7 @@ echo "
 ; Database for domain gestion.oondeo.es is gestion-oondeo-es
 xmlrpc_port = 8069
 longpolling_port = 8072
-dbfilter= ^%h$ 
+dbfilter= ^%h$
 proxy_mode = true
 workers=${ODOO_WORKERS:=6}
 limit_time_real = 3600
@@ -68,11 +68,25 @@ if [ "$DATABASE" != "" ]; then
 fi
 
 fi
+#create venv
+if [ ! -d "/opt/odoo/.env" ]; then
+  virtualenv /opt/odoo/.env
+  /opt/odoo/.env/bin/pip install -r /opt/odoo/requirements.txt
+
+fi
 
 #prevent running problems as user odoo
 for adir in $addons
 do
   cd $adir
+  for mdir in $(ls -1bd $adir)
+  do
+    if [ "$(md5sum $adir/requirements.txt)" != "$(cat $adir/requirements.txt.md5)" ]
+    then
+      /opt/odoo/.env/bin/pip/pip install --upgrade -r $adir/requirements.txt
+      md5sum $adir/requirements.txt > $adir/requirements.txt.md5
+    fi
+  done
   python -m compileall .
 done
 

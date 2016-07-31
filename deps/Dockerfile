@@ -5,6 +5,7 @@ MAINTAINER Juan Ramon Alfaro <info@oondeo.es>
 # set ODOO_WORKERS in prod
 # Variables used by the launch scripts
 ENV DEBIAN_FRONTEND=noninteractive LANG=es_ES.UTF-8 LANGUAGE=es_ES.UTF-8 LC_ALL=es_ES.UTF-8  \
+    PYTHON_MODULES="unicodecsv pyinotify openupgradelib ofxparse flanker pylint-odoo odoo_gateway" \
     BUILD_PACKAGES="bzr \
         git \
         mercurial \
@@ -37,6 +38,7 @@ ENV DEBIAN_FRONTEND=noninteractive LANG=es_ES.UTF-8 LANGUAGE=es_ES.UTF-8 LC_ALL=
         libwebp-dev \
         libxml2-dev \
         libxslt-dev \
+        libxslt1-dev \
         libyaml-dev \
         make \
         patch \
@@ -92,7 +94,7 @@ ENV DEBIAN_FRONTEND=noninteractive LANG=es_ES.UTF-8 LANGUAGE=es_ES.UTF-8 LC_ALL=
             rename  \
             sgml-base  \
             xml-core  \
-            " 
+            "
 
 
 # Install some deps, lessc and less-plugin-clean-css, and wkhtmltopdf
@@ -107,8 +109,8 @@ RUN set -x; \
         /var/lib/odoo/addons /var/lib/odoo/.local/share/Odoo/addons /home/odoo/.local/share /home/odoo/.cache \
         /home/odoo/.local  /etc/skel \
         && useradd -b /var/lib odoo  \
-        && chown -R odoo /home/odoo /var/lib/odoo 
-     
+        && chown -R odoo /home/odoo /var/lib/odoo
+
 
 
 
@@ -118,14 +120,14 @@ VOLUME ["/opt/odoo","/var/lib/odoo", "/mnt/extra-addons", "/var/log/odoo" , "/et
 WORKDIR /opt/odoo
 
 
-ENV WKHTMLTOPDF_VERSION=0.12.1.2 
+ENV WKHTMLTOPDF_VERSION=0.12.1.2
 RUN     curl -o wkhtmltox.deb -SL http://nightly.odoo.com/extra/wkhtmltox-${WKHTMLTOPDF_VERSION}_linux-jessie-amd64.deb \
         && dpkg --force-depends -i wkhtmltox.deb \
         && apt-get update && apt-get -y install -f --no-install-recommends  \
         && paxctl -Cm /usr/local/bin/wkhtmltopdf \
         && paxctl -Cm /usr/local/bin/wkhtmltoimage \
-        && rm -rf wkhtmltox.deb /var/lib/apt/* 
-         
+        && rm -rf wkhtmltox.deb /var/lib/apt/*
+
 # Add Tini
 ENV TINI_VERSION v0.9.0
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
