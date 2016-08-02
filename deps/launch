@@ -67,9 +67,13 @@ fi
 fi
 #create venv
 if [ ! -d "/opt/odoo/.env" ]; then
+  cd /opt/odoo
   virtualenv /opt/odoo/.env
   /opt/odoo/.env/bin/pip install -r /opt/odoo/requirements.txt
-
+  /opt/odoo/.env/bin/pip install  $PYTHON_MODULES
+  /opt/odoo/.env/bin/python setup.py develop
+  make
+  python -m compileall .
 fi
 
 #prevent running problems as user odoo
