@@ -9,7 +9,7 @@ ENV ODOO_VERSION=8.0 PHANTOMJS_VERSION=2.1.1 \
       /etc/odoo/src/* /mnt/extra-addons /var/lib/odoo/addons /var/lib/odoo/src/* \
       /var/lib/odoo/addons/$ODOO_VERSION" \
     PYTHON_MODULES="unicodecsv pyinotify openupgradelib \
-      ofxparse flanker pylint-odoo odoo_gateway pep8 wdb"
+      ofxparse flanker pylint-odoo odoo_gateway pep8 wdb" \
 # Variables used by the WDB debugger, in case you link a WDB container
     WDB_NO_BROWSER_AUTO_OPEN=True \
     WDB_SOCKET_SERVER=wdb \
