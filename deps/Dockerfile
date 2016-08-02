@@ -135,11 +135,10 @@ RUN     curl -o wkhtmltox.deb -SL http://nightly.odoo.com/extra/wkhtmltox-${WKHT
 
 # Add Tini
 ENV TINI_VERSION v0.9.0
-ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
-RUN curl -o /tini https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini && chmod +x /tini
+RUN curl -o /tini https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-static && chmod +x /tini
 
 COPY debug launch pot unittest getbuildpkgs /usr/local/bin/
 
-ENTRYPOINT ["/tini", "--"]
+# ENTRYPOINT ["/tini", "--"]
 
 CMD ["launch"]
