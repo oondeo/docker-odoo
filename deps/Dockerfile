@@ -5,8 +5,13 @@ MAINTAINER Juan Ramon Alfaro <info@oondeo.es>
 # set ODOO_WORKERS in prod
 # Variables used by the launch scripts
 ENV DEBIAN_FRONTEND=noninteractive LANG=es_ES.UTF-8 LANGUAGE=es_ES.UTF-8 LC_ALL=es_ES.UTF-8  \
-    PYTHON_MODULES="unicodecsv pyinotify openupgradelib ofxparse flanker pylint-odoo odoo_gateway" \
-    BUILD_PACKAGES="bzr \
+    ODOO_ADDONS_PATH="/opt/odoo/openerp/addons /opt/odoo/addons \
+    /usr/local/lib/python2.7/dist-packages/openerp/addons /etc/odoo/addons \
+    /etc/odoo/src/* /mnt/extra-addons"  ODOO_SERVER="/opt/odoo/.env/bin/python odoo.py" \
+    ODOO_VERSION=8.0 XDG_DATA_HOME="/var/lib/odoo" UNACCENT=False \
+    ODOO_URL="https://github.com/odoo/odoo/archive" \
+    ODOO_MODULES_URLS="" PYTHON_MODULES="unicodecsv pyinotify openupgradelib \
+    ofxparse flanker pylint-odoo odoo_gateway pep8" BUILD_PACKAGES="bzr \
         git \
         mercurial \
         openssh-client \
@@ -107,7 +112,7 @@ RUN set -x; \
         # Create odoo user with $HOME to store some data
         && mkdir -p /mnt/extra-addons /etc/odoo/addons /etc/odoo/src /opt/odoo/addons /var/log/odoo /var/lib/odoo/src \
         /var/lib/odoo/addons /var/lib/odoo/.local/share/Odoo/addons /home/odoo/.local/share /home/odoo/.cache \
-        /home/odoo/.local  /etc/skel \
+        /home/odoo/.local  /etc/skel /usr/local/lib/python2.7/dist-packages/openerp/addons \
         && useradd -b /var/lib odoo  \
         && chown -R odoo /home/odoo /var/lib/odoo
 
@@ -130,11 +135,11 @@ RUN     curl -o wkhtmltox.deb -SL http://nightly.odoo.com/extra/wkhtmltox-${WKHT
 
 # Add Tini
 ENV TINI_VERSION v0.9.0
-ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
+COPY https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
 RUN curl -o /tini https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini && chmod +x /tini
 
-ADD debug launch pot unittest getbuildpkgs /usr/local/bin/
+COPY debug launch pot unittest getbuildpkgs /usr/local/bin/
 
 ENTRYPOINT ["/tini", "--"]
 
-RUN ["launch"]
+CMD ["launch"]

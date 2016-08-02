@@ -5,8 +5,7 @@ MAINTAINER Juan Ramon Alfaro <info@oondeo.es>
 #ENV PYTHON_MODULES="unicodecsv pyinotify openupgradelib ofxparse"
 ENV  ODOO_VERSION=8.0 \
      XDG_DATA_HOME="/var/lib/odoo" \
-     ODOO_SERVER="/opt/odoo/.env/bin/python odoo.py" \
-     UNACCENT=True \
+     UNACCENT=False \
      ODOO_MODULES_URLS=""
 
 
