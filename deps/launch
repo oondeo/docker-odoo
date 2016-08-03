@@ -4,7 +4,7 @@
 
 # Set some running config options
 #set XDG_DATA_HOME for module install
-#export XDG_DATA_HOME=/var/lib/odoo/Odoo/addons/$ODOO_VERSION
+
 
 if [ -f /etc/skel/initrc ]
 then
@@ -24,8 +24,8 @@ conf=/etc/odoo/openerp-server.conf
 odoo="cd /opt/odoo;$ODOO_SERVER --config $conf"
 
 # Ensure proper content for $UNACCENT
-if [ "$UNACCENT" != "False" ]; then
-    UNACCENT=True
+if [ "$UNACCENT" != "True" ]; then
+    UNACCENT=False
 fi
 
 if [ ! -f /etc/odoo/openerp-server.conf ]
@@ -65,29 +65,19 @@ if [ "$DATABASE" != "" ]; then
 fi
 
 fi
-#create venv
-if [ ! -d "/opt/odoo/.env" ]; then
-  cd /opt/odoo
-  virtualenv /opt/odoo/.env
-  /opt/odoo/.env/bin/pip install -r /opt/odoo/requirements.txt
-  /opt/odoo/.env/bin/pip install  $PYTHON_MODULES
-  /opt/odoo/.env/bin/python setup.py develop
-  make
-  python -m compileall .
-fi
 
 #prevent running problems as user odoo
 for adir in $addons
 do
   cd $adir
-  for mdir in $(ls -1bd $adir)
-  do
-    if [ "$(md5sum $adir/requirements.txt)" != "$(cat $adir/requirements.txt.md5)" ]
-    then
-      /opt/odoo/.env/bin/pip/pip install --upgrade -r $adir/requirements.txt
-      md5sum $adir/requirements.txt > $adir/requirements.txt.md5
-    fi
-  done
+  #for mdir in $(ls -1bd $adir)
+  #do
+  #  if [ "$(md5sum $adir/requirements.txt)" != "$(cat $adir/requirements.txt.md5)" ]
+  #  then
+  #    /opt/odoo/.env/bin/pip/pip install --upgrade -r $adir/requirements.txt
+  #    md5sum $adir/requirements.txt > $adir/requirements.txt.md5
+  #  fi
+  #done
   python -m compileall .
 done
 

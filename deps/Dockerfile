@@ -11,7 +11,7 @@ ENV DEBIAN_FRONTEND=noninteractive LANG=es_ES.UTF-8 LANGUAGE=es_ES.UTF-8 LC_ALL=
     ODOO_VERSION=8.0 XDG_DATA_HOME="/var/lib/odoo" UNACCENT=False \
     ODOO_URL="https://github.com/odoo/odoo/archive" \
     ODOO_MODULES_URLS="" PYTHON_MODULES="unicodecsv pyinotify openupgradelib \
-    ofxparse flanker pylint-odoo odoo_gateway pep8" BUILD_PACKAGES="bzr \
+    ofxparse flanker odoo_gateway" BUILD_PACKAGES="bzr \
         git \
         mercurial \
         openssh-client \
@@ -59,6 +59,7 @@ ENV DEBIAN_FRONTEND=noninteractive LANG=es_ES.UTF-8 LANGUAGE=es_ES.UTF-8 LC_ALL=
         node-clean-css \
         python-pip \
         python-dev \
+        virtualenv \
         libtool \
         python-support \
         libldap2-dev \
@@ -99,6 +100,17 @@ ENV DEBIAN_FRONTEND=noninteractive LANG=es_ES.UTF-8 LANGUAGE=es_ES.UTF-8 LC_ALL=
             rename  \
             sgml-base  \
             xml-core  \
+            python-dateutil \
+            python-decorator \
+            python-docutils \
+            python-feedparser \
+            python-ldap \
+            python-paramiko \
+            python-imaging \
+            python-jinja2 \
+            python-libxslt1 \
+            python-lxml \
+            python-mako \
             "
 
 
