@@ -6,27 +6,57 @@
 #set XDG_DATA_HOME for module install 
 #export XDG_DATA_HOME=/var/lib/odoo/Odoo/addons/$ODOO_VERSION 
 
-cd /tmp 
-curl --location --remote-name "$ODOO_URL" && \
-unzip -q ./$ODOO_VERSION.zip -d ./ && \
-mv OCB-$ODOO_VERSION/* /opt/odoo && rm -rf OCB-$ODOO_VERSION
-
-#OLDIFS=$IFS
-#IFS=$'\n'
-for url in $ODOO_MODULES_URLS
-do 
+function download {
+    url=$1
+    rm -rf /tmp/module
+    mkdir -p /tmp/module
+    cd /tmp/module
     #git repo download with git
     if [ "${url:0:3}" == "git" || "${url:0:3}" == "ssh" || "${url:${#url}-3:${#url}}" == "git" ]
     then
         IFS=':' read -ra ADDR <<< "$url"
         repo=${ADDR[0]}
         if [ "${#ADDR[@]}" == "2" ];then
-            git clone --depth 1 -b ${ADDR[1]} $repo /opt/odoo_addons_src/
+            git clone --depth 1 -b ${ADDR[1]} "$repo" . || true
         else
-            git clone --depth 1 $repo /opt/odoo_addons_src/
+            git clone --depth 1 "$repo" . || true
         fi
     else
-        curl --location -o module.zip $url && unzip -q ./module.zip -d /opt/odoo_addons_src
-        rm module.zip
+        curl --location -o module.zip "$url" && unzip -q ./module.zip -d . && rm module.zip || true
     fi
+    #instalamos las dependencias de los modulos
+    ADDON=$(ls -1bd *)
+    if [ ! -d /opt/odoo_addons_src/$ADDON ]; then 
+        mv $ADDON /opt/odoo_addons_src/
+        if [ -f /opt/odoo_addons_src/$ADDON/oca_dependencies.txt ]; then
+            OLDIFS=$IFS
+            IFS=$'\n'
+            for line in (< /opt/odoo_addons_src/$ADDON/oca_dependencies.txt ); do
+                download "${OCA_URL}/${line}.git"
+            done
+            IFS=$OLDIFS            
+        fi
+        if [ -f /opt/odoo_addons_src/$ADDON/requirements.txt ]; then
+            cd /opt/odoo_addons_src/
+            $PIP_BIN -r requirements.txt || true
+            make || $PYTHON_BIN  -m compileall . || true
+        fi
+    fi
+}
+
+cd /tmp 
+if [ ! -f /opt/odoo/odoo.py ]; then
+    curl --location --remote-name "$ODOO_URL" && \
+    unzip -q ./$ODOO_VERSION.zip -d ./ && \
+    mv OCB-$ODOO_VERSION/* /opt/odoo && rm -rf OCB-$ODOO_VERSION
+    $PIP_BIN -r /opt/odoo/requirements.txt
+    cd /opt/odoo
+    $PYTHON_BIN setup.py develop && make && $PYTHON_BIN  -m compileall . 
+fi
+#OLDIFS=$IFS
+#IFS=$'\n'
+for url in $ODOO_MODULES_URLS
+do 
+    download "$url"
 done
+
