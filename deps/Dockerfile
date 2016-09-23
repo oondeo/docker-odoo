@@ -9,7 +9,7 @@ ENV DEBIAN_FRONTEND=noninteractive LANG=es_ES.UTF-8 LANGUAGE=es_ES.UTF-8 LC_ALL=
      ODOO_SERVER="python odoo.py" \
      UNACCENT=True \
      PYTHON_BIN="python" \
-     ODOO_VERSION="8.0"
+     ODOO_VERSION="8.0" \
      ODOO_URL="https://github.com/OCA/OCB/archive/$ODOO_VERSION.zip" \
      ODOO_MODULES_URLS="" \
      PYTHON_MODULES="unicodecsv pyinotify openupgradelib ofxparse" \
