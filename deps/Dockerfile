@@ -118,7 +118,7 @@ RUN set -x; \
         && echo $LANG UTF-8 >> /etc/locale.gen \
         && locale-gen \
         && useradd -b /var/lib/odoo odoo  \
-        && rm -f /var/lib/apt/* /var/tmp/* /tmp/* /var/log/*
+        && rm -rf /var/lib/apt/* /var/tmp/* /tmp/* /var/log/* || true
 
 
 
@@ -134,11 +134,11 @@ RUN     curl -o wkhtmltox.deb -SL http://nightly.odoo.com/extra/wkhtmltox-${WKHT
         && apt-get update && apt-get -y install -f --no-install-recommends  \
         && paxctl -Cm /usr/local/bin/wkhtmltopdf \
         && paxctl -Cm /usr/local/bin/wkhtmltoimage \
-        && rm -rf wkhtmltox.deb /var/lib/apt/* /var/tmp/* /tmp/* /var/log/* \
+        && rm -rf wkhtmltox.deb /var/lib/apt/* /var/tmp/* /tmp/* /var/log/* || true \
         # Create odoo user with $HOME to store some data
         && mkdir -p /mnt/extra-addons /mnt/extra-addons-src /etc/odoo /opt/odoo/addons /var/log/odoo /var/lib/odoo/src \
         /var/lib/odoo/addons /var/lib/odoo/.local/share/Odoo/addons /home/odoo/.local/share /home/odoo/.cache \
-        /home/odoo/.local  /etc/skel /opt/odoo_adddons_src \
+        /home/odoo/.local  /etc/skel /opt/odoo_adddons_src /var/log/odoo \
         && chown -R odoo /home/odoo /var/lib/odoo 
          
 # Add Tini
