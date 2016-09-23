@@ -5,6 +5,10 @@ MAINTAINER Juan Ramon Alfaro <info@oondeo.es>
 # set ODOO_WORKERS in prod
 # Variables used by the launch scripts
 ENV DEBIAN_FRONTEND=noninteractive LANG=es_ES.UTF-8 LANGUAGE=es_ES.UTF-8 LC_ALL=es_ES.UTF-8  \
+     XDG_DATA_HOME="/var/lib/odoo" \
+     ODOO_SERVER="python odoo.py" \
+     UNACCENT=True \
+     PYTHON_MODULES="unicodecsv pyinotify openupgradelib ofxparse" \
     BUILD_PACKAGES="bzr \
         git \
         mercurial \
