@@ -117,13 +117,8 @@ RUN set -x; \
         && echo "en_US.UTF-8 UTF-8" > /etc/locale.gen \
         && echo $LANG UTF-8 >> /etc/locale.gen \
         && locale-gen \
-        # Create odoo user with $HOME to store some data
-        && mkdir -p /mnt/extra-addons /mnt/extra-addons-src /etc/odoo /opt/odoo/addons /var/log/odoo /var/lib/odoo/src \
-        /var/lib/odoo/addons /var/lib/odoo/.local/share/Odoo/addons /home/odoo/.local/share /home/odoo/.cache \
-        /home/odoo/.local  /etc/skel /opt/odoo_adddons_src \
         && useradd -b /var/lib/odoo odoo  \
-        && chown -R odoo /home/odoo /var/lib/odoo 
-     
+        && rm -f /var/lib/apt/* /var/tmp/* /tmp/* /var/log/*
 
 
 
@@ -139,12 +134,16 @@ RUN     curl -o wkhtmltox.deb -SL http://nightly.odoo.com/extra/wkhtmltox-${WKHT
         && apt-get update && apt-get -y install -f --no-install-recommends  \
         && paxctl -Cm /usr/local/bin/wkhtmltopdf \
         && paxctl -Cm /usr/local/bin/wkhtmltoimage \
-        && rm -rf wkhtmltox.deb /var/lib/apt/* 
+        && rm -rf wkhtmltox.deb /var/lib/apt/* /var/tmp/* /tmp/* /var/log/* \
+        # Create odoo user with $HOME to store some data
+        && mkdir -p /mnt/extra-addons /mnt/extra-addons-src /etc/odoo /opt/odoo/addons /var/log/odoo /var/lib/odoo/src \
+        /var/lib/odoo/addons /var/lib/odoo/.local/share/Odoo/addons /home/odoo/.local/share /home/odoo/.cache \
+        /home/odoo/.local  /etc/skel /opt/odoo_adddons_src \
+        && chown -R odoo /home/odoo /var/lib/odoo 
          
 # Add Tini
-ENV TINI_VERSION v0.9.0
-ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
-RUN curl -o /tini https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini && chmod +x /tini
+ENV TINI_VERSION v0.10.0
+RUN curl -o /tini -sL https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini && chmod +x /tini
 
 ADD debug launch pot unittest getbuildpkgs odoo-install /usr/local/bin/
 
