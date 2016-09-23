@@ -70,7 +70,7 @@ ENV DEBIAN_FRONTEND=noninteractive LANG=es_ES.UTF-8 LANGUAGE=es_ES.UTF-8 LC_ALL=
         ruby-compass \
         " \
     RUN_PACKAGES="locales ca-certificates file \
-            libldap \
+            libldap-2.4 \
             libfreetype6 \
             adduser \
             locales \
@@ -150,4 +150,4 @@ ADD debug launch pot unittest getbuildpkgs odoo-install /usr/local/bin/
 
 ENTRYPOINT ["/tini", "--"]
 
-RUN ["launch"]
+CMD ["launch"]
