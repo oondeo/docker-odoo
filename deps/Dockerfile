@@ -60,6 +60,9 @@ ENV DEBIAN_FRONTEND=noninteractive LANG=es_ES.UTF-8 LANGUAGE=es_ES.UTF-8 LC_ALL=
         ruby-compass \
         " \
     RUN_PACKAGES="locales ca-certificates file \
+            libdap2 \
+            dapl2-utils \
+            libfreetype6 \
             adduser \
             locales \
             python \
@@ -92,6 +95,9 @@ ENV DEBIAN_FRONTEND=noninteractive LANG=es_ES.UTF-8 LANGUAGE=es_ES.UTF-8 LC_ALL=
             rename  \
             sgml-base  \
             xml-core  \
+            libsasl2-2 \
+            libsasl2-modules \
+            libsasl2-modules-ldap \
             " 
 
 
