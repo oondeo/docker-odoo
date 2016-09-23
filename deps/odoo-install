@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# This program patches the configuration for Odoo and then runs the server
+
+# Set some running config options
+#set XDG_DATA_HOME for module install 
+#export XDG_DATA_HOME=/var/lib/odoo/Odoo/addons/$ODOO_VERSION 
+
+cd /tmp 
+curl --location --remote-name "$ODOO_URL" && \
+unzip -q ./$ODOO_VERSION.zip -d ./ && \
+mv OCB-$ODOO_VERSION/* /opt/odoo && rm -rf OCB-$ODOO_VERSION
+
+#OLDIFS=$IFS
+#IFS=$'\n'
+for url in $ODOO_MODULES_URLS
+do 
+    #git repo download with git
+    if [ "${url:0:3}" == "git" || "${url:0:3}" == "ssh" || "${url:${#url}-3:${#url}}" == "git" ]
+    then
+        IFS=':' read -ra ADDR <<< "$url"
+        repo=${ADDR[0]}
+        if [ "${#ADDR[@]}" == "2" ];then
+            git clone --depth 1 -b ${ADDR[1]} $repo /opt/odoo_addons_src/
+        else
+            git clone --depth 1 $repo /opt/odoo_addons_src/
+        fi
+    else
+        curl --location -o module.zip $url && unzip -q ./module.zip -d /opt/odoo_addons_src
+        rm module.zip
+    fi
+done

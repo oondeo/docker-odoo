@@ -8,6 +8,10 @@ ENV DEBIAN_FRONTEND=noninteractive LANG=es_ES.UTF-8 LANGUAGE=es_ES.UTF-8 LC_ALL=
      XDG_DATA_HOME="/var/lib/odoo" \
      ODOO_SERVER="python odoo.py" \
      UNACCENT=True \
+     PYTHON_BIN="python" \
+     ODOO_VERSION="8.0"
+     ODOO_URL="https://github.com/OCA/OCB/archive/$ODOO_VERSION.zip" \
+     ODOO_MODULES_URLS="" \
      PYTHON_MODULES="unicodecsv pyinotify openupgradelib ofxparse" \
     BUILD_PACKAGES="bzr \
         git \
@@ -113,9 +117,9 @@ RUN set -x; \
         && echo $LANG UTF-8 >> /etc/locale.gen \
         && locale-gen \
         # Create odoo user with $HOME to store some data
-        && mkdir -p /mnt/extra-addons /etc/odoo/addons /etc/odoo/src /opt/odoo/addons /var/log/odoo /var/lib/odoo/src \
+        && mkdir -p /mnt/extra-addons /mnt/extra-addons-src /etc/odoo /opt/odoo/addons /var/log/odoo /var/lib/odoo/src \
         /var/lib/odoo/addons /var/lib/odoo/.local/share/Odoo/addons /home/odoo/.local/share /home/odoo/.cache \
-        /home/odoo/.local  /etc/skel \
+        /home/odoo/.local  /etc/skel /opt/odoo_adddons_src \
         && useradd -b /var/lib/odoo odoo  \
         && chown -R odoo /home/odoo /var/lib/odoo 
      
@@ -123,7 +127,7 @@ RUN set -x; \
 
 
 
-VOLUME ["/opt/odoo","/var/lib/odoo", "/mnt/extra-addons", "/var/log/odoo" , "/etc/odoo","/etc/skel"]
+VOLUME ["/opt/odoo","/var/lib/odoo", "/mnt/extra-addons", "/mnt/extra-addons-src", "/var/log/odoo" , "/etc/odoo","/etc/skel"]
 
 WORKDIR /opt/odoo
 
@@ -141,7 +145,7 @@ ENV TINI_VERSION v0.9.0
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
 RUN curl -o /tini https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini && chmod +x /tini
 
-ADD debug launch pot unittest getbuildpkgs /usr/local/bin/
+ADD debug launch pot unittest getbuildpkgs odoo-install /usr/local/bin/
 
 ENTRYPOINT ["/tini", "--"]
 
