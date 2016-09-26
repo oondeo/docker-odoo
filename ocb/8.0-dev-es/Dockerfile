@@ -70,10 +70,11 @@ ENV PHANTOMJS_VERSION=2.1.1 \
         libsasl2-dev \
         ruby-sass \
         ruby-compass \
-        " 
+        "
 
 # Install Odoo build requirements
-RUN apt-get update && apt-get install -y --no-install-recommends $BUILD_PACKAGES \
+RUN apt-get update && apt-get install -y --no-install-recommends $BUILD_PACKAGES && \
+    rm -f /var/log/apt/* && rm -f /var/log/* && \
     pip install --upgrade pip setuptools && \
     cd /tmp && paxctl -Cm /usr/bin/nodejs && \
     virtualenv --system-site-packages /opt/odoo/.env && \
@@ -98,4 +99,3 @@ RUN apt-get update && apt-get install -y --no-install-recommends $BUILD_PACKAGES
     chown -R odoo /var/log/odoo /var/lib/odoo /home/odoo && \
 # Install odoo script
     /usr/local/bin/odoo_install
-    
