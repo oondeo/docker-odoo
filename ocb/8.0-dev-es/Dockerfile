@@ -95,7 +95,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends $BUILD_PACKAGES
     tar -jxf phantomjs.tar.bz2 && \
     cp phantomjs-$PHANTOMJS_VERSION-linux-x86_64/bin/phantomjs /usr/local/bin/ && \
     rm -rf phantomjs* && \
-    rm -Rf /tmp/*
+    rm -rf /tmp/* /root/.cache
 
 # Install odoo script
 RUN /usr/local/bin/odoo-install
