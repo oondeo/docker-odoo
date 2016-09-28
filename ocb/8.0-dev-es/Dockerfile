@@ -6,7 +6,7 @@ ENV PHANTOMJS_VERSION=2.1.1 \
     REMOTE_MODULE_INSTALLER_VERSION=0.1 \
     ODOO_VERSION=8.0
 
-ENV ODOO_MODULES_URLS="https://github.com/OCA/l10n-spain/archive/8.0.zip https://github.com/OCA/web/archive/8.0.zip https://github.com/OCA/e-commerce/archive/8.0.zip https://github.com/OCA/sale-workflow/archive/8.0.zip https://github.com/OCA/product-attribute/archive/8.0.zip https://github.com/OCA/bank-statement-import/archive/8.0.zip https://github.com/OCA/hr-timesheet/archive/8.0.zip https://github.com/OCA/product-variant/archive/8.0.zip https://github.com/OCA/account-payment/archive/8.0.zip https://github.com/OCA/website/archive/8.0.zip https://github.com/OCA/knowledge/archive/8.0.zip https://github.com/OCA/project/archive/8.0.zip https://github.com/OCA/report-print-send/archive/8.0.zip https://github.com/OCA/commission/archive/8.0.zip" \
+ENV ODOO_MODULES_URLS="" \
 # Variables used by the WDB debugger, in case you link a WDB container
     WDB_NO_BROWSER_AUTO_OPEN=True \
     WDB_SOCKET_SERVER=wdb \
