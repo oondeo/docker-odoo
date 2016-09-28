@@ -1,21 +1,21 @@
 FROM debian:jessie
 MAINTAINER Juan Ramon Alfaro <info@oondeo.es>
 
-
+ENV ODOO_VERSION="8.0"
 # set ODOO_WORKERS in prod
 # Variables used by the launch scripts
 ENV DEBIAN_FRONTEND=noninteractive LANG=es_ES.UTF-8 LANGUAGE=es_ES.UTF-8 LC_ALL=es_ES.UTF-8  \
      XDG_DATA_HOME="/var/lib/odoo" \
+     ODOO_HOME="/opt/odoo" \
      ODOO_SERVER="python odoo.py" \
      UNACCENT=True \
      PYTHON_BIN="python" \
      PIP_BIN="pip" \
-     ODOO_VERSION="8.0" \
      OCA_URL="https://github.com/OCA" \
      ODOO_URL="https://github.com/OCA/OCB/archive/$ODOO_VERSION.zip" \
      ODOO_MODULES_URLS="" \
      PYTHON_MODULES="unicodecsv pyinotify openupgradelib ofxparse" \
-    BUILD_PACKAGES="bzr \
+     BUILD_PACKAGES="bzr \
         git \
         mercurial \
         openssh-client \
@@ -107,7 +107,7 @@ ENV DEBIAN_FRONTEND=noninteractive LANG=es_ES.UTF-8 LANGUAGE=es_ES.UTF-8 LC_ALL=
             libsasl2-2 \
             libsasl2-modules \
             libsasl2-modules-ldap \
-            " 
+            "
 
 
 # Install some deps, lessc and less-plugin-clean-css, and wkhtmltopdf
@@ -123,12 +123,12 @@ RUN set -x; \
 
 
 
-VOLUME ["/opt/odoo","/var/lib/odoo", "/mnt/extra-addons", "/mnt/extra-addons-src", "/var/log/odoo" , "/etc/odoo","/etc/skel"]
+VOLUME ["/var/lib/odoo", "/mnt/odoo","/mnt/extra-addons", "/mnt/extra-addons-src", "/var/log/odoo" , "/etc/odoo","/etc/skel"]
 
-WORKDIR /opt/odoo
+WORKDIR /var/lib/odoo
 
 
-ENV WKHTMLTOPDF_VERSION=0.12.1.2 
+ENV WKHTMLTOPDF_VERSION=0.12.1.2
 RUN     curl -o wkhtmltox.deb -SL http://nightly.odoo.com/extra/wkhtmltox-${WKHTMLTOPDF_VERSION}_linux-jessie-amd64.deb \
         && dpkg --force-depends -i wkhtmltox.deb \
         && apt-get update && apt-get -y install -f --no-install-recommends  \
@@ -136,11 +136,11 @@ RUN     curl -o wkhtmltox.deb -SL http://nightly.odoo.com/extra/wkhtmltox-${WKHT
         && paxctl -Cm /usr/local/bin/wkhtmltoimage \
         && rm -rf wkhtmltox.deb /var/lib/apt/* /var/tmp/* /tmp/* /var/log/* || true \
         # Create odoo user with $HOME to store some data
-        && mkdir -p /mnt/extra-addons /mnt/extra-addons-src /etc/odoo /opt/odoo/addons /var/log/odoo /var/lib/odoo/src \
+        && mkdir -p /mnt/extra-addons /mnt/extra-addons-src /etc/odoo $ODOO_HOME/addons /var/log/odoo /var/lib/odoo/src \
         /var/lib/odoo/addons /var/lib/odoo/.local/share/Odoo/addons /home/odoo/.local/share /home/odoo/.cache \
         /home/odoo/.local  /etc/skel /opt/odoo_adddons_src /var/log/odoo \
-        && chown -R odoo /home/odoo /var/lib/odoo 
-         
+        && chown -R odoo /home/odoo /var/lib/odoo
+
 # Add Tini
 ENV TINI_VERSION v0.10.0
 RUN curl -o /tini -sL https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini && chmod +x /tini
