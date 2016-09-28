@@ -32,12 +32,14 @@ if [ ! -f /etc/odoo/openerp-server.conf ]
 then
 echo Patching configuration > /dev/stderr
 
-mkdir -p $XDG_DATA_HOME/Odoo/addons/$ODOO_VERSION
-chown odoo $XDG_DATA_HOME/Odoo/addons/$ODOO_VERSION
+mkdir -p $XDG_DATA_HOME/Odoo/addons/$ODOO_VERSION $XDG_DATA_HOME/addons $XDG_DATA_HOME/.cache
+chown -R odoo $XDG_DATA_HOME/*
+chown -R odoo $XDG_DATA_HOME/.cache
+
 addons=$(ls -1bd /usr/local/lib/python2.7/dist-packages/openerp/addons $ODOO_ADDONS_HOME/* \
-  /mnt/extra-addons-src/* /mnt/extra-addons /var/lib/odoo/addons /var/lib/odoo/src/* \
-                 $XDG_DATA_HOME/Odoo/addons/$ODOO_VERSION $ODOO_HOME/openerp/addons \
-                 $ODOO_HOME/addons | tr '\n' ',' | sed s/,$//)
+  /mnt/extra-addons-src/* /mnt/extra-addons $XDG_DATA_HOME/addons \
+  $XDG_DATA_HOME/Odoo/addons/$ODOO_VERSION $ODOO_HOME/openerp/addons \
+  $ODOO_HOME/addons | tr '\n' ',' | sed s/,$//)
 
 echo "
 [options]
@@ -73,7 +75,7 @@ fi
 for adir in $addons
 do
   cd $adir
-  $PYHON_BIN -m compileall .
+  $PYTHON_BIN -m compileall .
 done
 
 # Run server
