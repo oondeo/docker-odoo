@@ -85,7 +85,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends $BUILD_PACKAGES
 #----------Development---------------------------------------------
     mkdir -p $XDG_DATA_HOME/.local/share/Odoo/addons/$ODOO_VERSION && \
 #Install wdb for development
-    $PIP_BIN install wdb && \
+    pip install wdb && \
 # Add PhantomJS for headless ECMAScript tests
     curl -sL -o phantomjs.tar.bz2 https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-$PHANTOMJS_VERSION-linux-x86_64.tar.bz2 && \
     tar -jxf phantomjs.tar.bz2 && \
