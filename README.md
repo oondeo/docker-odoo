@@ -39,9 +39,9 @@ set it up will be proxying Odoo with [yajo/https-proxy][].
             WDB_SOCKET_SERVER: wdb
             WDB_WEB_PORT: 1984
             WDB_WEB_SERVER: localhost
-            XDG_DATA_HOME="/var/lib/odoo" 
-            ODOO_SERVER="python odoo.py" 
-            UNACCENT=True 
+            XDG_DATA_HOME="/var/lib/odoo"
+            ODOO_SERVER="python odoo.py"
+            UNACCENT=True
      # If you are going to use the HTTPS proxy for production,
         # don't expose any ports
         ports:
@@ -137,7 +137,56 @@ Follow instructions from [postgres][] to understand the PostgreSQL part.
 
 Maybe you prefer to change `--publish-all` for `-p 1984 -p 8069 -p 8072`.
 
+### Volumes
+- /etc/odoo: openerp-server.conf file from this directory is used for configuration (generated if not exists)
+- /mnt/extra-addons
+- /mnt/extra-addons-src
+- /mnt/odoo: Put odoo source here and change ODOO_HOME
+- /etc/skel
+- /var/lib/odoo
+
+### Envirnment variables
+- ODOO_VERSION:
+- ODOO_URL:
+- ODOO_HOME:
+- ODOO_SERVER:
+- OCA_URL:
+- ODOO_MODULES:
+- PYTHON_MODULES:
+- PYTHON_BIN:
+- PIP_BIN:
+- UNACCENT:
+- ODOO_WORKERS
+- ADMIN_PASSWORD
+- POSTGRES_HOST:
+- POSTGRES_PORT
+- POSTGRES_USER
+- POSTGRES_PASSWORD
+- WDB_NO_BROWSER_AUTO_OPEN=True
+- WDB_SOCKET_SERVER=wdb
+- WDB_WEB_PORT=1984
+- WDB_WEB_SERVER=localhost
+- BUILD_PACKAGES: Used only on Dockerfile
+- RUN_PACKAGES: Used only on Dockerfile
+- WKHTMLTOPDF_VERSION: Used only on Dockerfile
+- TINI_VERSION: Used only on Dockerfile
+- PHANTOMJS_VERSION: Used only on Dockerfile
+- TZ: Set timezone
+- XDG_DATA_HOME:
+
 ### Scripts available
+
+-   `odoo-install`: Using envirnment variables this script install odoo ($ODOO_VERSION from $ODOO_URL) in $ODOO_HOME and modules included in ODOO_MODULES_URL in $ODOO_MODULES_HOME. Configuration variables.
+    - ODOO_MODULES_URLS: list of repos:branch separed by space
+    - OCA_URL: base oca url to install oca_dependencies.txt
+    - ODOO_HOME: install directory of odoo
+    - ODOO_MODULES_HOME: install direcrtory of modules
+    - PYTHON_BIN: Python ejecutable
+    - PIP_BIN: pip ejecutable
+    - ODOO_VERSION: Self explanatory
+    - ODOO_URL: Url to download odoo
+
+-   `getbuildpkgs`: get package from parameter 1 that are not in 2
 
 -   `debug`: Use for debugging with [wdb][] from the start. See section
     *Debugging* below.
@@ -194,7 +243,7 @@ How you put them there does not matter. I will give you some ideas:
 
 Recommended for developing.
 
-Add `--volume /path/to/addons/folder/in/host:/opt/odoo/extra-addons:ro` when
+Add `--volume /path/to/addons/folder/in/host:/mnt/extra-addons:ro` when
 executing step 2 of above instructions. The mounted folder must have read
 permissions for the docker process, or it will fail without notice.
 
@@ -249,7 +298,7 @@ And now, `docker-compose.yml` should have:
 
     app:
         volumes:
-            ./app/my-odoo-fork:/opt/odoo:ro,Z
+            ./app/my-odoo-fork:/mnt/odoo:ro,Z
             ./app/data:/var/lib/odoo:rw,Z
     [... etc.]
 
@@ -268,7 +317,7 @@ This is a sample production `Dockerfile`:
 
     # Install dependencies for your custom addons
     RUN yum -y install some-centos-epel-package &&\
-        pip install some-pypi-package &&\
+        $PIP_BIN install some-pypi-package &&\
         yum clean all
 
 
@@ -362,4 +411,4 @@ These tags were used some time ago, but right now are not updated anymore:
 [postgres]: https://registry.hub.docker.com/_/postgres/
 [yajo/https-proxy]: https://registry.hub.docker.com/u/oondeo/https-proxy/
 [oondeo/odoo]: https://registry.hub.docker.com/u/oondeo/odoo/
-[yajo/odoo]: https://registry.hub.docker.com/u/oondeo/odoo/yajo/odoo 
+[yajo/odoo]: https://registry.hub.docker.com/u/oondeo/odoo/yajo/odoo
