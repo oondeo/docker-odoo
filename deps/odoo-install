@@ -41,10 +41,10 @@ function download {
             sed -i '/^$/d' /opt/odoo_addons_src/$ADDON/oca_dependencies.txt
             while read -u 10 rawline; do
                 IFS=' ' read -ra ARRLINE <<< "$rawline"
-                if [ "${#ADDR[@]}" == "0" ]; then
+                if [ "${#ADDR[@]}" == "1" ]; then
                     line="${OCA_URL}/${rawline}.git:$branch"
                 else
-                    if  [[ ${#ADDR[@]} > 2 ]]; then
+                    if  [ ${#ADDR[@]} -gt 2 ]; then
                         branch="${ARRLINE[2]}"
                     fi
                     repo=${ARRLINE[1]}
