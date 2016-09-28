@@ -8,25 +8,27 @@
 
 function download {
     url=$1
-    branch=""
+    branch="$ODOO_VERSION"
     rm -rf /tmp/module
     mkdir -p /tmp/module
     cd /tmp/module
     echo "Downloading $url"
     #git repo download with git
-    if [[ "${url:0:3}" == "git" || "${url:0:3}" == "ssh" || "${url:${#url}-3:${#url}}" == "git" ]]
+    IFS=':' read -ra ADDR <<< "$url"
+    repo="${ADDR[0]}:${ADDR[1]}"
+    if [[ "${repo:0:3}" == "git" || "${repo:0:3}" == "ssh" || "${repo:${#repo}-3:${#repo}}" == "git" ]]
     then
-        IFS=':' read -ra ADDR <<< "$url"
-        repo=${ADDR[0]}
         echo "GIT: ${ADDR[*]}"
         if [ "${#ADDR[@]}" == "2" ];then
             branch="${ADDR[1]}"
-            git clone --depth 1 -b $branch "$repo" . || true
+            git clone --depth 1 -b $branch "$repo" || true
         else
-            git clone --depth 1 "$repo" . || true
+            git clone --depth 1 "$repo" || true
         fi
+        mv "$(ls -1bd *)" "$(ls -1bd *)-$branch"
     else
-        curl --location -o module.zip "$url" && unzip -q ./module.zip -d . && rm module.zip || true
+        echo "Download using curl"
+        curl --location -o module.zip "$url" && unzip -q ./module.zip -d . && rm module.zip
     fi
     #instalamos las dependencias de los modulos
     ADDON=$(ls -1bd *)
@@ -37,20 +39,32 @@ function download {
         if [ -f /opt/odoo_addons_src/$ADDON/oca_dependencies.txt ]; then
             sed -i '/^[[:blank:]]*#/d;s/#.*//' /opt/odoo_addons_src/$ADDON/oca_dependencies.txt
             sed -i '/^$/d' /opt/odoo_addons_src/$ADDON/oca_dependencies.txt
-            while read -u 10 line; do
-                if [ "$branch" != "" ]; then
-                    download "${OCA_URL}/${line}.git:$branch"
+            while read -u 10 rawline; do
+                IFS=' ' read -ra ARRLINE <<< "$rawline"
+                if [ "${#ADDR[@]}" == "0" ]; then
+                    line="${OCA_URL}/${rawline}.git:$branch"
                 else
-                    download "${OCA_URL}/${line}.git"
+                    if  [[ ${#ADDR[@]} > 2 ]]; then
+                        branch="${ARRLINE[2]}"
+                    fi
+                    repo=${ARRLINE[1]}
+                    if [[ "${repo:0:3}" == "git" || "${repo:0:3}" == "ssh" || "${repo:${#repo}-3:${#repo}}" == "git" ]]; then
+                        line="${ARRLINE[1]}:$branch"
+                    else
+                        line="${ARRLINE[1]}.git:$branch"
+                    fi
                 fi
+                download $line
             done 10</opt/odoo_addons_src/$ADDON/oca_dependencies.txt
 
         fi
         if [ -f /opt/odoo_addons_src/$ADDON/requirements.txt ]; then
-            cd /opt/odoo_addons_src/
-            $PIP_BIN -r requirements.txt || true
-            make || $PYTHON_BIN  -m compileall . || true
+            $PIP_BIN install -r /opt/odoo_addons_src/$ADDON/requirements.txt || true
         fi
+        cd /opt/odoo_addons_src/$ADDON
+        make || $PYTHON_BIN  -m compileall . || true
+        cd -
+
     fi
 }
 
@@ -59,7 +73,7 @@ if [ ! -f /opt/odoo/odoo.py ]; then
     curl --location --remote-name "$ODOO_URL" && \
     unzip -q ./$ODOO_VERSION.zip -d ./ && \
     mv OCB-$ODOO_VERSION/* /opt/odoo && rm -rf OCB-$ODOO_VERSION
-    $PIP_BIN -r /opt/odoo/requirements.txt
+    $PIP_BIN install -r /opt/odoo/requirements.txt
     cd /opt/odoo
     $PYTHON_BIN setup.py develop && make && $PYTHON_BIN  -m compileall .
 fi
