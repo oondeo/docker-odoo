@@ -7,13 +7,14 @@ ENV ODOO_VERSION="8.0"
 ENV DEBIAN_FRONTEND=noninteractive LANG=es_ES.UTF-8 LANGUAGE=es_ES.UTF-8 LC_ALL=es_ES.UTF-8  \
      XDG_DATA_HOME="/var/lib/odoo" \
      ODOO_HOME="/opt/odoo" \
+     ODOO_ADDONS_HOME="/opt/odoo_addons_src" \
      ODOO_SERVER="python odoo.py" \
      UNACCENT=True \
      PYTHON_BIN="python" \
      PIP_BIN="pip" \
      OCA_URL="https://github.com/OCA" \
      ODOO_URL="https://github.com/OCA/OCB/archive/$ODOO_VERSION.zip" \
-     ODOO_MODULES_URLS="" \
+     ODOO_MODULES="" \
      PYTHON_MODULES="unicodecsv pyinotify openupgradelib ofxparse" \
      BUILD_PACKAGES="bzr \
         git \
@@ -138,7 +139,7 @@ RUN     curl -o wkhtmltox.deb -SL http://nightly.odoo.com/extra/wkhtmltox-${WKHT
         # Create odoo user with $HOME to store some data
         && mkdir -p /mnt/extra-addons /mnt/extra-addons-src /etc/odoo $ODOO_HOME/addons /var/log/odoo /var/lib/odoo/src \
         /var/lib/odoo/addons /var/lib/odoo/.local/share/Odoo/addons /home/odoo/.local/share /home/odoo/.cache \
-        /home/odoo/.local  /etc/skel /opt/odoo_adddons_src /var/log/odoo \
+        /home/odoo/.local  /etc/skel /opt/odoo /opt/odoo_addons_src /var/log/odoo \
         && chown -R odoo /home/odoo /var/lib/odoo
 
 # Add Tini

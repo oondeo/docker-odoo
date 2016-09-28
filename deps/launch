@@ -34,9 +34,9 @@ echo Patching configuration > /dev/stderr
 
 mkdir -p $XDG_DATA_HOME/Odoo/addons/$ODOO_VERSION
 chown odoo $XDG_DATA_HOME/Odoo/addons/$ODOO_VERSION
-addons=$(ls -1bd /usr/local/lib/python2.7/dist-packages/openerp/addons /opt/odoo_addons_src/* \
+addons=$(ls -1bd /usr/local/lib/python2.7/dist-packages/openerp/addons $ODOO_ADDONS_HOME/* \
   /mnt/extra-addons-src/* /mnt/extra-addons /var/lib/odoo/addons /var/lib/odoo/src/* \
-                 $XDG_DATA_HOME/Odoo/addons/$ODOO_VERSION /opt/odoo/openerp/addons \
+                 $XDG_DATA_HOME/Odoo/addons/$ODOO_VERSION $ODOO_HOME/openerp/addons \
                  $ODOO_HOME/addons | tr '\n' ',' | sed s/,$//)
 
 echo "

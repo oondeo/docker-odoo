@@ -33,12 +33,12 @@ function download {
     #instalamos las dependencias de los modulos
     ADDON=$(ls -1bd *)
     echo "Instalando $ADDON"
-    if [ ! -d /opt/odoo_addons_src/$ADDON ]; then
+    if [ ! -d $ODOO_ADDONS_HOME/$ADDON ]; then
         echo "Procesando $ADDON"
-        mv $ADDON /opt/odoo_addons_src/
-        if [ -f /opt/odoo_addons_src/$ADDON/oca_dependencies.txt ]; then
-            sed -i '/^[[:blank:]]*#/d;s/#.*//' /opt/odoo_addons_src/$ADDON/oca_dependencies.txt
-            sed -i '/^$/d' /opt/odoo_addons_src/$ADDON/oca_dependencies.txt
+        mv $ADDON $ODOO_ADDONS_HOME/
+        if [ -f $ODOO_ADDONS_HOME/$ADDON/oca_dependencies.txt ]; then
+            sed -i '/^[[:blank:]]*#/d;s/#.*//' $ODOO_ADDONS_HOME/$ADDON/oca_dependencies.txt
+            sed -i '/^$/d' $ODOO_ADDONS_HOME/$ADDON/oca_dependencies.txt
             while read -u 10 rawline; do
                 IFS=' ' read -ra ARRLINE <<< "$rawline"
                 if [ "${#ADDR[@]}" == "1" ]; then
@@ -55,13 +55,13 @@ function download {
                     fi
                 fi
                 download $line
-            done 10</opt/odoo_addons_src/$ADDON/oca_dependencies.txt
+            done 10<$ODOO_ADDONS_HOME/$ADDON/oca_dependencies.txt
 
         fi
-        if [ -f /opt/odoo_addons_src/$ADDON/requirements.txt ]; then
-            $PIP_BIN install -r /opt/odoo_addons_src/$ADDON/requirements.txt || true
+        if [ -f $ODOO_ADDONS_HOME/$ADDON/requirements.txt ]; then
+            $PIP_BIN install -r $ODOO_ADDONS_HOME/$ADDON/requirements.txt || true
         fi
-        cd /opt/odoo_addons_src/$ADDON
+        cd $ODOO_ADDONS_HOME/$ADDON
         make || $PYTHON_BIN  -m compileall . || true
         cd -
 
@@ -69,17 +69,17 @@ function download {
 }
 
 cd /tmp
-if [ ! -f /opt/odoo/odoo.py ]; then
+if [ ! -f $ODOO_HOME/odoo.py ]; then
     curl --location --remote-name "$ODOO_URL" && \
     unzip -q ./$ODOO_VERSION.zip -d ./ && \
-    mv OCB-$ODOO_VERSION/* /opt/odoo && rm -rf OCB-$ODOO_VERSION
-    $PIP_BIN install -r /opt/odoo/requirements.txt
-    cd /opt/odoo
+    mv OCB-$ODOO_VERSION/* $ODOO_HOME && rm -rf OCB-$ODOO_VERSION
+    $PIP_BIN install -r $ODOO_HOME/requirements.txt
+    cd $ODOO_HOME
     $PYTHON_BIN setup.py develop && make && $PYTHON_BIN  -m compileall .
 fi
 #OLDIFS=$IFS
 #IFS=$'\n'
-for url in $ODOO_MODULES_URLS
+for url in $ODOO_MODULES
 do
     download "$url"
 done
