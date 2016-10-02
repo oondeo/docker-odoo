@@ -32,9 +32,10 @@ if [ ! -f /etc/odoo/openerp-server.conf ]
 then
 echo Patching configuration > /dev/stderr
 
-mkdir -p $XDG_DATA_HOME/Odoo/addons/$ODOO_VERSION $XDG_DATA_HOME/addons $XDG_DATA_HOME/.cache
-chown -R odoo $XDG_DATA_HOME/*
+mkdir -p $XDG_DATA_HOME/Odoo/addons/$ODOO_VERSION $XDG_DATA_HOME/addons $XDG_DATA_HOME/.cache $HOME/.cache
+chown -R odoo $XDG_DATA_HOME
 chown -R odoo $XDG_DATA_HOME/.cache
+chown -R odoo $HOME/.cache
 
 addons=$(ls -1bd /usr/local/lib/python2.7/dist-packages/openerp/addons $ODOO_ADDONS_HOME/* \
   /mnt/extra-addons-src/* /mnt/extra-addons $XDG_DATA_HOME/addons \
