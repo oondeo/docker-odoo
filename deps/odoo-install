@@ -19,8 +19,8 @@ function download {
     if [[ "${repo:0:3}" == "git" || "${repo:0:3}" == "ssh" || "${repo:${#repo}-3:${#repo}}" == "git" ]]
     then
         echo "GIT: ${ADDR[*]}"
-        if [ "${#ADDR[@]}" == "2" ];then
-            branch="${ADDR[1]}"
+        if [ "${#ADDR[@]}" == "3" ];then
+            branch="${ADDR[2]}"
             git clone --depth 1 -b $branch "$repo" || true
         else
             git clone --depth 1 "$repo" || true
@@ -41,10 +41,10 @@ function download {
             sed -i '/^$/d' $ODOO_ADDONS_HOME/$ADDON/oca_dependencies.txt
             while read -u 10 rawline; do
                 IFS=' ' read -ra ARRLINE <<< "$rawline"
-                if [ "${#ADDR[@]}" == "1" ]; then
+                if [ "${#ARRLINE[@]}" == "1" ]; then
                     line="${OCA_URL}/${rawline}.git:$branch"
                 else
-                    if  [ ${#ADDR[@]} -gt 2 ]; then
+                    if  [ ${#ARRLINE[@]} -gt 2 ]; then
                         branch="${ARRLINE[2]}"
                     fi
                     repo=${ARRLINE[1]}
@@ -54,7 +54,9 @@ function download {
                         line="${ARRLINE[1]}.git:$branch"
                     fi
                 fi
-                download $line
+                if [ ! -d $ODOO_ADDONS_HOME/${ARRLINE[0]}-$ODOO_VERSION ]; then
+                    download $line
+                fi
             done 10<$ODOO_ADDONS_HOME/$ADDON/oca_dependencies.txt
 
         fi
