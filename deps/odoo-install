@@ -63,10 +63,6 @@ function download {
         if [ -f $ODOO_ADDONS_HOME/$ADDON/requirements.txt ]; then
             $PIP_BIN install -r $ODOO_ADDONS_HOME/$ADDON/requirements.txt || true
         fi
-        cd $ODOO_ADDONS_HOME/$ADDON
-        make || $PYTHON_BIN  -m compileall . || true
-        cd -
-
     fi
 }
 
@@ -85,4 +81,8 @@ for url in $ODOO_MODULES
 do
     download "$url"
 done
+cd "$ODOO_ADDONS_HOME"
+find -type d -name ".git" -exec rm -rf {} \;
+make || $PYTHON_BIN  -m compileall . || true
+cd -
 rm -rf ~/.cache /tmp/*
