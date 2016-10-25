@@ -13,7 +13,7 @@ ENV WDB_NO_BROWSER_AUTO_OPEN=True \
     WDB_WEB_SERVER=localhost \
     PIP_BIN="/opt/odoo/.env/bin/pip" \
     PYTHON_BIN="/opt/odoo/.env/bin/python" \
-    ODOO_SERVER="/opt/odoo/.env/bin/python /opt/odoo/odoo.py" \
+    ODOO_SERVER="/opt/odoo/.env/bin/python /opt/odoo/odoo-bin" \
     OCA_URL="https://github.com/OCA" \
     ODOO_URL="https://github.com/OCA/OCB/archive/$ODOO_VERSION.zip"
 
