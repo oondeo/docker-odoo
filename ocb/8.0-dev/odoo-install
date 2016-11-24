@@ -6,6 +6,8 @@
 #set XDG_DATA_HOME for module install
 #export XDG_DATA_HOME=/var/lib/odoo/Odoo/addons/$ODOO_VERSION
 
+set -e
+
 function download {
     url=$1
     branch="$ODOO_VERSION"
@@ -67,7 +69,7 @@ function download {
 }
 
 cd /tmp
-if [ ! -f $ODOO_HOME/odoo.py ]; then
+if [ ! -f $ODOO_HOME/requirements.txt ]; then
     curl --location --remote-name "$ODOO_URL" && \
     unzip -q ./$ODOO_VERSION.zip -d ./ && \
     mv OCB-$ODOO_VERSION/* $ODOO_HOME && rm -rf OCB-$ODOO_VERSION
