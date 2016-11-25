@@ -27,10 +27,10 @@ RUN apk add --no-cache -t .rundeps nodejs-lts postgresql-client libpq \
     && rm -rf /usr/lib/node_modules/npm
 
 
+ENV  ODOO_VERSION="8.0"
 # set ODOO_WORKERS in prod
 # Variables used by the launch scripts
 ENV LANG=es_ES.UTF-8 LANGUAGE=es_ES.UTF-8 LC_ALL=es_ES.UTF-8  \
-     ODOO_VERSION="8.0" \
      XDG_DATA_HOME="/var/lib/odoo/.local/share" \
      ODOO_HOME="/opt/odoo" \
      ODOO_ADDONS_HOME="/opt/odoo_addons_src" \
