@@ -72,7 +72,7 @@ cd /tmp
 if [ ! -f $ODOO_HOME/requirements.txt ]; then
     curl --location --remote-name "$ODOO_URL" && \
     unzip -q ./$ODOO_VERSION.zip -d ./ && \
-    mv OCB-$ODOO_VERSION/* $ODOO_HOME && rm -rf OCB-$ODOO_VERSION
+    mv $ODOO_TARBALL_DIR/* $ODOO_HOME && rm -rf $ODOO_TARBALL_DIR
     $PIP_BIN install -r $ODOO_HOME/requirements.txt
     cd $ODOO_HOME
     $PYTHON_BIN setup.py develop && make && $PYTHON_BIN  -m compileall .

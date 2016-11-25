@@ -27,10 +27,10 @@ RUN apk add --no-cache -t .rundeps nodejs-lts postgresql-client libpq \
     && rm -rf /usr/lib/node_modules/npm
 
 
+ENV  ODOO_VERSION="8.0"
 # set ODOO_WORKERS in prod
 # Variables used by the launch scripts
 ENV LANG=es_ES.UTF-8 LANGUAGE=es_ES.UTF-8 LC_ALL=es_ES.UTF-8  \
-     ODOO_VERSION="8.0" \
      XDG_DATA_HOME="/var/lib/odoo/.local/share" \
      ODOO_HOME="/opt/odoo" \
      ODOO_ADDONS_HOME="/opt/odoo_addons_src" \
@@ -40,6 +40,7 @@ ENV LANG=es_ES.UTF-8 LANGUAGE=es_ES.UTF-8 LC_ALL=es_ES.UTF-8  \
      PIP_BIN="/opt/odoo/.env/bin/pip" \
      OCA_URL="https://github.com/OCA" \
      ODOO_URL="https://github.com/OCA/OCB/archive/$ODOO_VERSION.zip" \
+     ODOO_TARBALL_DIR="OCB-$ODOO_VERSION.zip" \
      ODOO_MODULES="" \
      PYTHON_MODULES="unicodecsv pyinotify openupgradelib ofxparse" \
      BUILD_PACKAGES=" \
@@ -65,7 +66,7 @@ ENV LANG=es_ES.UTF-8 LANGUAGE=es_ES.UTF-8 LC_ALL=es_ES.UTF-8  \
 		tk-dev \
 		zlib-dev \
         " \
-    RUN_PACKAGES=""
+    RUN_PACKAGES="libpng libjpeg zlib"
 
 
 # Create odoo user with $HOME to store some data
@@ -74,17 +75,18 @@ RUN adduser -D -u 1000 odoo && mkdir -p /mnt/extra-addons /mnt/extra-addons-src 
         /home/odoo/.local  /etc/skel /opt/odoo/addons /opt/odoo_addons_src /var/log/odoo \
         && chown -R odoo /home/odoo /var/lib/odoo /var/log/odoo
 
-COPY getbuildpkgs odoo-install /usr/local/bin/
+COPY scripts/getbuildpkgs scripts/odoo-install /usr/local/bin/
 
 RUN apk add -t .rundeps $RUN_PACKAGES \
     && apk add --no-cache -t .builddeps $BUILD_PACKAGES \
     && pip install virtualenv && virtualenv --system-site-packages /opt/odoo/.env \
     && $PIP_BIN install $PYTHON_MODULES \
     && /usr/local/bin/odoo-install \
-    && rm -rf $ODOO_HOME/doc $ODOO_HOME/doc
+    && rm -rf $ODOO_HOME/doc $ODOO_HOME/setup* $ODOO_HOME/debian
+    && pip uninstall virtualenv setuptools wheel pip
     && apk del --no-cache .builddeps && rm -rf /tmp/*  ~/.cache
 
-COPY start.sh debug launch pot unittest  /usr/local/bin/
+COPY scripts/start.sh scripts/debug scripts/launch scripts/pot scripts/unittest  /usr/local/bin/
 
 VOLUME ["/var/lib/odoo", "/mnt/odoo","/mnt/extra-addons", "/mnt/extra-addons-src", "/var/log/odoo" , "/etc/odoo","/etc/skel"]
 
