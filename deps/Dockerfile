@@ -24,7 +24,7 @@ RUN apk add --no-cache -t .builddeps alpine-sdk perl mesa-dev libice-dev libsm-d
 
 RUN apk add --no-cache -t .rundeps nodejs-lts postgresql-client libpq \
     && npm install -g less less-plugin-clean-css && npm cache clean \
-    && rm -rf /usr/lib/node_modules/npm
+    && rm -rf /usr/lib/node_modules/npm /tmp/*
 
 
 VOLUME ["/var/lib/odoo", "/mnt/odoo","/mnt/extra-addons", "/mnt/extra-addons-src", "/var/log/odoo" , "/etc/odoo","/etc/skel"]
@@ -34,5 +34,3 @@ WORKDIR /var/lib/odoo
 ENTRYPOINT ["/sbin/tini", "-g", "--"]
 
 CMD ["launch"]
-
-

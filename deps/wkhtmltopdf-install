@@ -106,8 +106,8 @@ cp -a include $BUILD_DIR/linux-generic-amd64/qt
 cd $BUILD_DIR/linux-generic-amd64/app
 ../qt/bin/qmake $BUILD_DIR/wkhtmltopdf.pro
 make -j$(getconf _NPROCESSORS_ONLN)
-cp bin/wkhtmlto* /usr/bin/
-cp -P bin/lib* /usr/lib/
-install-deps bin/*
+cp bin/wkhtmltopdf /usr/bin/
+#cp -P bin/lib* /usr/lib/
+install-deps bin/wkhtmltopdf
 
 rm -rf /tmp/*
