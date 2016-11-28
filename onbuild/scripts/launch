@@ -37,7 +37,7 @@ chown -R odoo $XDG_DATA_HOME
 chown -R odoo $XDG_DATA_HOME/.cache
 chown -R odoo $HOME/.cache
 
-addons=$(ls -1bd /usr/local/lib/python2.7/dist-packages/openerp/addons $ODOO_ADDONS_HOME/* \
+addons=$(ls -1d /usr/local/lib/python2.7/dist-packages/openerp/addons $ODOO_ADDONS_HOME/* \
   /mnt/extra-addons-src/* /mnt/extra-addons $XDG_DATA_HOME/addons \
   $XDG_DATA_HOME/Odoo/addons/$ODOO_VERSION $ODOO_HOME/openerp/addons \
   $ODOO_HOME/addons | tr '\n' ',' | sed s/,$//)

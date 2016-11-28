@@ -88,7 +88,6 @@ ONBUILD RUN apk add --no-cache -t .rundeps $RUN_PACKAGES \
     && /usr/local/bin/odoo-install && /usr/local/bin/install-deps /opt \
     && /usr/local/bin/clean.sh && rm -rf /tmp/*  ~/.cache
 
-COPY scripts/start.sh scripts/debug scripts/launch scripts/pot scripts/unittest  /usr/local/bin/
 
 VOLUME ["/var/lib/odoo", "/mnt/odoo","/mnt/extra-addons", "/mnt/extra-addons-src", "/var/log/odoo" , "/etc/odoo","/etc/skel"]
 
