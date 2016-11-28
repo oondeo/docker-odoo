@@ -1,97 +1,15 @@
-FROM python:2-alpine
+FROM oondeo/odoo-deps:onbuild
 MAINTAINER Juan Ramon Alfaro <info@oondeo.es>
 
-ENV WKHTMLTOX_VERSION="0.12.4" \
-    ALPINE_VERSION="3.4.6"
+ENV PYTHON_MODULES="$PYTHON_MODULES pyinotify openupgradelib wdb"
+ENV PHANTOMJS_VERSION=2.1.1
 
-#Use dash instead busybox
-RUN echo "@testing http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories && \
-    echo "@community http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories && \
-    apk add --update --no-cache tini dash@testing && \
-    cp /bin/sh /sh && cp /usr/bin/dash /bin/sh && mkdir -p /app /etc/skel
+RUN curl -sL -o phantomjs.tar.bz2 https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-$PHANTOMJS_VERSION-linux-x86_64.tar.bz2 && \
+    tar -jxf phantomjs.tar.bz2 && \
+    cp phantomjs-$PHANTOMJS_VERSION-linux-x86_64/bin/phantomjs /usr/local/bin/ && \
+    rm -rf phantomjs* && \
+#cleanup
+    rm -rf /tmp/* /root/.cache /var/lib/apt || true
 
-COPY localtime /etc/localtime
-
-COPY wkhtmltopdf-install install-deps /usr/local/bin/
-
-RUN apk add --no-cache -t .builddeps alpine-sdk perl mesa-dev libice-dev libsm-dev libx11-dev libxext-dev \
-	libxrender-dev alsa-lib-dev openssl-dev fontconfig-dev freetype-dev \
-	glib-dev libpng-dev zlib-dev  dbus-dev \
-	gtk+-dev tiff-dev libmng-dev libxrandr-dev libxv-dev libxi-dev perl \
-	gawk paxmark rsync freetds-dev hicolor-icon-theme mesa-gl \
-    && /usr/local/bin/wkhtmltopdf-install \
-    && apk del --no-cache .builddeps && rm -rf /tmp/*
-
-RUN apk add --no-cache -t .rundeps nodejs-lts postgresql-client libpq \
-    && npm install -g less less-plugin-clean-css && npm cache clean \
-    && rm -rf /usr/lib/node_modules/npm
-
-
-ENV  ODOO_VERSION="8.0"
-# set ODOO_WORKERS in prod
-# Variables used by the launch scripts
-ENV LANG=es_ES.UTF-8 LANGUAGE=es_ES.UTF-8 LC_ALL=es_ES.UTF-8  \
-     XDG_DATA_HOME="/var/lib/odoo/.local/share" \
-     ODOO_HOME="/opt/odoo" \
-     ODOO_ADDONS_HOME="/opt/odoo_addons_src" \
-     ODOO_SERVER="/opt/odoo/.env/bin/python odoo.py" \
-     UNACCENT=True \
-     PYTHON_BIN="/opt/odoo/.env/bin/python" \
-     PIP_BIN="/opt/odoo/.env/bin/pip" \
-     OCA_URL="https://github.com/OCA" \
-     ODOO_URL="https://github.com/OCA/OCB/archive/$ODOO_VERSION.zip" \
-     ODOO_TARBALL_DIR="OCB-$ODOO_VERSION.zip" \
-     ODOO_MODULES="" \
-     PYTHON_MODULES="unicodecsv pyinotify openupgradelib ofxparse" \
-     BUILD_PACKAGES=" \
-        alpine-sdk postgresql-dev libxml2-dev libffi-dev freetype-dev jpeg-dev \
-        libwebp-dev tiff-dev libpng-dev lcms2-dev openjpeg-dev zlib-dev openldap-dev \
-        libxslt-dev \
-        bash \
-        git \
-		bzip2-dev \
-		gcc \
-		gdbm-dev \
-		libc-dev \
-		linux-headers \
-		make \
-		ncurses-dev \
-		openssl \
-		openssl-dev \
-		pax-utils \
-		readline-dev \
-		sqlite-dev \
-		tcl-dev \
-		tk \
-		tk-dev \
-		zlib-dev \
-        " \
-    RUN_PACKAGES="libpng libjpeg zlib"
-
-
-# Create odoo user with $HOME to store some data
-RUN adduser -D -u 1000 odoo && mkdir -p /mnt/extra-addons /mnt/extra-addons-src /etc/odoo $ODOO_HOME/addons /var/log/odoo /var/lib/odoo/src \
-        $XDG_DATA_HOME/addons $XDG_DATA_HOME/.local/share/Odoo/addons /home/odoo/.local/share /home/odoo/.cache \
-        /home/odoo/.local  /etc/skel /opt/odoo/addons /opt/odoo_addons_src /var/log/odoo \
-        && chown -R odoo /home/odoo /var/lib/odoo /var/log/odoo
-
-COPY scripts/getbuildpkgs scripts/odoo-install /usr/local/bin/
-
-RUN apk add -t .rundeps $RUN_PACKAGES \
-    && apk add --no-cache -t .builddeps $BUILD_PACKAGES \
-    && pip install virtualenv && virtualenv --system-site-packages /opt/odoo/.env \
-    && $PIP_BIN install $PYTHON_MODULES \
-    && /usr/local/bin/odoo-install \
-    && rm -rf $ODOO_HOME/doc $ODOO_HOME/setup* $ODOO_HOME/debian
-    && pip uninstall virtualenv setuptools wheel pip
-    && apk del --no-cache .builddeps && rm -rf /tmp/*  ~/.cache
-
-COPY scripts/start.sh scripts/debug scripts/launch scripts/pot scripts/unittest  /usr/local/bin/
-
-VOLUME ["/var/lib/odoo", "/mnt/odoo","/mnt/extra-addons", "/mnt/extra-addons-src", "/var/log/odoo" , "/etc/odoo","/etc/skel"]
-
-WORKDIR /var/lib/odoo
-
-ENTRYPOINT ["/sbin/tini", "-g", "--"]
 
 CMD ["launch"]
