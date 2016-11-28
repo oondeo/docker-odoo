@@ -7,8 +7,10 @@ RUN cd /tmp && curl -sL -o phantomjs.tar.bz2 \
     https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-$PHANTOMJS_VERSION-linux-x86_64.tar.bz2 && \
     tar -jxf phantomjs.tar.bz2 && \
     cp phantomjs-$PHANTOMJS_VERSION-linux-x86_64/bin/phantomjs /usr/local/bin/ && \
-#cleanup
     rm -rf /tmp/* /root/.cache || true
+
+ENV ODOO_SERVER="$VENV_HOME/bin/python odoo-bin" \
+    ODOO_VERSION="10.0"
 
 ENV WDB_NO_BROWSER_AUTO_OPEN=True \
     WDB_SOCKET_SERVER=wdb \
