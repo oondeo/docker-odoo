@@ -26,7 +26,7 @@ RUN apk add --no-cache -t .rundeps nodejs-lts postgresql-client libpq \
 ENTRYPOINT ["/sbin/tini", "-g", "--"]
 
 
-
+ENV VENV_HOME="/opt/odoo/.env"
 ENV  ODOO_VERSION="8.0"
 # set ODOO_WORKERS in prod
 # Variables used by the launch scripts
@@ -34,10 +34,10 @@ ENV LANG=es_ES.UTF-8 LANGUAGE=es_ES.UTF-8 LC_ALL=es_ES.UTF-8  \
      XDG_DATA_HOME="/var/lib/odoo/.local/share" \
      ODOO_HOME="/opt/odoo" \
      ODOO_ADDONS_HOME="/opt/odoo_addons_src" \
-     ODOO_SERVER="/opt/odoo/.env/bin/python odoo.py" \
+     ODOO_SERVER="$VENV_HOME/bin/python odoo.py" \
      UNACCENT=True \
-     PYTHON_BIN="/opt/odoo/.env/bin/python" \
-     PIP_BIN="/opt/odoo/.env/bin/pip" \
+     PYTHON_BIN="$VENV_HOME/bin/python" \
+     PIP_BIN="$VENV_HOME/bin/pip" \
      OCA_URL="https://github.com/OCA" \
      ODOO_URL="https://github.com/OCA/OCB/archive/$ODOO_VERSION.zip" \
      ODOO_TARBALL_DIR="OCB-$ODOO_VERSION" \
@@ -79,7 +79,7 @@ RUN adduser -D -u 1000 odoo && mkdir -p /mnt/extra-addons /mnt/extra-addons-src 
 
 COPY scripts/* /usr/local/bin/
 
-RUN pip install virtualenv pip-autoremove && virtualenv /opt/odoo/.env \
+RUN pip install virtualenv pip-autoremove && virtualenv $VENV_HOME \
     && pip-autoremove virtualenv -y && pip uninstall -y pip-autoremove \
     && /usr/local/bin/clean.sh && rm -rf /tmp/*  ~/.cache
 

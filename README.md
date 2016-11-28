@@ -1,7 +1,58 @@
 # Dockerized Odoo #
 
-An [Odoo][] 8 server installed in [Debian][] jessie.
+An [Odoo][] 8 server installed in [Alpine][].
 Based on [yajo/odoo][] image.
+This image is intended to use in other Dockerfile odoo is installed using ONBUILD
+instruction in dir /opt/odoo and additional addons in /opt/odoo_addons_src
+All environment variables are optional
+
+
+##Example Dockerfile
+
+ENV  ODOO_VERSION="8.0"
+# set ODOO_WORKERS in prod
+# Variables used by the launch scripts
+ENV LANG=es_ES.UTF-8 LANGUAGE=es_ES.UTF-8 LC_ALL=es_ES.UTF-8  \
+     XDG_DATA_HOME="/var/lib/odoo/.local/share" \
+     ODOO_HOME="/opt/odoo" \
+     ODOO_ADDONS_HOME="/opt/odoo_addons_src" \
+     ODOO_SERVER="/opt/odoo/.env/bin/python odoo.py" \
+     UNACCENT=True \
+     PYTHON_BIN="/opt/odoo/.env/bin/python" \
+     PIP_BIN="/opt/odoo/.env/bin/pip" \
+     OCA_URL="https://github.com/OCA" \
+     ODOO_URL="https://github.com/OCA/OCB/archive/$ODOO_VERSION.zip" \
+     ODOO_TARBALL_DIR="OCB-$ODOO_VERSION" \
+     ODOO_MODULES="https://github.com/OCA/l10n-spain.git" \
+     PYTHON_MODULES="unicodecsv ofxparse" \
+     DEVELOP="no" \
+     BUILD_PACKAGES=" \
+        alpine-sdk postgresql-dev libxml2-dev libffi-dev freetype-dev jpeg-dev \
+        libwebp-dev tiff-dev libpng-dev lcms2-dev openjpeg-dev zlib-dev openldap-dev \
+        libxslt-dev \
+        bash \
+        git \
+		bzip2-dev \
+		gcc \
+		gdbm-dev \
+		libc-dev \
+		linux-headers \
+		make \
+		ncurses-dev \
+		openssl \
+		openssl-dev \
+		pax-utils \
+		readline-dev \
+		sqlite-dev \
+		tcl-dev \
+		tk \
+		tk-dev \
+		zlib-dev \
+        sassc@comunity \
+        " \
+    RUN_PACKAGES="libpng libjpeg zlib"
+
+
 
 ## Security
 
@@ -39,9 +90,9 @@ set it up will be proxying Odoo with [yajo/https-proxy][].
             WDB_SOCKET_SERVER: wdb
             WDB_WEB_PORT: 1984
             WDB_WEB_SERVER: localhost
-            XDG_DATA_HOME="/var/lib/odoo" 
-            ODOO_SERVER="python odoo.py" 
-            UNACCENT=True 
+            XDG_DATA_HOME="/var/lib/odoo"
+            ODOO_SERVER="python odoo.py"
+            UNACCENT=True
      # If you are going to use the HTTPS proxy for production,
         # don't expose any ports
         ports:
@@ -311,33 +362,15 @@ create a BitBucket issue.
 You can use the automatic `latest` and `master` tags, but I strongly recommend
 using the number-versioned ones.
 
-### Data
-
-The `data` tag is a shortcut used to create a volumes in `/home/odoo` and
-`/var/{lib,log}/odoo` to store variable data.
-
-Instead, you can use any other tag running command `/usr/bin/true`, and save a
-little disk space. It's almost the same.
-
-### Core
-
-Core tags are installed from upstream Odoo code, using [nightly
-builds](http://nightly.odoo.com/) (RPM version, of course).
-
-- `latest`: Latest stable version. Right now it points to `9.0`.
-- `master`: Latest development version. Right now it points to `10.0`.
-- `8.0`: Stable.
-- `9.0`: Stable. Not tested by me.
-- `10.0`: Unstable. Not tested by me.
-
-### OCB
+### Tags
 
 These are installed from [OCB][]. Can be useful if there are fixes that you
 need.
 
-- `ocb-latest`: Latest stable version. Right now it points to `ocb-9.0`.
-- `ocb-8.0`: Stable. Not tested by me.
-- `ocb-9.0`: Stable. Not tested by me.
+- `latest`: Latest stable version with support from community. Right now it points to `ocb-8.0`.
+- `8.0`: Stable.
+- `9.0`: Stable. Not tested by me.
+- `10.0`: Stable. Not tested by me.
 
 ### Deprecated tags
 
@@ -348,7 +381,7 @@ These tags were used some time ago, but right now are not updated anymore:
     [the official main source code repository](https://github.com/odoo/odoo).
 
 
-[Debian]: http://debian.org/
+[Alpine]: http://alpinelinux.org/
 [Docker Compose]: http://www.fig.sh/
 [Git]: http://git-scm.com/
 [Odoo]: https://www.odoo.com/
@@ -362,4 +395,4 @@ These tags were used some time ago, but right now are not updated anymore:
 [postgres]: https://registry.hub.docker.com/_/postgres/
 [yajo/https-proxy]: https://registry.hub.docker.com/u/oondeo/https-proxy/
 [oondeo/odoo]: https://registry.hub.docker.com/u/oondeo/odoo/
-[yajo/odoo]: https://registry.hub.docker.com/u/oondeo/odoo/yajo/odoo 
+[yajo/odoo]: https://registry.hub.docker.com/u/oondeo/odoo/yajo/odoo
