@@ -75,7 +75,8 @@ if [ ! -f $ODOO_HOME/requirements.txt ]; then
     mv $ODOO_TARBALL_DIR/* $ODOO_HOME && rm -rf $ODOO_TARBALL_DIR
     $PIP_BIN install -r $ODOO_HOME/requirements.txt
     cd $ODOO_HOME
-    $PYTHON_BIN setup.py develop && make && $PYTHON_BIN  -m compileall .
+    $PYTHON_BIN setup.py develop && make
+    $PYTHON_BIN  -m compileall .
 fi
 #OLDIFS=$IFS
 #IFS=$'\n'

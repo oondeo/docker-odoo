@@ -5,10 +5,9 @@ ENV WKHTMLTOX_VERSION="0.12.4" \
     ALPINE_VERSION="3.4.6"
 
 #Use dash instead busybox
-RUN echo "@testing http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories && \
-    echo "@community http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories && \
-    apk add --update --no-cache tini dash@testing && \
-    cp /bin/sh /sh && cp /usr/bin/dash /bin/sh && mkdir -p /app /etc/skel
+RUN apk add --update --no-cache tini \
+    && apk add --update --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing dash \
+    && cp /bin/sh /sh && cp /usr/bin/dash /bin/sh && mkdir -p /app /etc/skel
 
 COPY localtime /etc/localtime
 
@@ -16,11 +15,10 @@ COPY build-scripts/* /usr/local/bin/
 
 COPY wkhtmltopdf /usr/bin
 
-RUN install-deps /usr/bin/wkhtmltopdf
+RUN /usr/local/bin/install-deps /usr/bin/wkhtmltopdf
 
-RUN apk add --no-cache -t .rundeps nodejs-lts postgresql-client libpq \
-    && npm install -g less less-plugin-clean-css && npm cache clean \
-    && rm -rf /usr/lib/node_modules/npm /tmp/* /root/.cache/*
+RUN apk add --no-cache -t .rundeps postgresql-client libpq \
+    && rm -rf /tmp/* /root/.cache/*
 
 
 ENTRYPOINT ["/sbin/tini", "-g", "--"]
@@ -34,7 +32,7 @@ ENV LANG=es_ES.UTF-8 LANGUAGE=es_ES.UTF-8 LC_ALL=es_ES.UTF-8  \
      XDG_DATA_HOME="/var/lib/odoo/.local/share" \
      ODOO_HOME="/opt/odoo" \
      ODOO_ADDONS_HOME="/opt/odoo_addons_src" \
-     ODOO_SERVER="$VENV_HOME/bin/python odoo.py" \
+     ODOO_SERVER="$VENV_HOME/bin/python odoo.pyc" \
      UNACCENT=True \
      PYTHON_BIN="$VENV_HOME/bin/python" \
      PIP_BIN="$VENV_HOME/bin/pip" \
@@ -66,7 +64,7 @@ ENV LANG=es_ES.UTF-8 LANGUAGE=es_ES.UTF-8 LC_ALL=es_ES.UTF-8  \
 		tk \
 		tk-dev \
 		zlib-dev \
-        sassc@comunity \
+        nodejs-lts \
         " \
     RUN_PACKAGES="libpng libjpeg zlib"
 
@@ -84,15 +82,16 @@ RUN pip install virtualenv pip-autoremove && virtualenv $VENV_HOME \
     && /usr/local/bin/clean.sh && rm -rf /tmp/*  ~/.cache
 
 ONBUILD RUN apk add --no-cache -t .rundeps $RUN_PACKAGES \
+    && apk add --update --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/community -t .builddeps  sassc@community \
     && apk add --no-cache -t .builddeps $BUILD_PACKAGES \
     && $PIP_BIN install $PYTHON_MODULES \
-    && /usr/local/bin/odoo-install \
+    && /usr/local/bin/odoo-install && /usr/local/bin/install-deps /opt \
     && /usr/local/bin/clean.sh && rm -rf /tmp/*  ~/.cache
 
 COPY scripts/start.sh scripts/debug scripts/launch scripts/pot scripts/unittest  /usr/local/bin/
 
 VOLUME ["/var/lib/odoo", "/mnt/odoo","/mnt/extra-addons", "/mnt/extra-addons-src", "/var/log/odoo" , "/etc/odoo","/etc/skel"]
 
-WORKDIR /var/lib/odoo
+WORKDIR /opt/odoo
 
 CMD ["/usr/local/bin/launch"]

@@ -1,0 +1,8 @@
+#!/bin/sh
+
+
+if [ ! -f /usr/bin/lessc ]
+then
+  exit 0
+fi
+lessc $@
