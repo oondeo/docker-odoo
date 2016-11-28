@@ -3,12 +3,12 @@ MAINTAINER Juan Ramon Alfaro <info@oondeo.es>
 
 ENV PHANTOMJS_VERSION=2.1.1
 
-RUN cd /tmp && curl -sL -o phantomjs.tar.bz2 \
+RUN apk add --no-cache curl \
+    && cd /tmp && curl -sL -o phantomjs.tar.bz2 \
     https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-$PHANTOMJS_VERSION-linux-x86_64.tar.bz2 && \
     tar -jxf phantomjs.tar.bz2 && \
     cp phantomjs-$PHANTOMJS_VERSION-linux-x86_64/bin/phantomjs /usr/local/bin/ && \
-#cleanup
-    rm -rf /tmp/* /root/.cache || true
+    apk del curl && rm -rf /tmp/* /root/.cache || true
 
 ENV WDB_NO_BROWSER_AUTO_OPEN=True \
     WDB_SOCKET_SERVER=wdb \

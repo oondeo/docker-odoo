@@ -3,11 +3,12 @@ MAINTAINER Juan Ramon Alfaro <info@oondeo.es>
 
 ENV PHANTOMJS_VERSION=2.1.1
 
-RUN cd /tmp && curl -sL -o phantomjs.tar.bz2 \
+RUN apk add --no-cache curl \
+    && cd /tmp && curl -sL -o phantomjs.tar.bz2 \
     https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-$PHANTOMJS_VERSION-linux-x86_64.tar.bz2 && \
     tar -jxf phantomjs.tar.bz2 && \
     cp phantomjs-$PHANTOMJS_VERSION-linux-x86_64/bin/phantomjs /usr/local/bin/ && \
-    rm -rf /tmp/* /root/.cache || true
+    apk del curl && rm -rf /tmp/* /root/.cache || true
 
 ENV ODOO_SERVER="$VENV_HOME/bin/python odoo-bin" \
     ODOO_VERSION="10.0"
