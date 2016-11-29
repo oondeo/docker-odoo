@@ -5,4 +5,4 @@ if [ ! -f /usr/bin/lessc ]
 then
   exit 0
 fi
-sassc $@
+/usr/bin/sass $@

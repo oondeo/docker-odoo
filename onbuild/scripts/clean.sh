@@ -1,11 +1,11 @@
 #!/bin/sh
 
-if [ "$DEVELOP" !=  "yes" ]; then
-    rm -rf $ODOO_HOME/doc $ODOO_HOME/setup* $ODOO_HOME/debian
-    find /opt -name "*.py" -exec rm -f {} \;
-    apk del --no-cache .builddeps
-    rm -rf /usr/lib/node_modules
-    exit 0
-fi
+rm -rf $ODOO_HOME/doc $ODOO_HOME/setup* $ODOO_HOME/debian
+find /opt -name "*.py" -exec rm -f {} \;
+npm uninstall -g less less-plugin-clean-css
+gem uninstall -x -q sass
+apk del --no-cache .builddeps
+rm -rf /usr/lib/node_modules
+rm -rf /usr/lib/ruby
 
 exit 0
