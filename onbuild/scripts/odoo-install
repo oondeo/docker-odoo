@@ -6,9 +6,9 @@
 #set XDG_DATA_HOME for module install
 #export XDG_DATA_HOME=/var/lib/odoo/Odoo/addons/$ODOO_VERSION
 
-set -e
+#set -e
 
-function download {
+function download () {
     url=$1
     branch="$ODOO_VERSION"
     rm -rf /tmp/module
@@ -27,17 +27,25 @@ function download {
         else
             git clone --depth 1 "$repo" || true
         fi
-        mv "$(ls -1bd *)" "$(ls -1bd *)-$branch"
+        mv "$(ls -1d *)" "$(ls -1d *)-$branch"
     else
         echo "Download using curl"
         curl --location -o module.zip "$url" && unzip -q ./module.zip -d . && rm module.zip
     fi
     #instalamos las dependencias de los modulos
-    ADDON=$(ls -1bd *)
-    echo "Instalando $ADDON"
+    ADDON=$(ls -1d *)
     if [ ! -d $ODOO_ADDONS_HOME/$ADDON ]; then
-        echo "Procesando $ADDON"
         mv $ADDON $ODOO_ADDONS_HOME/
+    fi
+}
+
+function install () {
+    ADDON=$1
+    echo "Instalando $ADDON"
+    ls -1 /opt/odoo_addons_src/l10n-spain-8.0/*/__openerp__.pyc | wc -l
+    if [ "0" == "$(ls -1 $ODOO_ADDONS_HOME/$ADDON/*/$ODOO_MODULE_FILE | wc -l)" ]; then
+        echo "Procesando $ADDON"
+
         if [ -f $ODOO_ADDONS_HOME/$ADDON/oca_dependencies.txt ]; then
             sed -i '/^[[:blank:]]*#/d;s/#.*//' $ODOO_ADDONS_HOME/$ADDON/oca_dependencies.txt
             sed -i '/^$/d' $ODOO_ADDONS_HOME/$ADDON/oca_dependencies.txt
@@ -58,6 +66,7 @@ function download {
                 fi
                 if [ ! -d $ODOO_ADDONS_HOME/${ARRLINE[0]}-$ODOO_VERSION ]; then
                     download $line
+                    install ${ARRLINE[0]}-$ODOO_VERSION
                 fi
             done 10<$ODOO_ADDONS_HOME/$ADDON/oca_dependencies.txt
 
@@ -65,14 +74,15 @@ function download {
         if [ -f $ODOO_ADDONS_HOME/$ADDON/requirements.txt ]; then
             $PIP_BIN install --no-cache-dir -r $ODOO_ADDONS_HOME/$ADDON/requirements.txt || true
         fi
+        cd $ODOO_ADDONS_HOME/$ADDON && $PYTHON_BIN -m compileall .
     fi
 }
 
 cd /tmp
-if [ ! -f $ODOO_HOME/requirements.txt ]; then
+if [ ! -f $ODOO_HOME/addons/web/__init__.pyc ]; then
     curl --location --remote-name "$ODOO_URL" && \
     unzip -q ./$ODOO_VERSION.zip -d ./ && \
-    mv $ODOO_TARBALL_DIR/* $ODOO_HOME && rm -rf $ODOO_TARBALL_DIR
+    cp -aP $ODOO_TARBALL_DIR/* $ODOO_HOME && rm -rf $ODOO_TARBALL_DIR
     $PIP_BIN install --no-cache-dir -r $ODOO_HOME/requirements.txt
     cd $ODOO_HOME
     $PYTHON_BIN setup.py develop && make
@@ -84,8 +94,13 @@ for url in $ODOO_MODULES
 do
     download "$url"
 done
+
+for elem in $ODOO_ADDONS_HOME/*
+do
+    install "$(basename $elem)"
+done
+
+cd /usr/lib/python2.7/site-packages && python -m compileall .
 cd "$ODOO_ADDONS_HOME"
 find -type d -name ".git" -exec rm -rf {} \;
-make || $PYTHON_BIN  -m compileall . || true
-cd -
 rm -rf ~/.cache /tmp/*

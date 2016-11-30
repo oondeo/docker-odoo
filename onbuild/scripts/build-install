@@ -1,0 +1,9 @@
+#!/sh
+
+apk add --no-cache -t .builddeps $BUILD_PACKAGES
+#py2-pyldap@community
+gem install sass compass --clear-sources -r --source http://rubygems.org/ -N --no-ri --no-rdoc
+npm install -g less less-plugin-clean-css
+npm cache clean
+$PIP_BIN --no-cache-dir install $PYTHON_MODULES
+cd /usr/lib/python2.7/site-packages && python -m compileall .
