@@ -27,7 +27,7 @@ $PIP_BIN --no-cache-dir install $PYTHON_MODULES
 /usr/local/bin/odoo-install
 #fix pillow
 CFLAGS="$CFLAGS -L/lib"
-$PIP_BIN -I --no-cache-dir Pillow
+$PIP_BIN install -I --no-cache-dir Pillow
 cd /opt
 $PYTHON_BIN -m compileall .
 cd /usr/lib/python2.7/site-packages && python -m compileall .
