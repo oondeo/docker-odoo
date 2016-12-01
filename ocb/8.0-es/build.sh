@@ -1,8 +1,10 @@
 #!/sh
 
+set -e
+
 export ODOO_MODULES="https://github.com/OCA/l10n-spain/archive/8.0.zip"
 export  PYTHON_MODULES="flanker"
-set -e
+
 
 export > /etc/skel/initrc
 $PIP_BIN --no-cache-dir install $PYTHON_MODULES

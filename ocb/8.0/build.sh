@@ -1,9 +1,12 @@
-export ODOO_MODULES=""
+#!/sh
 
 set -e
 
 
 /usr/local/bin/odoo-install
+#fix pillow
+CFLAGS="$CFLAGS -L/lib"
+$PIP_BIN -I --no-cache-dir Pillow
 rm -rf $ODOO_HOME/doc $ODOO_HOME/setup* $ODOO_HOME/debian
 cd /opt
 $PYTHON_BIN -m compileall .

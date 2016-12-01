@@ -1,7 +1,27 @@
 # Dockerized Odoo #
 
-An [Odoo][] 8 server installed in [Debian][] jessie.
+An [Odoo][] 8 server installed in [Alpine][]
 Based on [yajo/odoo][] image.
+
+## Variables used by the launch scripts
+```
+XDG_DATA_HOME="/var/lib/odoo/.local/share"
+ODOO_HOME="/opt/odoo"
+ODOO_ADDONS_HOME="/opt/odoo_addons_src"
+ODOO_SERVER="/opt/odoo/.env/bin/python odoo.py"
+ODOO_MODULE_FILE="__openerp__.pyc"
+UNACCENT=True
+PYTHON_BIN="/opt/odoo/.env/bin/python"
+PIP_BIN="/opt/odoo/.env/bin/pip"
+OCA_URL="https://github.com/OCA"
+ODOO_URL="https://github.com/OCA/OCB/archive/$ODOO_VERSION.zip"
+ODOO_TARBALL_DIR="OCB-$ODOO_VERSION"
+ODOO_MODULES="https://github.com/OCA/l10n-spain.git"
+PYTHON_MODULES="unicodecsv ofxparse"
+DEVELOP="no"
+BUILD_PACKAGES=""
+RUN_PACKAGES="libpng libjpeg zlib"
+```
 
 ## Security
 
@@ -22,7 +42,7 @@ set it up will be proxying Odoo with [yajo/https-proxy][].
 
 **Never** add the debugger in production.
 
-## tl;dr: [Docker Compose][] example
+## [Docker Compose][] example
 
     # Odoo server itself
     app:
@@ -39,9 +59,9 @@ set it up will be proxying Odoo with [yajo/https-proxy][].
             WDB_SOCKET_SERVER: wdb
             WDB_WEB_PORT: 1984
             WDB_WEB_SERVER: localhost
-            XDG_DATA_HOME="/var/lib/odoo" 
-            ODOO_SERVER="python odoo.py" 
-            UNACCENT=True 
+            XDG_DATA_HOME="/var/lib/odoo"
+            ODOO_SERVER="python odoo.py"
+            UNACCENT=True
      # If you are going to use the HTTPS proxy for production,
         # don't expose any ports
         ports:
@@ -138,6 +158,13 @@ Follow instructions from [postgres][] to understand the PostgreSQL part.
 Maybe you prefer to change `--publish-all` for `-p 1984 -p 8069 -p 8072`.
 
 ### Scripts available
+-   `install-odoo`: Install odoo source from ODOO_VERSION and ODOO_URL variables
+    in /opt/odoo. Download addons from ODOO_MODULES in /opt/odoo_addons_src and
+    install them with dependencies.
+
+-   `build-install`: install build dependencies
+
+-   `clean.sh`: clean build packages and source files
 
 -   `debug`: Use for debugging with [wdb][] from the start. See section
     *Debugging* below.
@@ -206,14 +233,11 @@ Recommended for production.
 
 A simple `Dockerfile` like this can help:
 
-    FROM oondeo/odoo:8.0
-    ADD src /var/lib/odoo/
+    FROM oondeo/odoo-deps:onbuild
 
-You should obviously have an `extra-addons` folder in the directory tree.
-Then, run:
 
-    cd /path/to/my/subrepository
-    docker build --tag my-odoo .
+You should have a build.sh file that contains install steps see examples in this
+repo
 
 ## Mounting Odoo itself
 
@@ -267,9 +291,10 @@ This is a sample production `Dockerfile`:
     FROM oondeo/odoo:8.0
 
     # Install dependencies for your custom addons
-    RUN yum -y install some-centos-epel-package &&\
-        pip install some-pypi-package &&\
-        yum clean all
+    RUN build-install \
+        && apk add --no-cache -t .builddeps your-build-dep
+        && chmod +x /build.sh && rm -rf /tmp/*  ~/.cache
+
 
 
 There you have a production-ready image!
@@ -311,20 +336,11 @@ create a BitBucket issue.
 You can use the automatic `latest` and `master` tags, but I strongly recommend
 using the number-versioned ones.
 
-### Data
-
-The `data` tag is a shortcut used to create a volumes in `/home/odoo` and
-`/var/{lib,log}/odoo` to store variable data.
-
-Instead, you can use any other tag running command `/usr/bin/true`, and save a
-little disk space. It's almost the same.
-
 ### Core
 
 Core tags are installed from upstream Odoo code, using [nightly
 builds](http://nightly.odoo.com/) (RPM version, of course).
 
-- `latest`: Latest stable version. Right now it points to `9.0`.
 - `master`: Latest development version. Right now it points to `10.0`.
 - `8.0`: Stable.
 - `9.0`: Stable. Not tested by me.
@@ -335,6 +351,7 @@ builds](http://nightly.odoo.com/) (RPM version, of course).
 These are installed from [OCB][]. Can be useful if there are fixes that you
 need.
 
+- `latest`: Latest stable version. Right now it points to `8.0`.
 - `ocb-latest`: Latest stable version. Right now it points to `ocb-9.0`.
 - `ocb-8.0`: Stable. Not tested by me.
 - `ocb-9.0`: Stable. Not tested by me.
@@ -348,7 +365,7 @@ These tags were used some time ago, but right now are not updated anymore:
     [the official main source code repository](https://github.com/odoo/odoo).
 
 
-[Debian]: http://debian.org/
+[Alpine]: http://alpinelinux.org/
 [Docker Compose]: http://www.fig.sh/
 [Git]: http://git-scm.com/
 [Odoo]: https://www.odoo.com/
@@ -362,4 +379,4 @@ These tags were used some time ago, but right now are not updated anymore:
 [postgres]: https://registry.hub.docker.com/_/postgres/
 [yajo/https-proxy]: https://registry.hub.docker.com/u/oondeo/https-proxy/
 [oondeo/odoo]: https://registry.hub.docker.com/u/oondeo/odoo/
-[yajo/odoo]: https://registry.hub.docker.com/u/oondeo/odoo/yajo/odoo 
+[yajo/odoo]: https://registry.hub.docker.com/u/oondeo/odoo/yajo/odoo

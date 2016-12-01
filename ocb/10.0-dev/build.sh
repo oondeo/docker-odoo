@@ -1,5 +1,6 @@
 #!/sh
 
+set -e
 export ODOO_VERSION="10.0"
 export ODOO_SERVER="$PYTHON_BIN odoo-bin" \
   ODOO_MODULE_FILE="__manifest__.pyc" \
@@ -14,8 +15,6 @@ export WDB_NO_BROWSER_AUTO_OPEN=True \
     WDB_WEB_PORT=1984 \
     WDB_WEB_SERVER=localhost
 
-set -e
-
 export > /etc/skel/initrc
 
 apk add --no-cache -t .rundeps fontconfig && \
@@ -26,9 +25,11 @@ apk add --no-cache -t .rundeps fontconfig && \
 
 $PIP_BIN --no-cache-dir install $PYTHON_MODULES
 /usr/local/bin/odoo-install
-
-install-deps /opt /usr/lib/python2.7/site-packages
+#fix pillow
+CFLAGS="$CFLAGS -L/lib"
+$PIP_BIN -I --no-cache-dir Pillow
 cd /opt
 $PYTHON_BIN -m compileall .
 cd /usr/lib/python2.7/site-packages && python -m compileall .
+install-deps /opt /usr/lib/python2.7/site-packages
 rm -rf $ODOO_HOME/doc $ODOO_HOME/setup* $ODOO_HOME/debian
