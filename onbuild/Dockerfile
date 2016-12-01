@@ -14,12 +14,11 @@ ENV ODOO_VERSION="8.0"
 # set ODOO_WORKERS in prod
 # Variables used by the launch scripts
 ENV LANG=es_ES.UTF-8 LANGUAGE=es_ES.UTF-8 LC_ALL=es_ES.UTF-8  \
-    CFLAGS="$CFLAGS -L/lib -L/usr/lib" \
      XDG_DATA_HOME="/var/lib/odoo/.local/share" \
      ODOO_HOME="/opt/odoo" \
      ODOO_ADDONS_HOME="/opt/odoo_addons_src" \
      ODOO_SERVER="$PYTHON_BIN odoo.pyc" \
-     ODOO_MODULE_FILE="__openerp__.pyc" \
+     ODOO_MODULE_FILE="__init__.pyc" \
      UNACCENT=True \
      PYTHONDONTWRITEBYTECODE=True \
      PIP_BIN="/usr/bin/pip" \
@@ -89,11 +88,11 @@ RUN chmod +x /usr/local/bin/* \
     && find /usr/lib/python2.7 -name "*.py" -exec rm -f {} \; \
     && find /usr/lib/python2.7 -name "*.pyo" -exec rm -f {} \;
 
-ONBUILD COPY build.sh /build.sh
-ONBUILD RUN  build-install \
-    && /build.sh  \
-    && rm -rf /tmp/*  ~/.cache
 
+ONBUILD COPY . /app
+ONBUILD RUN  build-install \
+    && chmod +x /app/build.sh && /app/build.sh  \
+    && rm -rf /tmp/*  ~/.cache
 
 VOLUME ["/var/lib/odoo", "/mnt/odoo","/mnt/extra-addons", "/mnt/extra-addons-src", "/var/log/odoo" , "/etc/odoo","/etc/skel"]
 

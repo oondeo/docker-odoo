@@ -9,5 +9,6 @@ gem uninstall -x -q -f sass
 apk del --no-cache .builddeps
 rm -rf /usr/lib/node_modules
 rm -rf /usr/lib/ruby
+rm -rf /app/*
 
 exit 0

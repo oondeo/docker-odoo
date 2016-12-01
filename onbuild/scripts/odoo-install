@@ -42,7 +42,6 @@ function download () {
 function install () {
     ADDON=$1
     echo "Instalando $ADDON"
-    ls -1 /opt/odoo_addons_src/l10n-spain-8.0/*/__openerp__.pyc | wc -l
     if [ "0" == "$(ls -1 $ODOO_ADDONS_HOME/$ADDON/*/$ODOO_MODULE_FILE | wc -l)" ]; then
         echo "Procesando $ADDON"
 
@@ -80,13 +79,15 @@ function install () {
 
 cd /tmp
 if [ ! -f $ODOO_HOME/addons/web/__init__.pyc ]; then
-    curl --location --remote-name "$ODOO_URL" && \
-    unzip -q ./$ODOO_VERSION.zip -d ./ && \
-    cp -aP $ODOO_TARBALL_DIR/* $ODOO_HOME && rm -rf $ODOO_TARBALL_DIR
-    $PIP_BIN install --no-cache-dir -r $ODOO_HOME/requirements.txt
-    cd $ODOO_HOME
-    $PYTHON_BIN setup.py develop && make
-    $PYTHON_BIN  -m compileall .
+    if [ ! -f $ODOO_HOME/addons/web/__init__.py ]; then
+        curl --location --remote-name "$ODOO_URL" && \
+        unzip -q ./$ODOO_VERSION.zip -d ./ && \
+        cp -aP $ODOO_TARBALL_DIR/* $ODOO_HOME && rm -rf $ODOO_TARBALL_DIR
+    fi
+    $PIP_BIN install --no-cache-dir -r $ODOO_HOME/requirements.txt || exit 1
+    cd $ODOO_HOME || exit 1
+    $PYTHON_BIN setup.py develop && make || exit 1
+    $PYTHON_BIN  -m compileall . || exit 1
 fi
 #OLDIFS=$IFS
 #IFS=$'\n'
