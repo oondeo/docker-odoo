@@ -28,19 +28,20 @@ if [ "$UNACCENT" != "False" ]; then
     UNACCENT=True
 fi
 
-if [ ! -f /etc/odoo/openerp-server.conf ]
-then
-echo Patching configuration > /dev/stderr
-
 mkdir -p $XDG_DATA_HOME/Odoo/addons/$ODOO_VERSION $XDG_DATA_HOME/addons $XDG_DATA_HOME/.cache $HOME/.cache
-chown -R odoo $XDG_DATA_HOME
-chown -R odoo $XDG_DATA_HOME/.cache
-chown -R odoo $HOME/.cache
-
 addons=$(ls -1d /usr/local/lib/python2.7/dist-packages/openerp/addons $ODOO_ADDONS_HOME/* \
   /mnt/extra-addons-src/* /mnt/extra-addons $XDG_DATA_HOME/addons \
   $XDG_DATA_HOME/Odoo/addons/$ODOO_VERSION $ODOO_HOME/openerp/addons \
   $ODOO_HOME/addons | tr '\n' ',' | sed s/,$//)
+
+if [ ! -f /etc/odoo/openerp-server.conf ]
+then
+echo Patching configuration > /dev/stderr
+
+
+chown -R odoo $XDG_DATA_HOME
+chown -R odoo $XDG_DATA_HOME/.cache
+chown -R odoo $HOME/.cache
 
 echo "
 [options]
@@ -73,6 +74,7 @@ fi
 
 fi
 
+sed -i "s|^addons_path.*|addons_path = $addons|g" /etc/odoo/openerp-server.conf
 #prevent running problems as user odoo
 chown -R odoo /opt
 chmod 777 -R /opt

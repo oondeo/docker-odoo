@@ -41,6 +41,7 @@ function download () {
 
 function install () {
     ADDON=$1
+    ODOO_ADDONS_HOME=$2
     echo "Instalando $ADDON"
     if [ "0" == "$(ls -1 $ODOO_ADDONS_HOME/$ADDON/*/$ODOO_MODULE_FILE | wc -l)" ]; then
         echo "Procesando $ADDON"
@@ -65,7 +66,7 @@ function install () {
                 fi
                 if [ ! -d $ODOO_ADDONS_HOME/${ARRLINE[0]}-$ODOO_VERSION ]; then
                     download $line
-                    install ${ARRLINE[0]}-$ODOO_VERSION
+                    install ${ARRLINE[0]}-$ODOO_VERSION $ODOO_ADDONS_HOME
                 fi
             done 10<$ODOO_ADDONS_HOME/$ADDON/oca_dependencies.txt
 
@@ -98,7 +99,12 @@ done
 
 for elem in $ODOO_ADDONS_HOME/*
 do
-    install "$(basename $elem)"
+    install "$(basename $elem)" $ODOO_ADDONS_HOME
+done
+
+for elem in "$1"/*
+do
+    install "$(basename $elem)" "$1"
 done
 
 cd /usr/lib/python2.7/site-packages && python -m compileall .
