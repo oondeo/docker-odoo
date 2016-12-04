@@ -2,10 +2,12 @@ FROM python:2-slim
 MAINTAINER Juan Ramon Alfaro <info@oondeo.es>
 
 
-ENV TINI_VERSION v0.13.0
-RUN cp /bin/sh /sh \
+ENV DEBIAN_FRONTEND=noninteractive  \
+    TINI_VERSION=v0.13.0
+RUN cp /bin/sh /sh && apt-get update && apt-get install -y --no-install-recommends curl \
     && curl -o /sbin/tini -sL https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini \
-    && chmod +x /sbin/tini
+    && chmod +x /sbin/tini && apt-get purge -y --auto-remove curl \
+    && rm -rf /var/lib/apt/* /var/tmp/* /tmp/* /var/log/* || true
 
 ENTRYPOINT ["/sbin/tini", "-g" ,"--", "/usr/local/bin/start.sh"]
 
@@ -25,7 +27,7 @@ ENV XDG_DATA_HOME="/var/lib/odoo/.local/share" \
      ODOO_ADDONS_HOME="/opt/odoo_addons_src"
 
 # Create odoo user with $HOME to store some data
-RUN adduser -D -u 1000 odoo && mkdir -p /mnt/extra-addons /mnt/extra-addons-src /etc/odoo $ODOO_ADDONS_HOME /var/log/odoo /var/lib/odoo/src \
+RUN  useradd -b /var/lib odoo  && mkdir -p /mnt/extra-addons /mnt/extra-addons-src /etc/odoo $ODOO_ADDONS_HOME /var/log/odoo /var/lib/odoo/src \
         $XDG_DATA_HOME/addons $XDG_DATA_HOME/.local/share/Odoo/addons /home/odoo/.local/share /home/odoo/.cache \
         /home/odoo/.local  /etc/skel /opt/odoo /opt/odoo_addons_src /var/log/odoo \
         && chown -R odoo /home/odoo /var/lib/odoo /var/log/odoo
@@ -49,6 +51,7 @@ ENV LANG=es_ES.UTF-8 LANGUAGE=es_ES.UTF-8 LC_ALL=es_ES.UTF-8  \
      DEVELOP="no" \
      BUILD_PACKAGES="bzr \
          git \
+         bash \
          mercurial \
          openssh-client \
          subversion \
@@ -88,11 +91,10 @@ ENV LANG=es_ES.UTF-8 LANGUAGE=es_ES.UTF-8 LC_ALL=es_ES.UTF-8  \
          npm \
          fontconfig \
          libfreetype6-dev \
-         npm \
-         node \
          nodejs \
          node-less \
          node-clean-css \
+         npm \
          libtool \
          libldap2-dev \
          libsasl2-dev \
@@ -102,7 +104,6 @@ ENV LANG=es_ES.UTF-8 LANGUAGE=es_ES.UTF-8 LC_ALL=es_ES.UTF-8  \
     RUN_PACKAGES="locales ca-certificates file \
             libldap-2.4 \
             libfreetype6 \
-            adduser \
             locales \
             gsfonts \
             antiword \
@@ -134,12 +135,10 @@ ENV LANG=es_ES.UTF-8 LANGUAGE=es_ES.UTF-8 LC_ALL=es_ES.UTF-8  \
             libsasl2-modules-ldap \
             "
 
-RUN set -x; \
-        && apt-get install -y --no-install-recommends $RUN_PACKAGES \
+RUN apt-get update && apt-get install -y --no-install-recommends $RUN_PACKAGES \
         && echo "en_US.UTF-8 UTF-8" > /etc/locale.gen \
         && echo $LANG UTF-8 >> /etc/locale.gen \
         && locale-gen \
-        && useradd -b /var/lib/odoo odoo  \
         && rm -rf /var/lib/apt/* /var/tmp/* /tmp/* /var/log/* ~/.cache || true
 
 COPY scripts/* /usr/local/bin/

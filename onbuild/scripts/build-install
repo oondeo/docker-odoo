@@ -1,6 +1,6 @@
 #!/sh
 
-apt-get install -y --no-install-recommends $BUILD_PACKAGES
+apt-get update && apt-get install -y --no-install-recommends $BUILD_PACKAGES
 paxctl -Cm /usr/bin/nodejs
 paxctl -Cm /usr/bin/ruby
 $PIP_BIN --no-cache-dir install $PYTHON_MODULES
