@@ -142,7 +142,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends $RUN_PACKAGES \
         && rm -rf /var/lib/apt/* /var/tmp/* /tmp/* /var/log/* ~/.cache || true
 
 COPY scripts/* /usr/local/bin/
-
+RUN chmod +x /usr/local/bin/*
 
 
 ONBUILD COPY . /app
