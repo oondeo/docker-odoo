@@ -32,8 +32,9 @@ RUN  useradd -b /var/lib odoo  && mkdir -p /mnt/extra-addons /mnt/extra-addons-s
         /home/odoo/.local  /etc/skel /opt/odoo /opt/odoo_addons_src /var/log/odoo \
         && chown -R odoo /home/odoo /var/lib/odoo /var/log/odoo
 
-ENV VENV_HOME="/opt/odoo/.env"
-ENV PYTHON_BIN="/usr/bin/python"
+ENV VENV_HOME="/opt/odoo/.env" \
+    PYTHON_DIR="/usr/local/lib/python2.7"
+ENV PYTHON_BIN="python"
 ENV ODOO_VERSION="8.0"
 # set ODOO_WORKERS in prod
 # Variables used by the launch scripts
@@ -42,17 +43,17 @@ ENV LANG=es_ES.UTF-8 LANGUAGE=es_ES.UTF-8 LC_ALL=es_ES.UTF-8  \
      ODOO_MODULE_FILE="__init__.pyc" \
      UNACCENT=True \
      PYTHONDONTWRITEBYTECODE=True \
-     PIP_BIN="/usr/bin/pip" \
+     PIP_BIN="pip" \
      OCA_URL="https://github.com/OCA" \
      ODOO_URL="https://github.com/OCA/OCB/archive/$ODOO_VERSION.zip" \
      ODOO_TARBALL_DIR="OCB-$ODOO_VERSION" \
      ODOO_MODULES="" \
      PYTHON_MODULES="unicodecsv ofxparse" \
      DEVELOP="no" \
-     BUILD_PACKAGES="bzr \
-         git \
+     BUILD_PACKAGES="git \
          bash \
-         mercurial \
+         curl \
+         paxctl \
          openssh-client \
          subversion \
          autoconf \
@@ -67,12 +68,8 @@ ENV LANG=es_ES.UTF-8 LANGUAGE=es_ES.UTF-8 LC_ALL=es_ES.UTF-8  \
          libevent-dev \
          libffi-dev \
          libgeoip-dev \
-         libglib2.0-dev \
          libjpeg-dev \
          liblzma-dev \
-         libmagickcore-dev \
-         libmagickwand-dev \
-         libmysqlclient-dev \
          libncurses-dev \
          libpng-dev \
          libpq-dev \
@@ -88,13 +85,11 @@ ENV LANG=es_ES.UTF-8 LANGUAGE=es_ES.UTF-8 LC_ALL=es_ES.UTF-8  \
          patch \
          xz-utils \
          zlib1g-dev \
-         npm \
          fontconfig \
          libfreetype6-dev \
          nodejs \
          node-less \
          node-clean-css \
-         npm \
          libtool \
          libldap2-dev \
          libsasl2-dev \
