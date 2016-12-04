@@ -1,4 +1,4 @@
-FROM python:2-slim
+FROM debian:jessie
 MAINTAINER Juan Ramon Alfaro <info@oondeo.es>
 
 
@@ -33,7 +33,7 @@ RUN  useradd -b /var/lib odoo  && mkdir -p /mnt/extra-addons /mnt/extra-addons-s
         && chown -R odoo /home/odoo /var/lib/odoo /var/log/odoo
 
 ENV VENV_HOME="/opt/odoo/.env" \
-    PYTHON_DIR="/usr/local/lib/python2.7"
+    PYTHON_DIR="/usr/lib/python2.7"
 ENV PYTHON_BIN="python"
 ENV ODOO_VERSION="8.0"
 # set ODOO_WORKERS in prod
@@ -54,6 +54,9 @@ ENV LANG=es_ES.UTF-8 LANGUAGE=es_ES.UTF-8 LC_ALL=es_ES.UTF-8  \
          bash \
          curl \
          paxctl \
+         bzr \
+         git \
+         mercurial \
          openssh-client \
          subversion \
          autoconf \
@@ -68,8 +71,12 @@ ENV LANG=es_ES.UTF-8 LANGUAGE=es_ES.UTF-8 LC_ALL=es_ES.UTF-8  \
          libevent-dev \
          libffi-dev \
          libgeoip-dev \
+         libglib2.0-dev \
          libjpeg-dev \
          liblzma-dev \
+         libmagickcore-dev \
+         libmagickwand-dev \
+         libmysqlclient-dev \
          libncurses-dev \
          libpng-dev \
          libpq-dev \
@@ -85,12 +92,18 @@ ENV LANG=es_ES.UTF-8 LANGUAGE=es_ES.UTF-8 LC_ALL=es_ES.UTF-8  \
          patch \
          xz-utils \
          zlib1g-dev \
+         npm \
          fontconfig \
          libfreetype6-dev \
+         npm \
+         node \
          nodejs \
          node-less \
          node-clean-css \
+         python-pip \
+         python-dev \
          libtool \
+         python-support \
          libldap2-dev \
          libsasl2-dev \
          ruby-sass \
@@ -128,12 +141,17 @@ ENV LANG=es_ES.UTF-8 LANGUAGE=es_ES.UTF-8 LC_ALL=es_ES.UTF-8  \
             libsasl2-2 \
             libsasl2-modules \
             libsasl2-modules-ldap \
+            python \
+            python-renderpm \
+            python-setuptools \
             "
 
 RUN apt-get update && apt-get install -y --no-install-recommends $RUN_PACKAGES \
         && echo "en_US.UTF-8 UTF-8" > /etc/locale.gen \
         && echo $LANG UTF-8 >> /etc/locale.gen \
         && locale-gen \
+        && cd $PYTHON_DIR && python -m compileall . \
+        && find $PYTHON_DIR -name "*.py" -and -not -name "__*" -exec rm -f {} \; \
         && rm -rf /var/lib/apt/* /var/tmp/* /tmp/* /var/log/* ~/.cache || true
 
 COPY scripts/* /usr/local/bin/
