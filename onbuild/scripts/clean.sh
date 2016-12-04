@@ -6,7 +6,7 @@ find /opt -name "*.py" -and -not -name "__*" -exec rm -f {} \;
 npm uninstall -g less less-plugin-clean-css
 gem uninstall -x -q -f compass
 gem uninstall -x -q -f sass
-apk del --no-cache .builddeps
+apt-get purge -y --auto-remove $BUILD_PACKAGES
 rm -rf /usr/lib/node_modules
 rm -rf /usr/lib/ruby
 rm -rf /app/*
