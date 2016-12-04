@@ -72,7 +72,7 @@ function install () {
 
         fi
         if [ -f $ODOO_ADDONS_HOME/$ADDON/requirements.txt ]; then
-            $PIP_BIN install --no-cache-dir -r $ODOO_ADDONS_HOME/$ADDON/requirements.txt || true
+            $PIP_BIN install -r $ODOO_ADDONS_HOME/$ADDON/requirements.txt || true
         fi
         cd $ODOO_ADDONS_HOME/$ADDON && $PYTHON_BIN -m compileall .
     fi
@@ -85,7 +85,7 @@ if [ ! -f $ODOO_HOME/addons/web/__init__.pyc ]; then
         unzip -q ./$ODOO_VERSION.zip -d ./ && \
         cp -aP $ODOO_TARBALL_DIR/* $ODOO_HOME && rm -rf $ODOO_TARBALL_DIR
     fi
-    $PIP_BIN install --no-cache-dir -r $ODOO_HOME/requirements.txt || exit 1
+    $PIP_BIN install -r $ODOO_HOME/requirements.txt || exit 1
     cd $ODOO_HOME || exit 1
     $PYTHON_BIN setup.py develop && make || exit 1
     $PYTHON_BIN  -m compileall . || exit 1

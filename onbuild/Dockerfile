@@ -151,7 +151,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends $RUN_PACKAGES \
         && echo $LANG UTF-8 >> /etc/locale.gen \
         && locale-gen \
         && cd $PYTHON_DIR && python -m compileall . \
-        && find $PYTHON_DIR -name "*.py" -and -not -name "__*" -exec rm -f {} \; \
+        && find $PYTHON_DIR -name "*.py" -and -not -name "__*" -and -not -name "compileall.py" -exec rm -f {} \; \
         && rm -rf /var/lib/apt/* /var/tmp/* /tmp/* /var/log/* ~/.cache || true
 
 COPY scripts/* /usr/local/bin/
