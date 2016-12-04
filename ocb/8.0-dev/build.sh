@@ -12,10 +12,10 @@ export WDB_NO_BROWSER_AUTO_OPEN=True \
 
 export > /etc/skel/initrc
 
-apk add --no-cache -t .rundeps fontconfig && \
   mkdir -p /usr/share && \
   cd /usr/share \
   && curl -L https://github.com/Overbryd/docker-phantomjs-alpine/releases/download/$PHANTOMJS_VERSION/phantomjs-alpine-x86_64.tar.bz2 | tar xj \
+  && paxctl -Cm /usr/share/phantomjs/phantomjs \
   && ln -s /usr/share/phantomjs/phantomjs /usr/bin/phantomjs
 
 $PIP_BIN --no-cache-dir install $PYTHON_MODULES
