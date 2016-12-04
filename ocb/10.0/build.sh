@@ -13,8 +13,7 @@ export > /etc/skel/initrc
 rm -rf $ODOO_HOME/doc $ODOO_HOME/setup* $ODOO_HOME/debian
 #fix pillow
 CFLAGS="$CFLAGS -L/lib"
-$PIP_BIN uninstall -y Pillow
-$PIP_BIN install --no-cache-dir Pillow
+$PIP_BIN install -I --no-cache-dir Pillow
 cd /opt
 $PYTHON_BIN -m compileall .
 cd /usr/lib/python2.7/site-packages && python -m compileall .

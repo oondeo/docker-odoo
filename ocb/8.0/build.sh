@@ -6,8 +6,7 @@ set -e
 /usr/local/bin/odoo-install
 #fix pillow
 CFLAGS="$CFLAGS -L/lib"
-$PIP_BIN uninstall -y Pillow
-$PIP_BIN install --no-cache-dir Pillow
+$PIP_BIN install -I --no-cache-dir Pillow
 rm -rf $ODOO_HOME/doc $ODOO_HOME/setup* $ODOO_HOME/debian
 cd /opt
 $PYTHON_BIN -m compileall .
