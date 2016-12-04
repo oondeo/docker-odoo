@@ -1,29 +1,12 @@
 # Dockerized Odoo #
 
-An [Odoo][] 8 server installed in [Alpine][]
-Based on [yajo/odoo][] image.
+An [Odoo][]  server installed in [Debian][] Jessie. Basedin yajo/odoo image.
 
-## Variables used by the launch scripts
-```
-XDG_DATA_HOME="/var/lib/odoo/.local/share"
-ODOO_HOME="/opt/odoo"
-ODOO_ADDONS_HOME="/opt/odoo_addons_src"
-ODOO_SERVER="/opt/odoo/.env/bin/python odoo.py"
-ODOO_MODULE_FILE="__openerp__.pyc"
-UNACCENT=True
-PYTHON_BIN="/opt/odoo/.env/bin/python"
-PIP_BIN="/opt/odoo/.env/bin/pip"
-OCA_URL="https://github.com/OCA"
-ODOO_URL="https://github.com/OCA/OCB/archive/$ODOO_VERSION.zip"
-ODOO_TARBALL_DIR="OCB-$ODOO_VERSION"
-ODOO_MODULES="https://github.com/OCA/l10n-spain.git"
-PYTHON_MODULES="unicodecsv ofxparse"
-DEVELOP="no"
-BUILD_PACKAGES=""
-RUN_PACKAGES="libpng libjpeg zlib"
-```
+-dev tags have installed wdb debug.
 
 ## Security
+
+Set WORKERS variable in production.
 
 You **must** change the database administration password by adding
 `--env ADMIN_PASSWORD=blahblah`, or it will default to `admin`, which is too
@@ -38,11 +21,11 @@ don't expose its port (you do not need to do it anyway) or use
 
 You are setting up a service which will recieve passwords from users.
 As such, you should use HTTPS for production. The easiest way to
-set it up will be proxying Odoo with [yajo/https-proxy][].
+set it up will be proxying Odoo with [oondeo/https-proxy][].
 
 **Never** add the debugger in production.
 
-## [Docker Compose][] example
+## tl;dr: [Docker Compose][] example
 
     # Odoo server itself
     app:
@@ -59,17 +42,14 @@ set it up will be proxying Odoo with [yajo/https-proxy][].
             WDB_SOCKET_SERVER: wdb
             WDB_WEB_PORT: 1984
             WDB_WEB_SERVER: localhost
-            XDG_DATA_HOME="/var/lib/odoo"
-            ODOO_SERVER="python odoo.py"
-            UNACCENT=True
-     # If you are going to use the HTTPS proxy for production,
+        # If you are going to use the HTTPS proxy for production,
         # don't expose any ports
         ports:
             - "8069:8069"
             - "8072:8072"
         volumes:
             # Assuming you have an addons subfolder in the working tree
-            - ./addons:/mnt/extra-addons:ro,Z
+            - ./addons:/opt/odoo/extra-addons:ro,Z
         volumes_from:
             - appdata
         links:
@@ -80,7 +60,7 @@ set it up will be proxying Odoo with [yajo/https-proxy][].
 
     # Hold separately the volumes of Odoo variable data
     appdata:
-        image: yajo/odoo:data
+        image: oondeo/odoo:data
 
     # PostgreSQL server
     db:
@@ -99,13 +79,13 @@ set it up will be proxying Odoo with [yajo/https-proxy][].
 
     # For development, add a debugger
     wdb:
-        image: yajo/wdb-server
+        image: oondeo/wdb-server
         ports:
             - "1984:1984"
 
     # For production, you will need HTTPS
     https:
-        image: yajo/https-proxy
+        image: oondeo/https-proxy
         ports:
             - "80:80"
             - "443:443"
@@ -142,11 +122,8 @@ To get up and running using the docker CLI:
         -e POSTGRES_USER=odoo -e POSTGRES_PASSWORD=something_secure \
         postgres:9.2
 
-    #install unaccent extension on POSTGRES
-    CREATE extension unaccent
-
     # Hold separately the volumes of Odoo variable data
-    docker run -d --name odoo_appdata yajo/odoo:data
+    docker run -d --name odoo_appdata oondeo/odoo:data
 
     # Odoo server itself
     docker run -d --name odoo_app --link odoo_dbsrv:db \
@@ -158,13 +135,6 @@ Follow instructions from [postgres][] to understand the PostgreSQL part.
 Maybe you prefer to change `--publish-all` for `-p 1984 -p 8069 -p 8072`.
 
 ### Scripts available
--   `install-odoo`: Install odoo source from ODOO_VERSION and ODOO_URL variables
-    in /opt/odoo. Download addons from ODOO_MODULES in /opt/odoo_addons_src and
-    install them with dependencies.
-
--   `build-install`: install build dependencies
-
--   `clean.sh`: clean build packages and source files
 
 -   `debug`: Use for debugging with [wdb][] from the start. See section
     *Debugging* below.
@@ -210,10 +180,7 @@ If you need persistent logs, use volumes from `oondeo/odoo:data` and configure
 
 ## Mounting extra addons for Odoo
 
-Extra addons must be located in `/var/lib/odoo/src/<repo>/<addon>/` or `/var/lib/odoo/addons` for development.
-In production you may use `/etc/odoo/src/<repo>/<addon>/` or `/etc/odoo/addons/<addon>`
-
-Official mountpoint `/mnt/extra-addons` also works
+Extra addons must be located in `/mnt/extra-addons/<repo>/<addon>/`.
 
 How you put them there does not matter. I will give you some ideas:
 
@@ -233,26 +200,27 @@ Recommended for production.
 
 A simple `Dockerfile` like this can help:
 
-    FROM oondeo/odoo-deps:onbuild
+    FROM oondeo/odoo:8.0
+    ADD extra-addons /mnt/
 
+You should obviously have an `extra-addons` folder in the directory tree.
+Then, run:
 
-You should have a build.sh file that contains install steps see examples in this
-repo
+    cd /path/to/my/subrepository
+    docker build --tag my-odoo .
 
 ## Mounting Odoo itself
 
 Maybe you are a core Odoo developer, or want to make your own fork to fix
 something, or want to use a variant such as [OCB][]. How to do it?
 
+Well, the most important thing you need to know is that Odoo is installed in
+`/usr/lib/python2.7/site-packages/openerp/`.
 
 You should have a folder tree similar to this one:
 
     app/
-       /data/
-            /addons/
-                    /one_module/
-                    /...
-            /src/
+       /extra-addons/
                     /one-repo/
                              /one_module/
                                         /__openerp__.py
@@ -269,13 +237,22 @@ You should have a folder tree similar to this one:
     docker-compose.yml
     ...
 
+Then you need to link the extra core addons inside the `extra-addons` folder,
+as if it were an external repository:
+
+    $ ln -sT ../my-odoo-fork/addons app/extra-addons/core-addons
+
 And now, `docker-compose.yml` should have:
 
     app:
         volumes:
-            ./app/my-odoo-fork:/opt/odoo:ro,Z
-            ./app/data:/var/lib/odoo:rw,Z
+            ./app:/opt/odoo:ro,Z
+            ./app/my-odoo-fork/openerp:/usr/lib/python2.7/site-packages/openerp:ro,Z
     [... etc.]
+
+Now we have the custom addons and the extra core addons in
+`/opt/odoo/extra-addons`, and your Odoo fork in
+`/usr/lib/python2.7/site-packages/openerp`.
 
 Since everything is mounted from your computer, you can develop quickly, debug,
 etc.
@@ -291,11 +268,23 @@ This is a sample production `Dockerfile`:
     FROM oondeo/odoo:8.0
 
     # Install dependencies for your custom addons
-    RUN build-install \
-        && apk add --no-cache -t .builddeps your-build-dep
-        && chmod +x /build.sh && rm -rf /tmp/*  ~/.cache
+    RUN yum -y install some-centos-epel-package &&\
+        pip install some-pypi-package &&\
+        yum clean all
 
+    # This time, we link it to avoid wasting disk space
+    RUN rm -Rf /usr/lib/python2.7/site-packages/openerp &&\
+        ln -s /opt/odoo/my-odoo-fork/openerp /usr/lib/python2.7/site-packages/
 
+    # Add your custom code
+    ADD app /opt/odoo
+
+    # Now compile all Python files to have better performance
+    RUN python -m compileall /opt/odoo
+
+    # This will fix possible permission issues
+    RUN chown --recursive odoo:odoo /opt/odoo &&\
+        chmod --recursive u=rwX,go=rX /opt/odoo
 
 There you have a production-ready image!
 
@@ -303,9 +292,9 @@ There you have a production-ready image!
 
 This image comes with [wdb][] client preinstalled.
 
-To use the debugger, you need to link it to a [oondeo/wdb][] container:
+To use the debugger, you need to link it to a [oondeo/wdb-server][] container:
 
-    docker run -p 1984:1984 --name odoo_wdb oondeo/wdb
+    docker run -p 1984:1984 --name odoo_wdb oondeo/wdb-server
     docker run -p 80:8069 --link odoo_dbsrv:db --link odoo_wdb:wdb oondeo/odoo
 
 Adding this line anywhere in your modules will pause it for debugging:
@@ -336,11 +325,20 @@ create a BitBucket issue.
 You can use the automatic `latest` and `master` tags, but I strongly recommend
 using the number-versioned ones.
 
+### Data
+
+The `data` tag is a shortcut used to create a volumes in `/home/odoo` and
+`/var/{lib,log}/odoo` to store variable data.
+
+Instead, you can use any other tag running command `/usr/bin/true`, and save a
+little disk space. It's almost the same.
+
 ### Core
 
 Core tags are installed from upstream Odoo code, using [nightly
 builds](http://nightly.odoo.com/) (RPM version, of course).
 
+- `latest`: Latest stable version. Right now it points to `9.0`.
 - `master`: Latest development version. Right now it points to `10.0`.
 - `8.0`: Stable.
 - `9.0`: Stable. Not tested by me.
@@ -351,7 +349,6 @@ builds](http://nightly.odoo.com/) (RPM version, of course).
 These are installed from [OCB][]. Can be useful if there are fixes that you
 need.
 
-- `latest`: Latest stable version. Right now it points to `8.0`.
 - `ocb-latest`: Latest stable version. Right now it points to `ocb-9.0`.
 - `ocb-8.0`: Stable. Not tested by me.
 - `ocb-9.0`: Stable. Not tested by me.
@@ -365,7 +362,7 @@ These tags were used some time ago, but right now are not updated anymore:
     [the official main source code repository](https://github.com/odoo/odoo).
 
 
-[Alpine]: http://alpinelinux.org/
+[CentOS]: http://centos.org/
 [Docker Compose]: http://www.fig.sh/
 [Git]: http://git-scm.com/
 [Odoo]: https://www.odoo.com/
@@ -377,6 +374,5 @@ These tags were used some time ago, but right now are not updated anymore:
 [PhantomJS]: http://phantomjs.org/
 [PostgreSQL]: http://www.postgresql.org/
 [postgres]: https://registry.hub.docker.com/_/postgres/
-[yajo/https-proxy]: https://registry.hub.docker.com/u/oondeo/https-proxy/
+[oondeo/https-proxy]: https://registry.hub.docker.com/u/oondeo/https-proxy/
 [oondeo/odoo]: https://registry.hub.docker.com/u/oondeo/odoo/
-[yajo/odoo]: https://registry.hub.docker.com/u/oondeo/odoo/yajo/odoo
