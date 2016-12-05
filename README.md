@@ -381,6 +381,25 @@ These tags were used some time ago, but right now are not updated anymore:
     [the official main source code repository](https://github.com/odoo/odoo).
 
 
+##############################################
+# Multiprocessing options
+# Specify the number of workers, 0 disable prefork mode.
+workers = 2
+# Maximum allowed virtual memory per worker, when reached the worker be reset after the current request (default 671088640 aka 640MB)
+limit_memory_soft = 888777666
+# Maximum allowed virtual memory per worker, when reached, any memory allocation will fail (default 805306368 aka 768MB)
+limit_memory_hard = 1999888777
+# Maximum allowed CPU time per request (default 60)
+limit_time_cpu = 80
+# Maximum allowed Real time per request (default 120)
+limit_time_real = 120
+# Maximum number of request to be processed per worker (default 8192)
+limit_request = 12000
+# port for gevent processes has  worker (default 8072)
+# reverse proxy 8072 port to the external 80, only for location /longpolling (in nginx this is done with a second location)
+longpolling_port = 8083
+
+
 [Alpine]: http://alpinelinux.org/
 [Docker Compose]: http://www.fig.sh/
 [Git]: http://git-scm.com/

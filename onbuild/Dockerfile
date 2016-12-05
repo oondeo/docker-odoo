@@ -2,10 +2,10 @@ FROM debian:jessie
 MAINTAINER Juan Ramon Alfaro <info@oondeo.es>
 
 
-ENV DEBIAN_FRONTEND=noninteractive  \
-    TINI_VERSION=v0.13.0
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TINI_VERSION=v0.13.0
 RUN cp /bin/sh /sh && apt-get update && apt-get install -y --no-install-recommends curl \
-    && curl -o /sbin/tini -sL https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini \
+    && curl -o /sbin/tini -SLk https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini \
     && chmod +x /sbin/tini && apt-get purge -y --auto-remove curl \
     && rm -rf /var/lib/apt/* /var/tmp/* /tmp/* /var/log/* || true
 
@@ -17,9 +17,9 @@ RUN     apt-get update && apt-get install -y --no-install-recommends curl paxctl
         && dpkg --force-depends -i wkhtmltox.deb \
         && apt-get update && apt-get -y install -f --no-install-recommends  \
         && paxctl -Cm /usr/local/bin/wkhtmltopdf \
-        && paxctl -Cm /usr/local/bin/wkhtmltoimage \
+        && rm /usr/local/bin/wkhtmltoimage \
         && apt-get purge -y --auto-remove curl paxctl \
-        && rm -rf wkhtmltox.deb /var/lib/apt/* /var/tmp/* /tmp/* /var/log/* || true
+        && rm -rf wkhtmltox.deb /var/lib/apt/* /var/tmp/* /tmp/* /var/log/* /usr/share/doc/* || true
 
 
 ENV XDG_DATA_HOME="/var/lib/odoo/.local/share" \
@@ -152,7 +152,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends $RUN_PACKAGES \
         && locale-gen \
         && cd $PYTHON_DIR && python -m compileall . \
         && find $PYTHON_DIR -name "*.py" -and -not -name "__*" -and -not -name "compileall.py" -exec rm -f {} \; \
-        && rm -rf /var/lib/apt/* /var/tmp/* /tmp/* /var/log/* ~/.cache || true
+        && rm -rf /var/lib/apt/* /var/tmp/* /tmp/* /var/log/* ~/.cache /usr/share/doc/* || true
 
 COPY scripts/* /usr/local/bin/
 RUN chmod +x /usr/local/bin/*
@@ -161,7 +161,7 @@ RUN chmod +x /usr/local/bin/*
 ONBUILD COPY . /app
 ONBUILD RUN  build-install \
     && chmod +x /app/build.sh && /app/build.sh  \
-    && rm -rf /tmp/*  ~/.cache
+    && rm -rf /tmp/*  ~/.cache  /var/lib/apt/* /var/tmp/* /tmp/* /var/log/* ~/.cache /usr/share/doc/* || true
 
 VOLUME ["/var/lib/odoo", "/mnt/odoo","/mnt/extra-addons", "/mnt/extra-addons-src", "/var/log/odoo" , "/etc/odoo","/etc/skel"]
 
