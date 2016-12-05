@@ -7,5 +7,5 @@ set -e
 rm -rf $ODOO_HOME/doc $ODOO_HOME/setup* $ODOO_HOME/debian
 cd /opt
 $PYTHON_BIN -m compileall .
-cd /usr/lib/python2.7/site-packages && python -m compileall .
+cd $PYTHON_DIR && python -m compileall .
 /usr/local/bin/clean.sh

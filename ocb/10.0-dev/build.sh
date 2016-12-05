@@ -27,5 +27,5 @@ $PIP_BIN --no-cache-dir install $PYTHON_MODULES
 /usr/local/bin/odoo-install
 cd /opt
 $PYTHON_BIN -m compileall .
-cd /usr/lib/python2.7/site-packages && python -m compileall .
+cd $PYTHON_DIR && python -m compileall .
 rm -rf $ODOO_HOME/doc $ODOO_HOME/setup* $ODOO_HOME/debian
