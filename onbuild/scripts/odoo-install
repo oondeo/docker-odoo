@@ -107,7 +107,7 @@ do
     install "$(basename $elem)" "$1"
 done
 
-cd $PYTHON_DIR/site-packages && python -m compileall .
+cd $PIP_DIR && python -m compileall .
 cd "$ODOO_ADDONS_HOME"
 find -type d -name ".git" -exec rm -rf {} \;
 rm -rf ~/.cache /tmp/*

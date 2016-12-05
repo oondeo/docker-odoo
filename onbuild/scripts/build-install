@@ -4,5 +4,6 @@ apt-get update && apt-get install -y --no-install-recommends $BUILD_PACKAGES
 paxctl -Cm /usr/bin/nodejs
 paxctl -Cm /usr/bin/ruby
 $PIP_BIN install $PYTHON_MODULES
-cd $PYTHON_DIR/site-packages && python -m compileall .
+cd $PIP_DIR && python -m compileall .
+cd $PYTHON_DIR && python -m compileall .
 rm -rf /var/lib/apt/* /var/tmp/* /tmp/* /var/log/* ~/.cache || true

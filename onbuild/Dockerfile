@@ -32,7 +32,8 @@ RUN  useradd -b /var/lib odoo  && mkdir -p /mnt/extra-addons /mnt/extra-addons-s
         /home/odoo/.local  /etc/skel /opt/odoo /opt/odoo_addons_src /var/log/odoo \
         && chown -R odoo /home/odoo /var/lib/odoo /var/log/odoo
 
-ENV VENV_HOME="/opt/odoo/.env" \
+ENV VENV_HOME="/opt/odoo/.env"
+ENV PIP_DIR="/usr/local/lib/python2.7/dist-packages"
     PYTHON_DIR="/usr/lib/python2.7"
 ENV PYTHON_BIN="python"
 ENV ODOO_VERSION="8.0"
@@ -75,7 +76,6 @@ ENV LANG=es_ES.UTF-8 LANGUAGE=es_ES.UTF-8 LC_ALL=es_ES.UTF-8  \
          liblzma-dev \
          libmagickcore-dev \
          libmagickwand-dev \
-         libmysqlclient-dev \
          libncurses-dev \
          libpng-dev \
          libpq-dev \
