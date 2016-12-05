@@ -51,7 +51,6 @@ ENV LANG=es_ES.UTF-8 LANGUAGE=es_ES.UTF-8 LC_ALL=es_ES.UTF-8  \
      PYTHON_MODULES="unicodecsv ofxparse" \
      DEVELOP="no" \
      BUILD_PACKAGES="git \
-         bash \
          curl \
          paxctl \
          bzr \
