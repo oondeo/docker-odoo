@@ -33,7 +33,7 @@ RUN  useradd -b /var/lib odoo  && mkdir -p /mnt/extra-addons /mnt/extra-addons-s
         && chown -R odoo /home/odoo /var/lib/odoo /var/log/odoo
 
 ENV VENV_HOME="/opt/odoo/.env"
-ENV PIP_DIR="/usr/local/lib/python2.7/dist-packages"
+ENV PIP_DIR="/usr/local/lib/python2.7/dist-packages" \
     PYTHON_DIR="/usr/lib/python2.7"
 ENV PYTHON_BIN="python"
 ENV ODOO_VERSION="8.0"
