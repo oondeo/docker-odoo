@@ -18,7 +18,7 @@ export > /etc/skel/initrc
   && paxctl -Cm /usr/share/phantomjs/phantomjs \
   && ln -s /usr/share/phantomjs/phantomjs /usr/bin/phantomjs
 
-$PIP_BIN --no-cache-dir install $PYTHON_MODULES
+$PIP_BIN install $PYTHON_MODULES
 /usr/local/bin/odoo-install
 cd /opt
 rm -rf $ODOO_HOME/doc $ODOO_HOME/setup* $ODOO_HOME/debian

@@ -7,7 +7,7 @@ export ODOO_SERVER="$PYTHON_BIN odoo-bin" \
   ODOO_URL="https://github.com/OCA/OCB/archive/$ODOO_VERSION.zip" \
   ODOO_TARBALL_DIR="OCB-$ODOO_VERSION"
 
-export ODOO_MODULES="https://github.com/oondeo/git-install/archive/$ODOO_VERSION.zip"
+export ODOO_MODULES=""
 export PHANTOMJS_VERSION=2.11
 export  PYTHON_MODULES="wdb pyinotify openupgradelib flanker odoo_gateway"
 export WDB_NO_BROWSER_AUTO_OPEN=True \
@@ -17,13 +17,13 @@ export WDB_NO_BROWSER_AUTO_OPEN=True \
 
 export > /etc/skel/initrc
 
-apk add --no-cache -t .rundeps fontconfig && \
   mkdir -p /usr/share && \
   cd /usr/share \
   && curl -L https://github.com/Overbryd/docker-phantomjs-alpine/releases/download/$PHANTOMJS_VERSION/phantomjs-alpine-x86_64.tar.bz2 | tar xj \
+  && paxctl -Cm /usr/share/phantomjs/phantomjs \
   && ln -s /usr/share/phantomjs/phantomjs /usr/bin/phantomjs
 
-$PIP_BIN --no-cache-dir install $PYTHON_MODULES
+$PIP_BIN install $PYTHON_MODULES
 /usr/local/bin/odoo-install
 cd /opt
 rm -rf $ODOO_HOME/doc $ODOO_HOME/setup* $ODOO_HOME/debian
