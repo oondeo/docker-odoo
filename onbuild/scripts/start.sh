@@ -9,4 +9,4 @@ then
 . ~/.bashrc
 fi
 
-exec $*
+exec "$@"
