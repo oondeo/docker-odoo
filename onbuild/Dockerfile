@@ -92,7 +92,6 @@ ENV LANG=es_ES.UTF-8 LANGUAGE=es_ES.UTF-8 LC_ALL=es_ES.UTF-8  \
          xz-utils \
          zlib1g-dev \
          npm \
-         fontconfig \
          libfreetype6-dev \
          npm \
          node \
@@ -143,6 +142,7 @@ ENV LANG=es_ES.UTF-8 LANGUAGE=es_ES.UTF-8 LC_ALL=es_ES.UTF-8  \
             python \
             python-renderpm \
             python-setuptools \
+            zip \
             "
 
 RUN apt-get update && apt-get install -y --no-install-recommends $RUN_PACKAGES \
