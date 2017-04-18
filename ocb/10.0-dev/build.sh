@@ -9,13 +9,14 @@ export ODOO_SERVER="$PYTHON_BIN odoo-bin" \
 
 export ODOO_MODULES=""
 export PHANTOMJS_VERSION=2.11
-export  PYTHON_MODULES="wdb pyinotify openupgradelib flanker odoo_gateway"
+export  PYTHON_MODULES="pylint pylint-odoo wdb pyinotify openupgradelib flanker odoo_gateway"
 export WDB_NO_BROWSER_AUTO_OPEN=True \
     WDB_SOCKET_SERVER=wdb \
     WDB_WEB_PORT=1984 \
     WDB_WEB_SERVER=localhost
 
 export > /etc/skel/initrc
+sed -i 's/^export HOME\=.*/export HOME=/var/lib/odoo' /etc/skel/initrc
 
   mkdir -p /usr/share && \
   cd /usr/share \
