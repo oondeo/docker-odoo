@@ -65,20 +65,28 @@ then
     EXTRA_ARGS+=("--addons-path")
     EXTRA_ARGS+=("$addons")
 fi
+CMD="odoo"
+if [ "$PTVSD_ENABLE" != "0" ]; then
+    CMD="python3 -m ptvsd $PTVSD_ARGS /usr/bin/odoo"
+fi
 case "$1" in
     -- | odoo)
         shift
         if [[ "$1" == "scaffold" ]] ; then
-            exec odoo "$@"
+            exec $CMD "$@"
         else
-            exec odoo "$@" "${DB_ARGS[@]}" "${EXTRA_ARGS[@]}"
+            exec $CMD "$@" "${DB_ARGS[@]}" "${EXTRA_ARGS[@]}"
         fi
         ;;
     -*)
-        exec odoo "$@" "${DB_ARGS[@]}" "${EXTRA_ARGS[@]}"
+        exec $CMD "$@" "${DB_ARGS[@]}" "${EXTRA_ARGS[@]}"
         ;;
     *)
-        exec "$@"
+        if [ "$DISABLE_AUTOCONFIG" != "0" ]; then
+            exec "$@" "${DB_ARGS[@]}" "${EXTRA_ARGS[@]}"
+        else
+            exec "$@" 
+        fi
 esac
 
 exit 1

@@ -52,7 +52,8 @@ RUN ln -s /usr/bin/pip3 /usr/local/bin/pip
 
 RUN /install.sh "https://github.com/OCA/maintainer-quality-tools/archive/master.zip" /opt/maintainer-quality-tools
 
-ENV VERSION='11.0' ODOO_VERSION='11.0' PTVSD_ENABLE='0'
+ENV DISABLE_AUTOCONFIG "0" VERSION='11.0' ODOO_VERSION='11.0' PTVSD_ENABLE='0' PTVSD_ARGS "--host 0.0.0.0 --port 6899" 
+#--wait --multiprocess
 
 # Set default user when running the container
 USER 101
