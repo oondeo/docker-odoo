@@ -1,3 +1,6 @@
+# TODO #
+clone_oca_dependencies [<checkout_dir> <build_dir>]
+
 # Dockerized Odoo #
 
 An [Odoo][]  server installed in [Debian][] Jessie. Basedin yajo/odoo image.
