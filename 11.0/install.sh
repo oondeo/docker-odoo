@@ -10,9 +10,8 @@ TMP=$(mktemp -d -t ci-XXXXXXXXXX)
 # mkdir -p $DST
 cd $TMP 
 curl -Lo master.zip "$SRC" || true
-mv "$SRC" master.zip || true
-unzip master.zip 
-
+unzip master.zip && rm master.zip
+# mv "$SRC" master.zip || true
 if [ -e "__manifest__.py" ]; then
     NAME=${DST##*/}
     mkdir -p $DST/$NAME/

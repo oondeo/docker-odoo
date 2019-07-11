@@ -34,7 +34,7 @@ RUN set -x; echo deb http://ftp.debian.org/debian stretch-backports main > /etc/
             uwsgi uwsgi-emperor uwsgi-plugin-python3 \
         && rm -rf /var/lib/apt/lists/*
 
-RUN pip3 install --no-cache-dir ptvsd phonenumbers oauthlib redis psycogreen vobject python-ldap qrcode zeep xlrd xlsxwriter  \
+RUN pip3 install --no-cache-dir ptvsd phonenumbers oauthlib redis psycogreen vobject qrcode zeep xlrd xlsxwriter  \
         &&  rm -rf ~/.cache/pip && rm -rf /tmp/*
 
 #openshift compat
